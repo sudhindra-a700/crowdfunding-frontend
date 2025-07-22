@@ -1,4 +1,3 @@
-# frontend/haven_frontend.py
 import streamlit as st
 import requests
 import os
@@ -364,57 +363,161 @@ translations = {
         "search_button": "Search",
         "welcome_haven": "Welcome to HAVEN"
     },
-    "es": {
-        "welcome_title": "¡Bienvenido a HAVEN Crowdfunding!",
-        "app_loading": "Su aplicación está cargando...",
-        "contact_support": "Si ve este mensaje durante mucho tiempo, por favor contacte a soporte.",
-        "select_language": "Seleccionar idioma:",
-        "simplify_terms": "Simplificar términos",
-        "campaigns_title": "Nuestras Campañas",
-        "campaign_detail": "Detalles de la Campaña ",
-        "back_to_campaigns": "Volver a Campañas",
-        "login_title": "Iniciar Sesión",
-        "register_title": "Registrarse",
-        "full_name": "Nombre Completo",
-        "email_id": "Correo Electrónico",
-        "phone_number": "Número de Teléfono",
-        "enter_otp": "Ingresar OTP",
-        "continue_btn": "Continuar",
-        "not_registered": "¿No registrado?",
-        "create_account": "Crear una cuenta",
-        "sign_in_google": "Iniciar sesión con Google",
-        "sign_in_facebook": "Iniciar sesión con Facebook",
-        "register_individual": "Registrarse como Individuo",
-        "register_organization": "Registrarse como Organización",
-        "organization_name": "Nombre de la Organización",
-        "organization_phone": "Número de Teléfono de la Organización",
-        "select_org_type": "Seleccionar Tipo de Organización",
-        "brief_description": "Breve Descripción (máx. 100 caracteres)",
-        "register_btn": "Registrarse",
-        "campaign_1_title": "Iniciativa de Agricultura Sostenible",
-        "campaign_1_desc": "Apoye a los agricultores locales en la adopción de prácticas sostenibles.",
-        "campaign_2_title": "Proyecto Agua Limpia",
-        "campaign_2_desc": "Proporcionar acceso a agua potable limpia y segura.",
-        "campaign_3_title": "Educación para Todos",
-        "campaign_3_desc": "Financiar recursos educativos para niños desfavorecidos.",
-        "explore_categories": "Explorar Categorías",
-        "discover_campaigns": "Descubrir campañas por interés.",
-        "art_design": "Arte y Diseño",
-        "technology": "Tecnología",
-        "community": "Comunidad",
-        "film_video": "Cine y Video",
-        "music": "Música",
-        "publishing": "Publicación",
-        "search_campaigns": "Buscar Campañas",
-        "search_placeholder": "Buscar por palabra clave, categoría.",
-        "enter_term_search": "Ingrese un término arriba para buscar campañas.",
-        "search_tip": "Puede buscar por título, descripción o categoría.",
-        "trending_campaigns": "Campañas Populares",
-        "support_popular_projects": "Apoye los proyectos más populares en HAVEN.",
-        "home_button": "Inicio",
-        "explore_button": "Explorar",
-        "search_button": "Buscar",
-        "welcome_haven": "Bienvenido a HAVEN"
+    "hi": {
+        "welcome_title": "हैवन क्राउडफंडिंग में आपका स्वागत है!",
+        "app_loading": "आपका एप्लिकेशन लोड हो रहा है...",
+        "contact_support": "यदि आप इस संदेश को लंबे समय तक देखते हैं, तो कृपया सहायता से संपर्क करें।",
+        "select_language": "भाषा चुनें:",
+        "simplify_terms": "शब्दों को सरल बनाएं",
+        "campaigns_title": "हमारे अभियान",
+        "campaign_detail": "अभियान के विवरण ",
+        "back_to_campaigns": "अभियानों पर वापस जाएं",
+        "login_title": "लॉगिन",
+        "register_title": "पंजीकरण",
+        "full_name": "पूरा नाम",
+        "email_id": "ईमेल आईडी",
+        "phone_number": "फोन नंबर",
+        "enter_otp": "ओटीपी दर्ज करें",
+        "continue_btn": "जारी रखें",
+        "not_registered": "पंजीकृत नहीं हैं?",
+        "create_account": "खाता बनाएं",
+        "sign_in_google": "गूगल से साइन इन करें",
+        "sign_in_facebook": "फेसबुक से साइन इन करें",
+        "register_individual": "व्यक्तिगत के रूप में पंजीकरण करें",
+        "register_organization": "संगठन के रूप में पंजीकरण करें",
+        "organization_name": "संगठन का नाम",
+        "organization_phone": "संगठन का फोन नंबर",
+        "select_org_type": "संगठन का प्रकार चुनें",
+        "brief_description": "संक्षिप्त विवरण (अधिकतम 100 अक्षर)",
+        "register_btn": "पंजीकरण करें",
+        "campaign_1_title": "टिकाऊ कृषि पहल",
+        "campaign_1_desc": "स्थानीय किसानों को टिकाऊ प्रथाओं को अपनाने में सहायता करें।",
+        "campaign_3_title": "सभी के लिए शिक्षा",
+        "campaign_3_desc": "वंचित बच्चों के लिए शैक्षिक संसाधनों को फंड करें।",
+        "campaign_2_title": "स्वच्छ पानी परियोजना",
+        "campaign_2_desc": "स्वच्छ और सुरक्षित पेयजल तक पहुंच प्रदान करें।",
+        "explore_categories": "श्रेणियों का अन्वेषण करें",
+        "discover_campaigns": "रुचि के अनुसार अभियान खोजें।",
+        "art_design": "कला और डिज़ाइन",
+        "technology": "प्रौद्योगिकी",
+        "community": "समुदाय",
+        "film_video": "फिल्म और वीडियो",
+        "music": "संगीत",
+        "publishing": "प्रकाशन",
+        "search_campaigns": "अभियान खोजें",
+        "search_placeholder": "कीवर्ड, श्रेणी से खोजें।",
+        "enter_term_search": "अभियान खोजने के लिए ऊपर एक शब्द दर्ज करें।",
+        "search_tip": "आप शीर्षक, विवरण, या श्रेणी से खोज सकते हैं।",
+        "trending_campaigns": "ट्रेंडिंग अभियान",
+        "support_popular_projects": "हैवन पर सबसे लोकप्रिय परियोजनाओं का समर्थन करें।",
+        "home_button": "होम",
+        "explore_button": "अन्वेषण करें",
+        "search_button": "खोजें",
+        "welcome_haven": "हैवन में आपका स्वागत है"
+    },
+    "ta": {
+        "welcome_title": "ஹேவன் க்ரவுட்ஃபண்டிங்கிற்கு வரவேற்கிறோம்!",
+        "app_loading": "உங்கள் பயன்பாடு ஏற்றப்படுகிறது...",
+        "contact_support": "இந்த செய்தியை நீண்ட நேரம் பார்த்தால், தயவுசெய்து ஆதரவைத் தொடர்பு கொள்ளுங்கள்।",
+        "select_language": "மொழியைத் தேர்ந்தெடுக்கவும்:",
+        "simplify_terms": "சொற்களை எளிதாக்கவும்",
+        "campaigns_title": "எங்கள் பிரச்சாரங்கள்",
+        "campaign_detail": "பிரச்சாரத்தின் விவரங்கள் ",
+        "back_to_campaigns": "பிரச்சாரங்களுக்குத் திரும்பு",
+        "login_title": "உள்நுழைவு",
+        "register_title": "பதிவு",
+        "full_name": "முழு பெயர்",
+        "email_id": "மின்னஞ்சல் ஐடி",
+        "phone_number": "தொலைபேசி எண்",
+        "enter_otp": "ஓடிபி உள்ளிடவும்",
+        "continue_btn": "தொடரவும்",
+        "not_registered": "பதிவு செய்யப்படவில்லையா?",
+        "create_account": "கணக்கை உருவாக்கவும்",
+        "sign_in_google": "கூகிள் மூலம் உள்நுழையவும்",
+        "sign_in_facebook": "பேஸ்புக் மூலம் உள்நுழையவும்",
+        "register_individual": "தனிநபராக பதிவு செய்யவும்",
+        "register_organization": "அமைப்பாக பதிவு செய்யவும்",
+        "organization_name": "அமைப்பின் பெயர்",
+        "organization_phone": "அமைப்பின் தொலைபேசி எண்",
+        "select_org_type": "அமைப்பின் வகையைத் தேர்ந்தெடுக்கவும்",
+        "brief_description": "சுருக்க விளக்கம் (அதிகபட்சம் 100 எழுத்துக்கள்)",
+        "register_btn": "பதிவு செய்யவும்",
+        "campaign_1_title": "நிலையான விவசாய முன்முயற்சி",
+        "campaign_1_desc": "உள்ளூர் விவசாயிகளை நிலையான நடைமுறைகளை ஏற்க ஆதரிக்கவும்।",
+        "campaign_3_title": "அனைவருக்கும் கல்வி",
+        "campaign_3_desc": "பின்தங்கிய குழந்தைகளுக்கு கல்வி வளங்களுக்கு நிதி வழங்கவும்।",
+        "campaign_2_title": "சுத்தமான நீர் திட்டம்",
+        "campaign_2_desc": "சுத்தமான மற்றும் பாதுகாப்பான குடிநீருக்கான அணுகலை வழங்கவும்।",
+        "explore_categories": "வகைகளை ஆராயவும்",
+        "discover_campaigns": "ஆர்வத்தின் அடிப்படையில் பிரச்சாரங்களைக் கண்டறியவும்।",
+        "art_design": "கலை மற்றும் வடிவமைப்பு",
+        "technology": "தொழில்நுட்பம்",
+        "community": "சமூகம்",
+        "film_video": "திரைப்படம் மற்றும் வீடியோ",
+        "music": "இசை",
+        "publishing": "வெளியீடு",
+        "search_campaigns": "பிரச்சாரங்களைத் தேடவும்",
+        "search_placeholder": "முக்கிய சொல், வகை மூலம் தேடவும்।",
+        "enter_term_search": "பிரச்சாரங்களைத் தேட மேலே ஒரு சொல்லை உள்ளிடவும்।",
+        "search_tip": "நீங்கள் தலைப்பு, விளக்கம் அல்லது வகை மூலம் தேடலாம்।",
+        "trending_campaigns": "டிரெண்டிங் பிரச்சாரங்கள்",
+        "support_popular_projects": "ஹேவனில் மிகவும் பிரபலமான திட்டங்களை ஆதரிக்கவும்।",
+        "home_button": "முகப்பு",
+        "explore_button": "ஆராயவும்",
+        "search_button": "தேடவும்",
+        "welcome_haven": "ஹேவனுக்கு வரவேற்கிறோம்"
+    },
+    "te": {
+        "welcome_title": "హేవన్ క్రౌడ్‌ఫండింగ్‌కు స్వాగతం!",
+        "app_loading": "మీ అప్లికేషన్ లోడ్ అవుతోంది...",
+        "contact_support": "మీరు ఈ సందేశాన్ని చాలా కాలం పాటు చూస్తుంటే, దయచేసి మద్దతును సంప్రదించండి।",
+        "select_language": "భాషను ఎంచుకోండి:",
+        "simplify_terms": "పదాలను సరళీకరించండి",
+        "campaigns_title": "మా ప్రచారాలు",
+        "campaign_detail": "ప్రచారం వివరాలు ",
+        "back_to_campaigns": "ప్రచారాలకు తిరిగి వెళ్ళండి",
+        "login_title": "లాగిన్",
+        "register_title": "నమోదు",
+        "full_name": "పూర్తి పేరు",
+        "email_id": "ఇమెయిల్ ఐడి",
+        "phone_number": "ఫోన్ నంబర్",
+        "enter_otp": "ఓటిపిని నమోదు చేయండి",
+        "continue_btn": "కొనసాగించండి",
+        "not_registered": "నమోదు కాలేదా?",
+        "create_account": "ఖాతాను సృష్టించండి",
+        "sign_in_google": "గూగుల్‌తో సైన్ ఇన్ చేయండి",
+        "sign_in_facebook": "ఫేస్‌బుక్‌తో సైన్ ఇన్ చేయండి",
+        "register_individual": "వ్యక్తిగతంగా నమోదు చేసుకోండి",
+        "register_organization": "సంస్థగా నమోదు చేసుకోండి",
+        "organization_name": "సంస్థ పేరు",
+        "organization_phone": "సంస్థ ఫోన్ నంబర్",
+        "select_org_type": "సంస్థ రకాన్ని ఎంచుకోండి",
+        "brief_description": "సంక్షిప్త వివరణ (గరిష్టంగా 100 అక్షరాలు)",
+        "register_btn": "నమోదు చేయండి",
+        "campaign_1_title": "స్థిరమైన వ్యవసాయ చొరవ",
+        "campaign_1_desc": "స్థానిక రైతులను స్థిరమైన పద్ధతులను అనుసరించడంలో మద్దతు ఇవ్వండి।",
+        "campaign_3_title": "అందరికీ విద్య",
+        "campaign_3_desc": "నిరుపేద పిల్లలకు విద్యా వనరులకు నిధులు అందించండి।",
+        "campaign_2_title": "స్వచ్ఛమైన నీటి ప్రాజెక్ట్",
+        "campaign_2_desc": "స్వచ్ఛమైన మరియు సురక్షితమైన తాగునీటికి అందుబాటును అందించండి।",
+        "explore_categories": "వర్గాలను అన్వేషించండి",
+        "discover_campaigns": "ఆసక్తి ఆధారంగా ప్రచారాలను కనుగొనండి।",
+        "art_design": "కళ మరియు డిజైన్",
+        "technology": "సాంకేతికత",
+        "community": "సమాజం",
+        "film_video": "చలనచిత్రం మరియు వీడియో",
+        "music": "సంగీతం",
+        "publishing": "ప్రచురణ",
+        "search_campaigns": "ప్రచారాలను వెతకండి",
+        "search_placeholder": "కీవర్డ్, వర్గం ద్వారా వెతకండి।",
+        "enter_term_search": "ప్రచారాలను వెతకడానికి పైన ఒక పదాన్ని నమోదు చేయండి।",
+        "search_tip": "మీరు శీర్షిక, వివరణ లేదా వర్గం ద్వారా వెతకవచ్చు।",
+        "trending_campaigns": "ట్రెండింగ్ ప్రచారాలు",
+        "support_popular_projects": "హేవన్‌లో అత్యంత ప్రజాదరణ పొందిన ప్రాజెక్టులకు మద్దతు ఇవ్వండి।",
+        "home_button": "హోమ్",
+        "explore_button": "అన్వేషించండి",
+        "search_button": "వెతకండి",
+        "welcome_haven": "హేవన్‌కు స్వాగతం"
     }
 }
 
@@ -422,11 +525,31 @@ translations = {
 if 'lang' not in st.session_state:
     st.session_state.lang = 'en'
 
+
 # Function to get translated text
 def t(key):
-    return translations[st.session_state.lang].get(key, key)
+    text = translations["en"].get(key, key)  # Always get English text first
+    if st.session_state.lang != "en":
+        # Translate text using backend
+        translated_text = translate_text_backend(text, target_lang=st.session_state.lang)
+        return translated_text
+    return text
 
-# --- Term Simplification (Automatic) --- #
+
+# --- Term Simplification and Translation (Automatic) --- #
+def translate_text_backend(text, target_lang=None):
+    """Sends text to backend for translation."""
+    try:
+        payload = {"text": text, "source_language": "en", "target_language": target_lang}
+
+        response = requests.post(f"{BACKEND_URL}/translate-text", json=payload)
+        response.raise_for_status()
+        return response.json().get("translated_text", text)
+    except requests.exceptions.RequestException as e:
+        st.warning(f"Could not translate text via backend: {e}. Using local translation.")
+        return text
+
+
 def simplify_text_backend(text, target_lang=None):
     """Sends text to backend for simplification/translation."""
     try:
@@ -440,6 +563,7 @@ def simplify_text_backend(text, target_lang=None):
     except requests.exceptions.RequestException as e:
         st.warning(f"Could not simplify text via backend: {e}. Using local simplification.")
         return simplify_text_local(text)
+
 
 def simplify_text_local(text):
     replacements = {
@@ -456,13 +580,15 @@ def simplify_text_local(text):
         text = text.replace(old, new)
     return text
 
+
 # --- Page Navigation State --- #
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 if 'current_page' not in st.session_state:
-    st.session_state.current_page = 'login' # Start with login page
+    st.session_state.current_page = 'login'  # Start with login page
 if 'registration_type' not in st.session_state:
     st.session_state.registration_type = None
+
 
 # --- API Interaction Functions ---
 def get_auth_headers():
@@ -471,15 +597,16 @@ def get_auth_headers():
         return {"Authorization": f"Bearer {st.session_state.auth_token}"}
     return {}
 
-@st.cache_data(ttl=300) # Cache data for 5 minutes
+
+@st.cache_data(ttl=300)  # Cache data for 5 minutes
 def fetch_all_campaigns():
     """Fetches all campaigns from the backend."""
     if not st.session_state.logged_in:
-        return [] # Don't fetch if not logged in
+        return []  # Don't fetch if not logged in
 
     try:
         response = requests.get(f"{BACKEND_URL}/campaigns", headers=get_auth_headers())
-        response.raise_for_status() # Raise an exception for HTTP errors
+        response.raise_for_status()  # Raise an exception for HTTP errors
         all_campaigns = response.json()
         return [c for c in all_campaigns if c.get('verification_status') != 'Rejected']
     except requests.exceptions.ConnectionError:
@@ -492,6 +619,7 @@ def fetch_all_campaigns():
         st.error(f"An unexpected error occurred: {e}")
         return []
 
+
 def search_campaigns_backend(query):
     """Searches campaigns via the backend."""
     try:
@@ -502,6 +630,7 @@ def search_campaigns_backend(query):
     except requests.exceptions.RequestException as e:
         st.error(f"Error searching campaigns: {e}")
         return []
+
 
 def create_campaign_backend(campaign_data):
     """Sends request to create a new campaign."""
@@ -516,6 +645,7 @@ def create_campaign_backend(campaign_data):
         st.error(f"Error creating campaign: {e}")
         return None
 
+
 def login_user(email, password):
     """Authenticates user with the backend."""
     try:
@@ -525,7 +655,7 @@ def login_user(email, password):
         st.session_state.auth_token = token_data.get("access_token")
         st.session_state.user_role = token_data.get("role", "user")
         st.session_state.logged_in = True
-        st.session_state.username = email # Or fetch username from token_data
+        st.session_state.username = email  # Or fetch username from token_data
         st.session_state.current_page = "home"
         st.success(f"Welcome, {email}!")
         st.rerun()
@@ -533,6 +663,7 @@ def login_user(email, password):
         st.error(f"Login failed: {e.response.json().get('detail', 'Incorrect email or password')}")
     except requests.exceptions.RequestException as e:
         st.error(f"Login failed: Could not connect to backend. Is it running? {e}")
+
 
 def register_user_backend(user_data):
     """Registers a new user with the backend."""
@@ -550,6 +681,7 @@ def register_user_backend(user_data):
         st.error(f"Registration failed: Could not connect to backend. Is it running? {e}")
         return None
 
+
 def logout_user():
     """Logs out the user."""
     st.session_state.logged_in = False
@@ -559,6 +691,7 @@ def logout_user():
     st.session_state.current_page = "login"
     st.success("Logged out successfully.")
     st.rerun()
+
 
 # --- Term Definitions for Simplification ---
 TERM_DEFINITIONS = {
@@ -630,6 +763,7 @@ TERM_DEFINITIONS = {
         "Risk Assessment": "The process of identifying potential hazards and analyzing what could happen if a hazard occurs."
     }
 }
+
 
 # --- JavaScript for Term Highlighting and Tooltips ---
 def inject_term_simplification_js():
@@ -733,6 +867,7 @@ def render_login_page():
         st.session_state.current_page = 'register'
         st.rerun()
 
+
 def render_register_page():
     st.markdown(f"""
     <div class="container">
@@ -757,7 +892,8 @@ def render_register_page():
             email = st.text_input(t("email_id"), key="reg_email")
             phone_number = st.text_input(t("phone_number"), key="reg_phone_number")
             otp = st.text_input(t("enter_otp"), key="reg_otp")
-            user_data = {"full_name": full_name, "email": email, "phone_number": phone_number, "otp": otp, "type": "individual"}
+            user_data = {"full_name": full_name, "email": email, "phone_number": phone_number, "otp": otp,
+                         "type": "individual"}
 
         elif st.session_state.registration_type == 'organization':
             org_name = st.text_input(t("organization_name"), key="reg_org_name")
@@ -766,7 +902,8 @@ def render_register_page():
             brief_description = st.text_area(t("brief_description"), max_chars=100, key="reg_brief_desc")
             email = st.text_input(t("email_id"), key="reg_email_org")
             otp = st.text_input(t("enter_otp"), key="reg_otp_org")
-            user_data = {"organization_name": org_name, "organization_phone": org_phone, "organization_type": org_type, "brief_description": brief_description, "email": email, "otp": otp, "type": "organization"}
+            user_data = {"organization_name": org_name, "organization_phone": org_phone, "organization_type": org_type,
+                         "brief_description": brief_description, "email": email, "otp": otp, "type": "organization"}
 
         st.markdown(f"""
             </div>
@@ -781,6 +918,7 @@ def render_register_page():
 
         if submit_button:
             register_user_backend(user_data)
+
 
 def render_home_page():
     st.markdown(f"""
@@ -805,6 +943,7 @@ def render_home_page():
         </div>
     </div>
     """, unsafe_allow_html=True)
+
 
 def render_explore_page():
     st.markdown(f"""
@@ -840,6 +979,7 @@ def render_explore_page():
     </div>
     """, unsafe_allow_html=True)
 
+
 def render_search_page():
     st.markdown(f"""
     <div class="container">
@@ -853,16 +993,32 @@ def render_search_page():
     </div>
     """, unsafe_allow_html=True)
 
+
 # --- Main App Logic --- #
 
 # Language selection dropdown (moved to sidebar for consistency)
-lang_options = list(translations.keys())
-selected_lang = st.sidebar.selectbox(
+lang_options = [
+    ("en", "English"),
+    ("hi", "हिन्दी"),
+    ("ta", "தமிழ்"),
+    ("te", "తెలుగు")
+]
+lang_codes = [code for code, _ in lang_options]
+lang_names = [name for _, name in lang_options]
+
+current_index = 0
+if st.session_state.lang in lang_codes:
+    current_index = lang_codes.index(st.session_state.lang)
+
+selected_lang_index = st.sidebar.selectbox(
     t("select_language"),
-    lang_options,
-    index=lang_options.index(st.session_state.lang),
+    range(len(lang_options)),
+    index=current_index,
+    format_func=lambda x: lang_names[x],
     key="lang_selector"
 )
+
+selected_lang = lang_codes[selected_lang_index]
 
 if selected_lang != st.session_state.lang:
     st.session_state.lang = selected_lang
@@ -883,7 +1039,7 @@ if st.session_state.logged_in:
 else:
     # Only show login/register if not logged in
     if st.session_state.current_page != 'login' and st.session_state.current_page != 'register':
-        st.session_state.current_page = 'login' # Force login page if not logged in
+        st.session_state.current_page = 'login'  # Force login page if not logged in
 
 # Render current page
 if st.session_state.current_page == 'login':
@@ -915,6 +1071,8 @@ if st.sidebar.button("Test Backend Connection"):
         st.error(f"Failed to get response from backend. Status: {response_data.status_code}")
 
 # Add Font Awesome for icons
-st.markdown("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css\">", unsafe_allow_html=True)
+st.markdown(
+    "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css\">",
+    unsafe_allow_html=True)
 
 
