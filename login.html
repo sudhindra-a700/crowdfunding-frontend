@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>HAVEN – Login</title>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        display: grid;
+        height: 100vh;
+        width: 100%;
+        place-items: center;
+        background-color: #deb887 ;
+        color: #000;
+      }
+
+      .container {
+        background: #fff;
+        width: 100%;
+        max-width: 400px;     /* controls size on desktop */
+        padding: 20px 20px;    /* reduced padding */
+        border-radius: 5px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.15);
+      }
+
+
+      .container form .title {
+        font-size: 30px;
+        font-weight: 600;
+        margin: 20px 0 10px 0;
+        position: relative;
+      }
+
+      .container form .title:before {
+        content: "";
+        position: absolute;
+        height: 4px;
+        width: 33px;
+        left: 0;
+        bottom: 3px;
+        border-radius: 5px;
+        background: linear-gradient(to right, #ed4599 0%, #ff0080 100%);
+      }
+
+      .container form .input-box {
+        width: 100%;
+        height: 45px;
+        margin-top: 20px;
+        position: relative;
+      }
+
+      .container form .input-box input {
+        width: 100%;
+        height: 100%;
+        outline: none;
+        font-size: 16px;
+        border: none;
+        background: transparent;
+        color: #000;
+        border-bottom: 2px solid #ccc;
+        padding-left: 5px;
+      }
+
+      .container form .input-box input::placeholder {
+        color: #aaa;
+      }
+
+      .container form .button {
+        margin-top: 30px;
+      }
+
+      .container .input-box input[type="submit"] {
+        background: linear-gradient(to right, #99004d 0%, #ff0080 100%);
+        font-size: 17px;
+        color: #fff;
+        border-radius: 5px;
+        cursor: pointer;
+        padding: 10px 0;
+        transition: all 0.3s ease;
+        border: none;
+      }
+
+      .container .input-box input[type="submit"]:hover {
+        letter-spacing: 1px;
+        background: linear-gradient(to left, #99004d 0%, #ff0080 100%);
+      }
+
+      .container .option {
+        font-size: 14px;
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      .container .option a {
+        color: #ed4599;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .container .google a,
+      .container .facebook a {
+        display: block;
+        height: 45px;
+        width: 100%;
+        font-size: 15px;
+        text-decoration: none;
+        padding-left: 20px;
+        line-height: 45px;
+        color: #fff;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        margin-bottom: 15px;
+      }
+
+      .container .google a {
+        background: linear-gradient(to right, #db4437 0%, #e57373 100%);
+      }
+
+      .container .google a:hover {
+        background: linear-gradient(to left, #db4437 0%, #e57373 100%);
+      }
+
+      .container .facebook a {
+        background: linear-gradient(to right, #3b5998 0%, #476bb8 100%);
+      }
+
+      .container .facebook a:hover {
+        background: linear-gradient(to left, #3b5998 0%, #476bb8 100%);
+      }
+
+      .container .google i,
+      .container .facebook i {
+        padding-right: 12px;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <form action="#">
+        <div class="title">Login</div>
+
+        <div class="input-box">
+          <input type="text" placeholder="Enter Your Email" required />
+        </div>
+
+        <div class="input-box">
+          <input type="password" placeholder="Enter Your Password" required />
+        </div>
+
+        <div class="input-box button">
+          <input type="submit" value="Continue" />
+        </div>
+      </form>
+
+      <div class="option">
+        Not registered?
+        <a href="register.html">Create an account</a>
+      </div>
+
+      <div class="google">
+        <a href="#"><i class="fab fa-google"></i>Sign in With Google</a>
+      </div>
+
+      <div class="facebook">
+        <a href="#"><i class="fab fa-facebook-f"></i>Sign in With Facebook</a>
+      </div>
+    </div>
+  </body>
+</html>

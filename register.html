@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>HAVEN – Register</title>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        display: grid;
+        height: 100vh;
+        width: 100%;
+        place-items: center;
+        background-color: #deb887;
+        color: #000;
+        padding: 10px;
+      }
+
+      .container {
+        background: #fff;
+        width: 100%;
+        max-width: 900px;
+        padding: 25px 30px;
+        border-radius: 5px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.15);
+      }
+
+      .title {
+        font-size: 30px;
+        font-weight: 600;
+        margin-bottom: 30px;
+        position: relative;
+      }
+
+      .title::before {
+        content: "";
+        position: absolute;
+        height: 4px;
+        width: 33px;
+        left: 0;
+        bottom: -5px;
+        border-radius: 5px;
+        background: linear-gradient(to right, #ed4599 0%, #ff0080 100%);
+      }
+
+      .form-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      .form-box {
+        background: #fafafa;
+        padding: 20px;
+        border-radius: 8px;
+        flex: 1;
+      }
+
+      .form-box h3 {
+        margin-bottom: 10px;
+        font-size: 18px;
+        font-weight: 600;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 5px;
+      }
+
+      .input-box {
+        width: 100%;
+        height: 45px;
+        margin-top: 15px;
+        position: relative;
+      }
+
+      .input-box input,
+      .input-box select {
+        width: 100%;
+        height: 100%;
+        outline: none;
+        font-size: 16px;
+        border: none;
+        background: transparent;
+        color: #000;
+        border-bottom: 2px solid #ccc;
+        padding-left: 5px;
+      }
+
+      .input-box input::placeholder {
+        color: #aaa;
+      }
+
+      .button {
+        margin-top: 30px;
+      }
+
+      .button input[type="submit"] {
+        background: linear-gradient(to right, #99004d 0%, #ff0080 100%);
+        font-size: 17px;
+        color: #fff;
+        border-radius: 5px;
+        cursor: pointer;
+        padding: 10px 0;
+        transition: all 0.3s ease;
+        width: 100%;
+        border: none;
+      }
+
+      .button input[type="submit"]:hover {
+        letter-spacing: 1px;
+        background: linear-gradient(to left, #99004d 0%, #ff0080 100%);
+      }
+
+      /* Side-by-side only on larger screens */
+      @media (min-width: 768px) {
+        .form-wrapper {
+          flex-direction: row;
+        }
+
+        .form-box {
+          width: 48%;
+        }
+      }
+
+      /* Improve spacing on very small phones */
+      @media (max-width: 480px) {
+        .container {
+          padding: 20px 15px;
+        }
+
+        .title {
+          font-size: 24px;
+        }
+
+        .input-box {
+          height: 40px;
+        }
+
+        .input-box input,
+        .input-box select {
+          font-size: 14px;
+        }
+
+        .button input[type="submit"] {
+          font-size: 15px;
+          padding: 8px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="title">Register</div>
+      <form action="#">
+        <div class="form-wrapper">
+          <!-- Single User Form -->
+          <div class="form-box single-user-box">
+            <h3>Register as an Individual</h3>
+
+            <div class="input-box">
+              <input type="text" placeholder="Full Name" required />
+            </div>
+
+            <div class="input-box">
+              <input type="email" placeholder="Email ID" required />
+            </div>
+
+            <div class="input-box">
+              <input type="tel" placeholder="Phone Number" required />
+            </div>
+
+            <div class="input-box">
+              <input type="text" placeholder="Enter OTP" required />
+            </div>
+          </div>
+
+          <!-- Organization Form -->
+          <div class="form-box org-box">
+            <h3>Register as an Organization</h3>
+
+            <div class="input-box">
+              <input type="text" placeholder="Organization Name" />
+            </div>
+
+            <div class="input-box">
+              <input type="tel" placeholder="Organization Phone Number" />
+            </div>
+
+            <div class="input-box">
+              <select>
+                <option value="">Select Organization Type</option>
+                <option value="NGO">NGO</option>
+                <option value="Startup">Startup</option>
+                <option value="Charity">Charity</option>
+              </select>
+            </div>
+
+            <div class="input-box">
+              <input
+                type="text"
+                placeholder="Brief Description (max 100 chars)"
+                maxlength="100"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="input-box button">
+          <input type="submit" value="Register" />
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
