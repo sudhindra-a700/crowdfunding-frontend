@@ -16,7 +16,7 @@ class StreamlitOAuthService:
     """OAuth service specifically designed for Streamlit applications"""
 
     def __init__(self):
-        self.backend_url = "https://srv-d1sq8ser433s73eke7v0.onrender.com"  # Your Render backend URL
+        self.backend_url = "https://haven-fastapi-backend.onrender.com"  # Your Render backend URL
         self.token_key = 'oauth_access_token'
         self.user_key = 'oauth_user_profile'
 
@@ -363,6 +363,11 @@ custom_css = """
     .stFormSubmitButton > button:hover {
         background: linear-gradient(to left, #99004d 0%, #ff0080 100%) !important;
         letter-spacing: 1px !important;
+    }
+
+    /* FIXED: Hide specific buttons that should not be visible */
+    button[data-testid="baseButton-secondary"]:has-text("Create Account") {
+        display: none !important;
     }
 
     /* Side-by-side only on larger screens */
@@ -1272,13 +1277,28 @@ def render_login_page():
     # FIXED: Only show "Create Account" link, no duplicate button
     st.markdown(f"""
       <div class="option">
-        {t("not_registered")} <a href="#" onclick="document.getElementById('nav_to_register').click()">{t("create_account")}</a>
+        {t("not_registered")} <a href="#" onclick="window.parent.postMessage({{type: 'streamlit:setComponentValue', value: 'register'}}, '*')">{t("create_account")}</a>
       </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Hidden navigation button (triggered by the link above)
-    if st.button("Create Account", key="nav_to_register", help="Navigate to registration"):
+    # JavaScript to handle the link click
+    st.markdown("""
+    <script>
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'streamlit:setComponentValue' && event.data.value === 'register') {
+            // Trigger the hidden button
+            const button = window.parent.document.querySelector('button[data-testid="baseButton-secondary"]');
+            if (button && button.textContent.includes('Navigate to Register')) {
+                button.click();
+            }
+        }
+    });
+    </script>
+    """, unsafe_allow_html=True)
+
+    # FIXED: Hidden navigation button (triggered by the JavaScript above)
+    if st.button("Navigate to Register", key="nav_to_register", help="Navigate to registration"):
         st.session_state.current_page = 'register'
         st.rerun()
 
