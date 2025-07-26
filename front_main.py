@@ -16,7 +16,7 @@ class StreamlitOAuthService:
     """OAuth service specifically designed for Streamlit applications"""
 
     def __init__(self):
-        self.backend_url = "https://srv-d1sq8ser433s73eke7v0.onrender.com"  # Your Render backend URL
+        self.backend_url = "https://haven-streamlit-frontend.onrender.com"  # Your Render backend URL
         self.token_key = 'oauth_access_token'
         self.user_key = 'oauth_user_profile'
 
@@ -70,11 +70,11 @@ class StreamlitOAuthService:
 
     def handle_oauth_callback(self):
         """Handle OAuth callback from URL parameters"""
-        # Get URL parameters
-        query_params = st.experimental_get_query_params()
+        # FIXED: Use st.query_params instead of st.experimental_get_query_params
+        query_params = st.query_params
 
-        access_token = query_params.get('access_token', [None])[0]
-        error = query_params.get('error', [None])[0]
+        access_token = query_params.get('access_token')
+        error = query_params.get('error')
 
         if error:
             st.error(f"OAuth authentication failed: {error}")
@@ -89,7 +89,7 @@ class StreamlitOAuthService:
                     st.success(f"Welcome, {user_profile.get('name', 'User')}!")
 
                     # Clear URL parameters
-                    st.experimental_set_query_params()
+                    st.query_params.clear()
 
                     # Navigate to home page
                     st.session_state.current_page = 'home'
@@ -655,8 +655,9 @@ def logout_user_enhanced():
         st.rerun()
 
 
+# FIXED: OAuth buttons function that works outside forms
 def render_oauth_buttons():
-    """Render OAuth login buttons with proper styling"""
+    """Render OAuth login buttons with proper styling - OUTSIDE of forms"""
 
     # Check OAuth provider status
     oauth_status = oauth_service.check_oauth_status()
@@ -726,7 +727,7 @@ def render_user_profile_widget():
 
 def check_oauth_callback():
     """Check for OAuth callback and handle it"""
-    query_params = st.experimental_get_query_params()
+    query_params = st.query_params
 
     if 'access_token' in query_params or 'error' in query_params:
         return oauth_service.handle_oauth_callback()
@@ -776,21 +777,26 @@ def register_user_backend(user_data):
 
 # --- Render Pages based on current_page --- #
 
+# FIXED: Login page with OAuth buttons outside the form
 def render_login_page():
-    with st.form(key='login_form'):
-        st.markdown(f"""
-        <div class="container">
-          <div class="title">{t("login_title")}</div>
-        """, unsafe_allow_html=True)
+    # OAuth buttons OUTSIDE the form
+    st.markdown(f"""
+    <div class="container">
+      <div class="title">{t("login_title")}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-        # Add OAuth buttons at the top
-        st.markdown("</div>", unsafe_allow_html=True)
-        render_oauth_buttons()
+    # Render OAuth buttons outside of any form
+    render_oauth_buttons()
+
+    # Traditional login form
+    with st.form(key='login_form'):
         st.markdown('<div class="container">', unsafe_allow_html=True)
 
         email = st.text_input(t("email_id"), key="login_email")
         password = st.text_input(t("enter_otp"), type="password", key="login_password")
 
+        # FIXED: Added submit button inside the form
         submit_button = st.form_submit_button(t("continue_btn"))
 
         st.markdown(f"""
@@ -804,18 +810,8 @@ def render_login_page():
         if submit_button:
             login_user_with_oauth(email, password)
 
-    # Handle navigation to register page from login
-    st.markdown("""
-    <script>
-        document.getElementById("create_account_link").onclick = function() {
-            const streamlitButton = document.getElementById("hidden_register_button");
-            if (streamlitButton) {
-                streamlitButton.click();
-            }
-        };
-    </script>
-    """, unsafe_allow_html=True)
-    if st.button("", key="hidden_register_button", help="Go to registration", disabled=True):
+    # Navigation to register page
+    if st.button("Create Account", key="nav_to_register"):
         st.session_state.current_page = 'register'
         st.rerun()
 
@@ -859,17 +855,15 @@ def render_register_page():
 
         st.markdown(f"""
             </div>
-
-            <div class="input-box button">
-              <input type="submit" value="{t("register_btn")}" />
-            </div>
-          </div>
         """, unsafe_allow_html=True)
 
+        # FIXED: Added submit button inside the form
         submit_button = st.form_submit_button(t("register_btn"))
 
         if submit_button:
             register_user_backend(user_data)
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 def render_home_page():
