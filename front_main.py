@@ -149,7 +149,7 @@ class StreamlitOAuthService:
 # Create global OAuth service instance
 oauth_service = StreamlitOAuthService()
 
-# --- Custom CSS for global styling --- #
+# --- Custom CSS for global styling (matching front(2).py exactly) --- #
 custom_css = """
 <style>
     @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
@@ -287,23 +287,6 @@ custom_css = """
         cursor: pointer;
     }
 
-    /* OAuth Styling - Enhanced */
-    .oauth-container {
-        background: #f0f8f0;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin: 20px 0;
-        text-align: center;
-    }
-
-    .oauth-title {
-        color: #2d5a2d;
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 20px;
-    }
-
     .google a,
     .facebook a {
         display: block;
@@ -317,7 +300,6 @@ custom_css = """
         border-radius: 5px;
         transition: all 0.3s ease;
         margin-bottom: 15px;
-        cursor: pointer;
     }
 
     .google a {
@@ -340,63 +322,6 @@ custom_css = """
     .facebook i {
         padding-right: 12px;
         font-size: 20px;
-    }
-
-    .oauth-divider {
-        margin: 20px 0;
-        text-align: center;
-        position: relative;
-    }
-
-    .oauth-divider::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: #ddd;
-    }
-
-    .oauth-divider span {
-        background: #fff;
-        padding: 0 15px;
-        color: #666;
-        font-size: 14px;
-    }
-
-    .user-profile-widget {
-        background: #f0f8f0;
-        border-radius: 12px;
-        padding: 20px;
-        margin: 10px 0;
-        border: 2px solid #4CAF50;
-    }
-
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 15px;
-    }
-
-    .user-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        border: 2px solid #4CAF50;
-    }
-
-    .user-details h4 {
-        margin: 0;
-        color: #2d5a2d;
-        font-size: 16px;
-    }
-
-    .user-details p {
-        margin: 2px 0;
-        color: #666;
-        font-size: 12px;
     }
 
     /* Side-by-side only on larger screens */
@@ -511,6 +436,41 @@ custom_css = """
         cursor: pointer;
     }
 
+    /* OAuth User Profile Widget */
+    .user-profile-widget {
+        background: #f0f8f0;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 10px 0;
+        border: 2px solid #4CAF50;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 2px solid #4CAF50;
+    }
+
+    .user-details h4 {
+        margin: 0;
+        color: #2d5a2d;
+        font-size: 16px;
+    }
+
+    .user-details p {
+        margin: 2px 0;
+        color: #666;
+        font-size: 12px;
+    }
+
     /* Term highlighting styles */
     .highlight-legal { background-color: #ffeb3b; color: #000; position: relative; cursor: help; }
     .highlight-financial { background-color: #4caf50; color: #fff; position: relative; cursor: help; }
@@ -554,6 +514,14 @@ st.markdown(custom_css, unsafe_allow_html=True)
 BACKEND_SERVICE_NAME = os.environ.get("BACKEND_SERVICE_NAME", "haven-fastapi-backend")
 BACKEND_PORT = os.environ.get("BACKEND_PORT", "8000")
 BACKEND_URL = "https://srv-d1sq8ser433s73eke7v0.onrender.com"  # Your Render backend URL
+
+# --- API Key Environment Variables --- #
+FIREBASE_SERVICE_ACCOUNT_KEY_JSON_BASE64 = os.environ.get("FIREBASE_SERVICE_ACCOUNT_KEY_JSON_BASE64")
+ALGOLIA_API_KEY = os.environ.get("ALGOLIA_API_KEY")
+ALGOLIA_APP_ID = os.environ.get("ALGOLIA_APP_ID")
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY")
+INSTAMOJO_API_KEY = os.environ.get("INSTAMOJO_API_KEY")
+INSTAMOJO_AUTH_TOKEN = os.environ.get("INSTAMOJO_AUTH_TOKEN")
 
 # --- Language Selection and Term Simplification --- #
 
@@ -775,7 +743,7 @@ if 'lang' not in st.session_state:
 
 # Function to get translated text
 def t(key):
-    english_text = translations["en"].get(key, key)
+    english_text = translations["en"].get(key, key)  # Always get English text first
     if st.session_state.lang == "en":
         return english_text
 
@@ -784,14 +752,15 @@ def t(key):
         return translations[st.session_state.lang][key]
     else:
         # If no direct translation for the key, try to translate word by word via backend
+        # This part assumes the backend can handle word-by-word translation or returns original if no translation
         translated_words = []
-        words = re.findall(r'\b\w+\b|\W+', english_text)
+        words = re.findall(r'\b\w+\b|\W+', english_text)  # Split by words and non-words
         for word in words:
-            if word.strip() and word.strip().isalpha():
+            if word.strip() and word.strip().isalpha():  # Only try to translate actual words
                 translated_word = translate_text_backend(word, target_lang=st.session_state.lang)
                 translated_words.append(translated_word)
             else:
-                translated_words.append(word)
+                translated_words.append(word)  # Keep non-words as is
         return "".join(translated_words)
 
 
@@ -805,7 +774,8 @@ def translate_text_backend(text, target_lang=None):
         response.raise_for_status()
         return response.json().get("translated_text", text)
     except requests.exceptions.RequestException as e:
-        return text
+        # st.warning(f"Could not translate text via backend: {e}. Using local translation.")
+        return text  # Return original text if backend call fails
 
 
 def simplify_text_backend(text, target_lang=None):
@@ -843,7 +813,7 @@ def simplify_text_local(text):
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 if 'current_page' not in st.session_state:
-    st.session_state.current_page = 'login'
+    st.session_state.current_page = 'login'  # Start with login page
 if 'registration_type' not in st.session_state:
     st.session_state.registration_type = None
 
@@ -866,43 +836,6 @@ def get_enhanced_auth_headers():
         return {"Authorization": f"Bearer {st.session_state.auth_token}"}
 
     return {}
-
-
-def login_user_with_oauth(email, password):
-    """Enhanced login function that supports both traditional and OAuth login"""
-    try:
-        response = requests.post(f"{BACKEND_URL}/login", json={"email": email, "password": password})
-        response.raise_for_status()
-        token_data = response.json()
-
-        # Store traditional auth data
-        st.session_state.auth_token = token_data.get("access_token")
-        st.session_state.user_role = token_data.get("role", "user")
-        st.session_state.logged_in = True
-        st.session_state.username = email
-        st.session_state.current_page = "home"
-
-        st.success(f"Welcome, {email}!")
-        st.rerun()
-    except requests.exceptions.HTTPError as e:
-        st.error(f"Login failed: {e.response.json().get('detail', 'Incorrect email or password')}")
-    except requests.exceptions.RequestException as e:
-        st.error(f"Login failed: Could not connect to backend. Is it running? {e}")
-
-
-def logout_user_enhanced():
-    """Enhanced logout function that handles both traditional and OAuth logout"""
-    if oauth_service.is_authenticated():
-        oauth_service.logout()
-    else:
-        # Traditional logout
-        st.session_state.logged_in = False
-        st.session_state.auth_token = None
-        st.session_state.username = None
-        st.session_state.user_role = "user"
-        st.session_state.current_page = "login"
-        st.success("Logged out successfully.")
-        st.rerun()
 
 
 def check_oauth_callback():
@@ -943,15 +876,15 @@ def render_user_profile_widget():
 
 
 # --- API Interaction Functions ---
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=300)  # Cache data for 5 minutes
 def fetch_all_campaigns():
     """Fetches all campaigns from the backend."""
     if not is_user_authenticated():
-        return []
+        return []  # Don't fetch if not logged in
 
     try:
         response = requests.get(f"{BACKEND_URL}/campaigns", headers=get_enhanced_auth_headers())
-        response.raise_for_status()
+        response.raise_for_status()  # Raise an exception for HTTP errors
         all_campaigns = response.json()
         return [c for c in all_campaigns if c.get('verification_status') != 'Rejected']
     except requests.exceptions.ConnectionError:
@@ -963,6 +896,52 @@ def fetch_all_campaigns():
     except Exception as e:
         st.error(f"An unexpected error occurred: {e}")
         return []
+
+
+def search_campaigns_backend(query):
+    """Searches campaigns via the backend."""
+    try:
+        response = requests.post(f"{BACKEND_URL}/search", json={"query": query}, headers=get_enhanced_auth_headers())
+        response.raise_for_status()
+        search_results = response.json()
+        return [c for c in search_results if c.get('verification_status') != 'Rejected']
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error searching campaigns: {e}")
+        return []
+
+
+def create_campaign_backend(campaign_data):
+    """Sends request to create a new campaign."""
+    try:
+        response = requests.post(f"{BACKEND_URL}/create-campaign", json=campaign_data,
+                                 headers=get_enhanced_auth_headers())
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        st.error(f"Error creating campaign: {e.response.json().get('detail', 'Unknown error')}")
+        return None
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error creating campaign: {e}")
+        return None
+
+
+def login_user(email, password):
+    """Authenticates user with the backend."""
+    try:
+        response = requests.post(f"{BACKEND_URL}/login", json={"email": email, "password": password})
+        response.raise_for_status()
+        token_data = response.json()
+        st.session_state.auth_token = token_data.get("access_token")
+        st.session_state.user_role = token_data.get("role", "user")
+        st.session_state.logged_in = True
+        st.session_state.username = email  # Or fetch username from token_data
+        st.session_state.current_page = "home"
+        st.success(f"Welcome, {email}!")
+        st.rerun()
+    except requests.exceptions.HTTPError as e:
+        st.error(f"Login failed: {e.response.json().get('detail', 'Incorrect email or password')}")
+    except requests.exceptions.RequestException as e:
+        st.error(f"Login failed: Could not connect to backend. Is it running? {e}")
 
 
 def register_user_backend(user_data):
@@ -982,49 +961,170 @@ def register_user_backend(user_data):
         return None
 
 
+def logout_user():
+    """Logs out the user."""
+    if oauth_service.is_authenticated():
+        oauth_service.logout()
+    else:
+        st.session_state.logged_in = False
+        st.session_state.auth_token = None
+        st.session_state.username = None
+        st.session_state.user_role = "user"
+        st.session_state.current_page = "login"
+        st.success("Logged out successfully.")
+        st.rerun()
+
+
+# --- Term Definitions for Simplification ---
+TERM_DEFINITIONS = {
+    "legal": {
+        "Intellectual Property Rights": "Legal rights to creations of the mind, like inventions or designs.",
+        "Terms of Service": "The rules and conditions users must agree to when using a service.",
+        "Accredited Investor": "An investor recognized by financial regulators as sophisticated enough to invest in certain complex securities.",
+        "SEC regulations": "Rules set by the U.S. Securities and Exchange Commission to protect investors.",
+        "KYC (Know Your Customer)": "A process to verify the identity of clients to prevent fraud and illegal activities.",
+        "AML (Anti-Money Laundering)": "Laws and procedures to prevent criminals from disguising illegally obtained funds as legitimate income.",
+        "Equity Crowdfunding": "Raising capital by offering shares of a company to a large number of small investors.",
+        "Convertible Note": "A type of short-term debt that converts into equity at a later stage, usually during a future funding round.",
+        "Arbitration": "A legal technique for resolving disputes outside the courts, where a neutral third party makes a decision.",
+        "Jurisdiction": "The official power to make legal decisions and judgments."
+    },
+    "financial": {
+        "Return on Investment (ROI)": "A measure of the profitability of an investment, calculated as profit divided by cost.",
+        "Valuation": "The process of determining the current worth of a company or asset.",
+        "Seed Funding": "The earliest stage of fundraising for a startup, used to get the business off the ground.",
+        "Venture Capital": "Funding provided by investors to startup companies and small businesses with perceived long-term growth potential.",
+        "Dilution": "The reduction in the ownership percentage of a company's existing shareholders when new shares are issued.",
+        "Capital": "Wealth in the form of money or other assets owned by a person or organization.",
+        "Liquidity": "The ease with which an asset or security can be converted into ready cash without affecting its market price.",
+        "Escrow Account": "A temporary pass-through account held by a third party during the process of a transaction.",
+        "Payment Gateway Fees": "Charges imposed by payment processing services for handling online transactions.",
+        "Funding Threshold": "The minimum amount of money a crowdfunding campaign must raise to be successful.",
+        "All-or-Nothing Model": "A crowdfunding model where funds are only collected if the campaign reaches its full funding goal.",
+        "Tax Implications": "The consequences that a financial transaction or investment has on an individual's or company's tax liability."
+    },
+    "tech": {
+        "Minimum Viable Product (MVP)": "A version of a new product with just enough features to satisfy early customers and provide feedback for future product development.",
+        "Proof of Concept (POC)": "A realization of a certain method or idea to demonstrate its feasibility.",
+        "Scalability": "The ability of a system to handle a growing amount of work by adding resources.",
+        "Blockchain": "A decentralized, distributed ledger technology that records transactions across many computers.",
+        "Artificial Intelligence (AI)": "The simulation of human intelligence processes by machines.",
+        "Machine Learning (ML)": "A subset of AI that allows systems to learn from data without being explicitly programmed.",
+        "API (Application Programming Interface)": "A set of rules and protocols for building and interacting with software applications.",
+        "User Interface (UI)": "The visual part of a computer application or website that a user interacts with.",
+        "User Experience (UX)": "The overall experience of a person using a product, encompassing their feelings and attitudes.",
+        "Open Source": "Software with source code that anyone can inspect, modify, and enhance.",
+        "Proprietary Technology": "Technology owned exclusively by a company, often protected by patents or copyrights."
+    },
+    "social": {
+        "Sustainable Development Goals (SDGs)": "A collection of 17 global goals set by the United Nations for a sustainable future.",
+        "Impact Investing": "Investments made with the intention to generate positive, measurable social and environmental impact alongside a financial return.",
+        "Social Enterprise": "A business that has specific social objectives as its primary purpose.",
+        "Carbon Footprint": "The total amount of greenhouse gases produced to directly and indirectly support human activities.",
+        "Renewable Energy": "Energy from sources that are naturally replenishing but flow-limited, such as solar, wind, geothermal, and hydro.",
+        "Circular Economy": "An economic system aimed at eliminating waste and the continual use of resources.",
+        "Biodiversity": "The variety of life on Earth at all its levels, from genes to ecosystems.",
+        "Community Empowerment": "The process of enabling communities to increase control over their lives.",
+        "Philanthropy": "The desire to promote the welfare of others, expressed especially by the generous donation of money to good causes."
+    },
+    "marketing": {
+        "Market Penetration": "The successful selling of a product or service in a specific market.",
+        "Target Audience": "The specific group of consumers most likely to want your product or service.",
+        "Value Proposition": "A statement that explains what benefit a company provides to customers.",
+        "Unique Selling Proposition (USP)": "The unique benefit a company offers that helps it stand out from competitors.",
+        "SEO (Search Engine Optimization)": "The process of improving the visibility of a website or a web page in a web search engine's unpaid results.",
+        "Content Strategy": "The planning, development, and management of content.",
+        "Customer Acquisition Cost (CAC)": "The cost associated with convincing a consumer to buy a product/service.",
+        "Business Model Canvas": "A strategic management template used for developing new or documenting existing business models."
+    },
+    "general": {
+        "Milestone": "A significant stage or event in the development of something.",
+        "Deliverable": "A tangible or intangible good or service produced as a result of a project that is intended to be delivered to a customer.",
+        "Timeline": "A schedule of events; a chronological record.",
+        "Budget Allocation": "The process of assigning available financial resources for specific purposes.",
+        "Risk Assessment": "The process of identifying potential hazards and analyzing what could happen if a hazard occurs."
+    }
+}
+
+
+# --- JavaScript for Term Highlighting and Tooltips ---
+def inject_term_simplification_js():
+    js_code = """
+    <script>
+    const termDefinitions = %s; // Will be replaced by Python with JSON data
+
+    function applyTermSimplification() {
+        const campaignDescriptionElement = document.getElementById(\'campaign-description-text\');
+        if (!campaignDescriptionElement) {
+            return;
+        }
+
+        let originalText = campaignDescriptionElement.innerHTML;
+        let newHtml = originalText;
+
+        for (const category in termDefinitions) {
+            const terms = termDefinitions[category];
+            const className = `highlight-${category}`; // e.g., highlight-legal
+
+            for (const term in terms) {
+                const definition = terms[term];
+                // Create a regex to match the whole word, case-insensitive
+                const regex = new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\\\]/g, '\\$&')}\\b`, 'gi');
+                newHtml = newHtml.replace(regex, (match) => {
+                    // Avoid re-wrapping already wrapped terms
+                    if (match.includes('<span class="highlight-"')) {
+                        return match;
+                    }
+                    return `<span class="${className}" data-definition="${definition}">${match}<span class="tooltip-box">${definition}</span></span>`;
+                });
+            }
+        }
+        campaignDescriptionElement.innerHTML = newHtml;
+    }
+
+    const observer = new MutationObserver((mutationsList, observer) => {
+        for(const mutation of mutationsList) {
+            if (mutation.type === \'childList\' && mutation.addedNodes.length > 0) {
+                const campaignDetailContainer = document.querySelector(\".campaign-detail-container\");
+                if (campaignDetailContainer && campaignDetailContainer.contains(document.getElementById(\'campaign-description-text\'))) {
+                    applyTermSimplification();
+                    return;
+                }
+            }
+        }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+    document.addEventListener(\'DOMContentLoaded\', applyTermSimplification);
+    </script>
+    """ % json.dumps(TERM_DEFINITIONS)
+    st.markdown(js_code, unsafe_allow_html=True)
+
+
 # --- Render Pages based on current_page --- #
 
 def render_login_page():
-    st.markdown(f"""
-    <div class="container">
-      <div class="title">{t("login_title")}</div>
-    """, unsafe_allow_html=True)
-
     # OAuth buttons OUTSIDE the form - FIXED
     oauth_status = oauth_service.check_oauth_status()
 
-    st.markdown("""
-    <div class="oauth-container">
-        <div class="oauth-title">Sign in with your social account</div>
-    """, unsafe_allow_html=True)
+    # OAuth buttons with the exact styling from front(2).py
+    st.markdown(f"""
+    <div class="container">
+      <div class="title">{t("login_title")}</div>
 
-    col1, col2 = st.columns(2)
+      <div class="google">
+        <a href="{oauth_service.get_google_auth_url() if oauth_status.get('google_available', False) else '#'}" 
+           {'onclick="window.location.href=this.href"' if oauth_status.get('google_available', False) else 'onclick="return false;" style="opacity:0.5; cursor:not-allowed;"'}>
+          <i class="fab fa-google"></i>{t("sign_in_google")}
+        </a>
+      </div>
 
-    with col1:
-        if oauth_status.get('google_available', False):
-            if st.button("🔍 Sign in with Google", key="google_oauth", help="Sign in using your Google account"):
-                st.markdown(f'<meta http-equiv="refresh" content="0; url={oauth_service.get_google_auth_url()}">',
-                            unsafe_allow_html=True)
-                st.write("Redirecting to Google...")
-        else:
-            st.button("🔍 Google (Not Available)", disabled=True, help="Google OAuth is not configured")
-
-    with col2:
-        if oauth_status.get('facebook_available', False):
-            if st.button("📘 Sign in with Facebook", key="facebook_oauth", help="Sign in using your Facebook account"):
-                st.markdown(f'<meta http-equiv="refresh" content="0; url={oauth_service.get_facebook_auth_url()}">',
-                            unsafe_allow_html=True)
-                st.write("Redirecting to Facebook...")
-        else:
-            st.button("📘 Facebook (Not Available)", disabled=True, help="Facebook OAuth is not configured")
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # Add divider
-    st.markdown("""
-    <div class="oauth-divider">
-        <span>or continue with email</span>
-    </div>
+      <div class="facebook">
+        <a href="{oauth_service.get_facebook_auth_url() if oauth_status.get('facebook_available', False) else '#'}" 
+           {'onclick="window.location.href=this.href"' if oauth_status.get('facebook_available', False) else 'onclick="return false;" style="opacity:0.5; cursor:not-allowed;"'}>
+          <i class="fab fa-facebook-f"></i>{t("sign_in_facebook")}
+        </a>
+      </div>
     """, unsafe_allow_html=True)
 
     # Traditional login form - FIXED with submit button
@@ -1044,7 +1144,7 @@ def render_login_page():
         """, unsafe_allow_html=True)
 
         if submit_button:
-            login_user_with_oauth(email, password)
+            login_user(email, password)
 
     # Navigation to register page
     if st.button("Create Account", key="nav_to_register"):
@@ -1091,6 +1191,11 @@ def render_register_page():
 
         st.markdown(f"""
             </div>
+
+            <div class="input-box button">
+              <input type="submit" value="{t("register_btn")}" />
+            </div>
+          </div>
         """, unsafe_allow_html=True)
 
         # FIXED: Added submit button inside the form
@@ -1098,8 +1203,6 @@ def render_register_page():
 
         if submit_button:
             register_user_backend(user_data)
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
     # Navigation back to login
     if st.button("Back to Login", key="nav_to_login"):
@@ -1114,19 +1217,19 @@ def render_home_page():
         <p>{t("support_popular_projects")}</p>
         <div class="campaign-card">
             <img src="https://via.placeholder.com/600x400" alt="Campaign Image">
-            <h3>{t("campaign_1_title")}</h3>
-            <p>By Green Earth Foundation</p>
-            <p>{t("campaign_1_desc")}</p>
-            <p>₹75,000 raised of ₹100,000 goal</p>
+            <h3>ABC</h3>
+            <p>By XYZ</p>
+            <p>CAMPAIGNS DESCRIPTION</p>
+            <p>P1,000 raised 100%</p>
             <p>30 days left</p>
         </div>
         <div class="campaign-card">
             <img src="https://via.placeholder.com/600x400" alt="Campaign Image">
-            <h3>{t("campaign_2_title")}</h3>
-            <p>By Water for All</p>
-            <p>{t("campaign_2_desc")}</p>
-            <p>₹50,000 raised of ₹80,000 goal</p>
-            <p>45 days left</p>
+            <h3>ABC</h3>
+            <p>By XYZ</p>
+            <p>CAMPAIGNS DESCRIPTION</p>
+            <p>P1,000 raised 100%</p>
+            <p>30 days left</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -1232,11 +1335,11 @@ if is_user_authenticated():
         st.session_state.current_page = 'search'
         st.rerun()
     if st.sidebar.button("🚪 Logout"):
-        logout_user_enhanced()
+        logout_user()
 else:
     # Only show login/register if not logged in
     if st.session_state.current_page != 'login' and st.session_state.current_page != 'register':
-        st.session_state.current_page = 'login'
+        st.session_state.current_page = 'login'  # Force login page if not logged in
 
 # Render current page
 if st.session_state.current_page == 'login':
@@ -1250,6 +1353,14 @@ elif is_user_authenticated():
         render_explore_page()
     elif st.session_state.current_page == 'search':
         render_search_page()
+    # Add more pages here as needed
+
+# Placeholder for automatic term simplification
+# This would ideally be integrated into the content rendering functions
+# For example, when displaying campaign details, run them through simplify_text()
+
+# Example usage of simplify_text (for demonstration)
+# st.write(simplify_text("This campaign aims to provide resources and training to local farmers to transition to organic and sustainable farming methods."))
 
 # You can add a button to test backend connectivity (for debugging)
 if st.sidebar.button("Test Backend Connection"):
@@ -1271,4 +1382,6 @@ if st.sidebar.button("Test Backend Connection"):
 st.markdown(
     "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css\">",
     unsafe_allow_html=True)
+
+
 
