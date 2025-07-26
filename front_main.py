@@ -16,7 +16,7 @@ class StreamlitOAuthService:
     """OAuth service specifically designed for Streamlit applications"""
 
     def __init__(self):
-        self.backend_url = "https://haven-streamlit-frontend.onrender.com"  # Your Render backend URL
+        self.backend_url = "https://haven-fastapi-backend.onrender.com"  # Your Render backend URL
         self.token_key = 'oauth_access_token'
         self.user_key = 'oauth_user_profile'
 
@@ -208,80 +208,6 @@ custom_css = """
         background: linear-gradient(to right, #ed4599 0%, #ff0080 100%);
     }
 
-    /* OAuth Styling */
-    .oauth-container {
-        background: #f0f8f0;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin: 20px 0;
-        text-align: center;
-    }
-
-    .oauth-title {
-        color: #2d5a2d;
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 20px;
-    }
-
-    .oauth-divider {
-        margin: 20px 0;
-        text-align: center;
-        position: relative;
-    }
-
-    .oauth-divider::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: #ddd;
-    }
-
-    .oauth-divider span {
-        background: #f0f8f0;
-        padding: 0 15px;
-        color: #666;
-        font-size: 14px;
-    }
-
-    .user-profile-widget {
-        background: #f0f8f0;
-        border-radius: 12px;
-        padding: 20px;
-        margin: 10px 0;
-        border: 2px solid #4CAF50;
-    }
-
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 15px;
-    }
-
-    .user-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        border: 2px solid #4CAF50;
-    }
-
-    .user-details h4 {
-        margin: 0;
-        color: #2d5a2d;
-        font-size: 16px;
-    }
-
-    .user-details p {
-        margin: 2px 0;
-        color: #666;
-        font-size: 12px;
-    }
-
     .form-wrapper {
         display: flex;
         flex-direction: column;
@@ -358,6 +284,24 @@ custom_css = """
         color: #ed4599;
         text-decoration: none;
         font-weight: 500;
+        cursor: pointer;
+    }
+
+    /* OAuth Styling - Enhanced */
+    .oauth-container {
+        background: #f0f8f0;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+        text-align: center;
+    }
+
+    .oauth-title {
+        color: #2d5a2d;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
     }
 
     .google a,
@@ -373,6 +317,7 @@ custom_css = """
         border-radius: 5px;
         transition: all 0.3s ease;
         margin-bottom: 15px;
+        cursor: pointer;
     }
 
     .google a {
@@ -395,6 +340,63 @@ custom_css = """
     .facebook i {
         padding-right: 12px;
         font-size: 20px;
+    }
+
+    .oauth-divider {
+        margin: 20px 0;
+        text-align: center;
+        position: relative;
+    }
+
+    .oauth-divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #ddd;
+    }
+
+    .oauth-divider span {
+        background: #fff;
+        padding: 0 15px;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .user-profile-widget {
+        background: #f0f8f0;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 10px 0;
+        border: 2px solid #4CAF50;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 2px solid #4CAF50;
+    }
+
+    .user-details h4 {
+        margin: 0;
+        color: #2d5a2d;
+        font-size: 16px;
+    }
+
+    .user-details p {
+        margin: 2px 0;
+        color: #666;
+        font-size: 12px;
     }
 
     /* Side-by-side only on larger screens */
@@ -508,6 +510,42 @@ custom_css = """
         border-radius: 5px;
         cursor: pointer;
     }
+
+    /* Term highlighting styles */
+    .highlight-legal { background-color: #ffeb3b; color: #000; position: relative; cursor: help; }
+    .highlight-financial { background-color: #4caf50; color: #fff; position: relative; cursor: help; }
+    .highlight-tech { background-color: #2196f3; color: #fff; position: relative; cursor: help; }
+    .highlight-social { background-color: #ff9800; color: #fff; position: relative; cursor: help; }
+    .highlight-marketing { background-color: #9c27b0; color: #fff; position: relative; cursor: help; }
+    .highlight-general { background-color: #607d8b; color: #fff; position: relative; cursor: help; }
+
+    .tooltip-box {
+        visibility: hidden;
+        width: 200px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -100px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: 12px;
+    }
+
+    .highlight-legal:hover .tooltip-box,
+    .highlight-financial:hover .tooltip-box,
+    .highlight-tech:hover .tooltip-box,
+    .highlight-social:hover .tooltip-box,
+    .highlight-marketing:hover .tooltip-box,
+    .highlight-general:hover .tooltip-box {
+        visibility: visible;
+        opacity: 1;
+    }
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
@@ -572,7 +610,162 @@ translations = {
         "search_button": "Search",
         "welcome_haven": "Welcome to HAVEN"
     },
-    # ... (other language translations remain the same)
+    "hi": {
+        "welcome_title": "हैवन क्राउडफंडिंग में आपका स्वागत है!",
+        "app_loading": "आपका एप्लिकेशन लोड हो रहा है...",
+        "contact_support": "यदि आप इस संदेश को लंबे समय तक देखते हैं, तो कृपया सहायता से संपर्क करें।",
+        "select_language": "भाषा चुनें:",
+        "simplify_terms": "शब्दों को सरल बनाएं",
+        "campaigns_title": "हमारे अभियान",
+        "campaign_detail": "अभियान के विवरण ",
+        "back_to_campaigns": "अभियानों पर वापस जाएं",
+        "login_title": "लॉगिन",
+        "register_title": "पंजीकरण",
+        "full_name": "पूरा नाम",
+        "email_id": "ईमेल आईडी",
+        "phone_number": "फोन नंबर",
+        "enter_otp": "ओटीपी दर्ज करें",
+        "continue_btn": "जारी रखें",
+        "not_registered": "पंजीकृत नहीं हैं?",
+        "create_account": "खाता बनाएं",
+        "sign_in_google": "गूगल से साइन इन करें",
+        "sign_in_facebook": "फेसबुक से साइन इन करें",
+        "register_individual": "व्यक्तिगत के रूप में पंजीकरण करें",
+        "register_organization": "संगठन के रूप में पंजीकरण करें",
+        "organization_name": "संगठन का नाम",
+        "organization_phone": "संगठन का फोन नंबर",
+        "select_org_type": "संगठन का प्रकार चुनें",
+        "brief_description": "संक्षिप्त विवरण (अधिकतम 100 अक्षर)",
+        "register_btn": "पंजीकरण करें",
+        "campaign_1_title": "टिकाऊ कृषि पहल",
+        "campaign_1_desc": "स्थानीय किसानों को टिकाऊ प्रथाओं को अपनाने में सहायता करें।",
+        "campaign_3_title": "सभी के लिए शिक्षा",
+        "campaign_3_desc": "वंचित बच्चों के लिए शैक्षिक संसाधनों को फंड करें।",
+        "campaign_2_title": "स्वच्छ पानी परियोजना",
+        "campaign_2_desc": "स्वच्छ और सुरक्षित पेयजल तक पहुंच प्रदान करें।",
+        "explore_categories": "श्रेणियों का अन्वेषण करें",
+        "discover_campaigns": "रुचि के अनुसार अभियान खोजें।",
+        "art_design": "कला और डिज़ाइन",
+        "technology": "प्रौद्योगिकी",
+        "community": "समुदाय",
+        "film_video": "फिल्म और वीडियो",
+        "music": "संगीत",
+        "publishing": "प्रकाशन",
+        "search_campaigns": "अभियान खोजें",
+        "search_placeholder": "कीवर्ड, श्रेणी से खोजें।",
+        "enter_term_search": "अभियान खोजने के लिए ऊपर एक शब्द दर्ज करें।",
+        "search_tip": "आप शीर्षक, विवरण, या श्रेणी से खोज सकते हैं।",
+        "trending_campaigns": "ट्रेंडिंग अभियान",
+        "support_popular_projects": "हैवन पर सबसे लोकप्रिय परियोजनाओं का समर्थन करें।",
+        "home_button": "होम",
+        "explore_button": "अन्वेषण करें",
+        "search_button": "खोजें",
+        "welcome_haven": "हैवन में आपका स्वागत है"
+    },
+    "ta": {
+        "welcome_title": "ஹேவன் க்ரவுட்ஃபண்டிங்கிற்கு வரவேற்கிறோம்!",
+        "app_loading": "உங்கள் பயன்பாடு ஏற்றப்படுகிறது...",
+        "contact_support": "இந்த செய்தியை நீண்ட நேரம் பார்த்தால், தயவுசெய்து ஆதரவைத் தொடர்பு கொள்ளுங்கள்।",
+        "select_language": "மொழியைத் தேர்ந்தெடுக்கவும்:",
+        "simplify_terms": "சொற்களை எளிதாக்கவும்",
+        "campaigns_title": "எங்கள் பிரச்சாரங்கள்",
+        "campaign_detail": "பிரச்சாரத்தின் விவரங்கள் ",
+        "back_to_campaigns": "பிரச்சாரங்களுக்குத் திரும்பு",
+        "login_title": "உள்நுழைவு",
+        "register_title": "பதிவு",
+        "full_name": "முழு பெயர்",
+        "email_id": "மின்னஞ்சல் ஐடி",
+        "phone_number": "தொலைபேசி எண்",
+        "enter_otp": "ஓடிபி உள்ளிடவும்",
+        "continue_btn": "தொடரவும்",
+        "not_registered": "பதிவு செய்யப்படவில்லையா?",
+        "create_account": "கணக்கை உருவாக்கவும்",
+        "sign_in_google": "கூகிள் மூலம் உள்நுழையவும்",
+        "sign_in_facebook": "பேஸ்புக் மூலம் உள்நுழையவும்",
+        "register_individual": "தனிநபராக பதிவு செய்யவும்",
+        "register_organization": "அமைப்பாக பதிவு செய்யவும்",
+        "organization_name": "அமைப்பின் பெயர்",
+        "organization_phone": "அமைப்பின் தொலைபேசி எண்",
+        "select_org_type": "அமைப்பின் வகையைத் தேர்ந்தெடுக்கவும்",
+        "brief_description": "சுருக்க விளக்கம் (அதிகபட்சம் 100 எழுத்துக்கள்)",
+        "register_btn": "பதிவு செய்யவும்",
+        "campaign_1_title": "நிலையான விவசாய முன்முயற்சி",
+        "campaign_1_desc": "உள்ளூர் விவசாயிகளை நிலையான நடைமுறைகளை ஏற்க ஆதரிக்கவும்।",
+        "campaign_3_title": "அனைவருக்கும் கல்வி",
+        "campaign_3_desc": "பின்தங்கிய குழந்தைகளுக்கு கல்வி வளங்களுக்கு நிதி வழங்கவும்।",
+        "campaign_2_title": "சுத்தமான நீர் திட்டம்",
+        "campaign_2_desc": "சுத்தமான மற்றும் பாதுகாப்பான குடிநீருக்கான அணுகலை வழங்கவும்।",
+        "explore_categories": "வகைகளை ஆராயவும்",
+        "discover_campaigns": "ஆர்வத்தின் அடிப்படையில் பிரச்சாரங்களைக் கண்டறியவும்।",
+        "art_design": "கலை மற்றும் வடிவமைப்பு",
+        "technology": "தொழில்நுட்பம்",
+        "community": "சமூகம்",
+        "film_video": "திரைப்படம் மற்றும் வீடியோ",
+        "music": "இசை",
+        "publishing": "வெளியீடு",
+        "search_campaigns": "பிரச்சாரங்களைத் தேடவும்",
+        "search_placeholder": "முக்கிய சொல், வகை மூலம் தேடவும்।",
+        "enter_term_search": "பிரச்சாரங்களைத் தேட மேலே ஒரு சொல்லை உள்ளிடவும்।",
+        "search_tip": "நீங்கள் தலைப்பு, விளக்கம் அல்லது வகை மூலம் தேடலாம்।",
+        "trending_campaigns": "டிரெண்டிங் பிரச்சாரங்கள்",
+        "support_popular_projects": "ஹேவனில் மிகவும் பிரபலமான திட்டங்களை ஆதரிக்கவும்।",
+        "home_button": "முகப்பு",
+        "explore_button": "ஆராயவும்",
+        "search_button": "தேடவும்",
+        "welcome_haven": "ஹேவனுக்கு வரவேற்கிறோம்"
+    },
+    "te": {
+        "welcome_title": "హేవన్ క్రౌడ్‌ఫండింగ్‌కు స్వాగతం!",
+        "app_loading": "మీ అప్లికేషన్ లోడ్ అవుతోంది...",
+        "contact_support": "మీరు ఈ సందేశాన్ని చాలా కాలం పాటు చూస్తుంటే, దయచేసి మద్దతును సంప్రదించండి।",
+        "select_language": "భాషను ఎంచుకోండి:",
+        "simplify_terms": "పదాలను సరళీకరించండి",
+        "campaigns_title": "మా ప్రచారాలు",
+        "campaign_detail": "ప్రచారం వివరాలు ",
+        "back_to_campaigns": "ప్రచారాలకు తిరిగి వెళ్ళండి",
+        "login_title": "లాగిన్",
+        "register_title": "నమోదు",
+        "full_name": "పూర్తి పేరు",
+        "email_id": "ఇమెయిల్ ఐడి",
+        "phone_number": "ఫోన్ నంబర్",
+        "enter_otp": "ఓటిపిని నమోదు చేయండి",
+        "continue_btn": "కొనసాగించండి",
+        "not_registered": "నమోదు కాలేదా?",
+        "create_account": "ఖాతాను సృష్టించండి",
+        "sign_in_google": "గూగుల్‌తో సైన్ ఇన్ చేయండి",
+        "sign_in_facebook": "ఫేస్‌బుక్‌తో సైన్ ఇన్ చేయండి",
+        "register_individual": "వ్యక్తిగతంగా నమోదు చేసుకోండి",
+        "register_organization": "సంస్థగా నమోదు చేసుకోండి",
+        "organization_name": "సంస్థ పేరు",
+        "organization_phone": "సంస్థ ఫోన్ నంబర్",
+        "select_org_type": "సంస్థ రకాన్ని ఎంచుకోండి",
+        "brief_description": "సంక్షిప్త వివరణ (గరిష్టంగా 100 అక్షరాలు)",
+        "register_btn": "నమోదు చేయండి",
+        "campaign_1_title": "స్థిరమైన వ్యవసాయ చొరవ",
+        "campaign_1_desc": "స్థానిక రైతులను స్థిరమైన పద్ధతులను అనుసరించడంలో మద్దతు ఇవ్వండి।",
+        "campaign_3_title": "అందరికీ విద్య",
+        "campaign_3_desc": "నిరుపేద పిల్లలకు విద్యా వనరులకు నిధులు అందించండి।",
+        "campaign_2_title": "స్వచ్ఛమైన నీటి ప్రాజెక్ట్",
+        "campaign_2_desc": "స్వచ్ఛమైన మరియు సురక్షితమైన తాగునీటికి అందుబాటును అందించండి।",
+        "explore_categories": "వర్గాలను అన్వేషించండి",
+        "discover_campaigns": "ఆసక్తి ఆధారంగా ప్రచారాలను కనుగొనండి।",
+        "art_design": "కళ మరియు డిజైన్",
+        "technology": "సాంకేతికత",
+        "community": "సమాజం",
+        "film_video": "చలనచిత్రం మరియు వీడియో",
+        "music": "సంగీతం",
+        "publishing": "ప్రచురణ",
+        "search_campaigns": "ప్రచారాలను వెతకండి",
+        "search_placeholder": "కీవర్డ్, వర్గం ద్వారా వెతకండి।",
+        "enter_term_search": "ప్రచారాలను వెతకడానికి పైన ఒక పదాన్ని నమోదు చేయండి।",
+        "search_tip": "మీరు శీర్షిక, వివరణ లేదా వర్గం ద్వారా వెతకవచ్చు।",
+        "trending_campaigns": "ట్రెండింగ్ ప్రచారాలు",
+        "support_popular_projects": "హేవన్‌లో అత్యంత ప్రజాదరణ పొందిన ప్రాజెక్టులకు మద్దతు ఇవ్వండి।",
+        "home_button": "హోమ్",
+        "explore_button": "అన్వేషించండి",
+        "search_button": "వెతకండి",
+        "welcome_haven": "హేవన్‌కు స్వాగతం"
+    }
 }
 
 # Get current language from session state or set default
@@ -585,8 +778,65 @@ def t(key):
     english_text = translations["en"].get(key, key)
     if st.session_state.lang == "en":
         return english_text
-    # Add translation logic for other languages if needed
-    return english_text
+
+    # Check if a direct translation exists for the key in the target language
+    if key in translations[st.session_state.lang]:
+        return translations[st.session_state.lang][key]
+    else:
+        # If no direct translation for the key, try to translate word by word via backend
+        translated_words = []
+        words = re.findall(r'\b\w+\b|\W+', english_text)
+        for word in words:
+            if word.strip() and word.strip().isalpha():
+                translated_word = translate_text_backend(word, target_lang=st.session_state.lang)
+                translated_words.append(translated_word)
+            else:
+                translated_words.append(word)
+        return "".join(translated_words)
+
+
+# --- Term Simplification and Translation (Automatic) --- #
+def translate_text_backend(text, target_lang=None):
+    """Sends text to backend for translation."""
+    try:
+        payload = {"text": text, "source_language": "en", "target_language": target_lang}
+
+        response = requests.post(f"{BACKEND_URL}/translate-text", json=payload)
+        response.raise_for_status()
+        return response.json().get("translated_text", text)
+    except requests.exceptions.RequestException as e:
+        return text
+
+
+def simplify_text_backend(text, target_lang=None):
+    """Sends text to backend for simplification/translation."""
+    try:
+        payload = {"text": text}
+        if target_lang:
+            payload["target_language"] = target_lang
+
+        response = requests.post(f"{BACKEND_URL}/simplify-text", json=payload)
+        response.raise_for_status()
+        return response.json().get("simplified_text", text)
+    except requests.exceptions.RequestException as e:
+        st.warning(f"Could not simplify text via backend: {e}. Using local simplification.")
+        return simplify_text_local(text)
+
+
+def simplify_text_local(text):
+    replacements = {
+        "sustainable practices": "eco-friendly ways",
+        "underprivileged children": "children who need help",
+        "holistic development": "all-round growth",
+        "socio-economic background": "family's money situation",
+        "permaculture": "natural farming methods",
+        "resilient food system": "strong food supply",
+        "widespread health issues": "many health problems",
+        "fundamental human right": "basic right for everyone"
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    return text
 
 
 # --- Page Navigation State --- #
@@ -655,47 +905,14 @@ def logout_user_enhanced():
         st.rerun()
 
 
-# FIXED: OAuth buttons function that works outside forms
-def render_oauth_buttons():
-    """Render OAuth login buttons with proper styling - OUTSIDE of forms"""
+def check_oauth_callback():
+    """Check for OAuth callback and handle it"""
+    query_params = st.query_params
 
-    # Check OAuth provider status
-    oauth_status = oauth_service.check_oauth_status()
+    if 'access_token' in query_params or 'error' in query_params:
+        return oauth_service.handle_oauth_callback()
 
-    st.markdown("""
-    <div class="oauth-container">
-        <div class="oauth-title">Sign in with your social account</div>
-    """, unsafe_allow_html=True)
-
-    # Create columns for buttons
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if oauth_status.get('google_available', False):
-            if st.button("🔍 Sign in with Google", key="google_oauth", help="Sign in using your Google account"):
-                st.markdown(f'<meta http-equiv="refresh" content="0; url={oauth_service.get_google_auth_url()}">',
-                            unsafe_allow_html=True)
-                st.write("Redirecting to Google...")
-        else:
-            st.button("🔍 Google (Not Available)", disabled=True, help="Google OAuth is not configured")
-
-    with col2:
-        if oauth_status.get('facebook_available', False):
-            if st.button("📘 Sign in with Facebook", key="facebook_oauth", help="Sign in using your Facebook account"):
-                st.markdown(f'<meta http-equiv="refresh" content="0; url={oauth_service.get_facebook_auth_url()}">',
-                            unsafe_allow_html=True)
-                st.write("Redirecting to Facebook...")
-        else:
-            st.button("📘 Facebook (Not Available)", disabled=True, help="Facebook OAuth is not configured")
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # Add divider
-    st.markdown("""
-    <div class="oauth-divider">
-        <span>or continue with email</span>
-    </div>
-    """, unsafe_allow_html=True)
+    return False
 
 
 def render_user_profile_widget():
@@ -725,26 +942,16 @@ def render_user_profile_widget():
             oauth_service.logout()
 
 
-def check_oauth_callback():
-    """Check for OAuth callback and handle it"""
-    query_params = st.query_params
-
-    if 'access_token' in query_params or 'error' in query_params:
-        return oauth_service.handle_oauth_callback()
-
-    return False
-
-
 # --- API Interaction Functions ---
-@st.cache_data(ttl=300)  # Cache data for 5 minutes
+@st.cache_data(ttl=300)
 def fetch_all_campaigns():
     """Fetches all campaigns from the backend."""
     if not is_user_authenticated():
-        return []  # Don't fetch if not logged in
+        return []
 
     try:
         response = requests.get(f"{BACKEND_URL}/campaigns", headers=get_enhanced_auth_headers())
-        response.raise_for_status()  # Raise an exception for HTTP errors
+        response.raise_for_status()
         all_campaigns = response.json()
         return [c for c in all_campaigns if c.get('verification_status') != 'Rejected']
     except requests.exceptions.ConnectionError:
@@ -777,22 +984,51 @@ def register_user_backend(user_data):
 
 # --- Render Pages based on current_page --- #
 
-# FIXED: Login page with OAuth buttons outside the form
 def render_login_page():
-    # OAuth buttons OUTSIDE the form
     st.markdown(f"""
     <div class="container">
       <div class="title">{t("login_title")}</div>
+    """, unsafe_allow_html=True)
+
+    # OAuth buttons OUTSIDE the form - FIXED
+    oauth_status = oauth_service.check_oauth_status()
+
+    st.markdown("""
+    <div class="oauth-container">
+        <div class="oauth-title">Sign in with your social account</div>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if oauth_status.get('google_available', False):
+            if st.button("🔍 Sign in with Google", key="google_oauth", help="Sign in using your Google account"):
+                st.markdown(f'<meta http-equiv="refresh" content="0; url={oauth_service.get_google_auth_url()}">',
+                            unsafe_allow_html=True)
+                st.write("Redirecting to Google...")
+        else:
+            st.button("🔍 Google (Not Available)", disabled=True, help="Google OAuth is not configured")
+
+    with col2:
+        if oauth_status.get('facebook_available', False):
+            if st.button("📘 Sign in with Facebook", key="facebook_oauth", help="Sign in using your Facebook account"):
+                st.markdown(f'<meta http-equiv="refresh" content="0; url={oauth_service.get_facebook_auth_url()}">',
+                            unsafe_allow_html=True)
+                st.write("Redirecting to Facebook...")
+        else:
+            st.button("📘 Facebook (Not Available)", disabled=True, help="Facebook OAuth is not configured")
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # Add divider
+    st.markdown("""
+    <div class="oauth-divider">
+        <span>or continue with email</span>
     </div>
     """, unsafe_allow_html=True)
 
-    # Render OAuth buttons outside of any form
-    render_oauth_buttons()
-
-    # Traditional login form
+    # Traditional login form - FIXED with submit button
     with st.form(key='login_form'):
-        st.markdown('<div class="container">', unsafe_allow_html=True)
-
         email = st.text_input(t("email_id"), key="login_email")
         password = st.text_input(t("enter_otp"), type="password", key="login_password")
 
@@ -802,7 +1038,7 @@ def render_login_page():
         st.markdown(f"""
           <div class="option">
             {t("not_registered")}
-            <a href="#" id="create_account_link">{t("create_account")}</a>
+            <a href="#" onclick="document.getElementById('nav_to_register').click()">{t("create_account")}</a>
           </div>
         </div>
         """, unsafe_allow_html=True)
@@ -865,6 +1101,11 @@ def render_register_page():
 
     st.markdown("</div>", unsafe_allow_html=True)
 
+    # Navigation back to login
+    if st.button("Back to Login", key="nav_to_login"):
+        st.session_state.current_page = 'login'
+        st.rerun()
+
 
 def render_home_page():
     st.markdown(f"""
@@ -873,17 +1114,17 @@ def render_home_page():
         <p>{t("support_popular_projects")}</p>
         <div class="campaign-card">
             <img src="https://via.placeholder.com/600x400" alt="Campaign Image">
-            <h3>Sustainable Farming Initiative</h3>
+            <h3>{t("campaign_1_title")}</h3>
             <p>By Green Earth Foundation</p>
-            <p>Support local farmers in adopting sustainable practices.</p>
+            <p>{t("campaign_1_desc")}</p>
             <p>₹75,000 raised of ₹100,000 goal</p>
             <p>30 days left</p>
         </div>
         <div class="campaign-card">
             <img src="https://via.placeholder.com/600x400" alt="Campaign Image">
-            <h3>Clean Water Project</h3>
+            <h3>{t("campaign_2_title")}</h3>
             <p>By Water for All</p>
-            <p>Provide access to clean and safe drinking water.</p>
+            <p>{t("campaign_2_desc")}</p>
             <p>₹50,000 raised of ₹80,000 goal</p>
             <p>45 days left</p>
         </div>
@@ -995,7 +1236,7 @@ if is_user_authenticated():
 else:
     # Only show login/register if not logged in
     if st.session_state.current_page != 'login' and st.session_state.current_page != 'register':
-        st.session_state.current_page = 'login'  # Force login page if not logged in
+        st.session_state.current_page = 'login'
 
 # Render current page
 if st.session_state.current_page == 'login':
