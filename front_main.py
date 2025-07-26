@@ -16,7 +16,7 @@ class StreamlitOAuthService:
     """OAuth service specifically designed for Streamlit applications"""
 
     def __init__(self):
-        self.backend_url = "https://srv-d1sq8ser433s73eke7v0.onrender.com"  # Your Render backend URL
+        self.backend_url = "https://haven-fastapi-backend.onrender.com"  # Your Render backend URL
         self.token_key = 'oauth_access_token'
         self.user_key = 'oauth_user_profile'
 
