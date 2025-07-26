@@ -16,7 +16,7 @@ class StreamlitOAuthService:
     """OAuth service specifically designed for Streamlit applications"""
 
     def __init__(self):
-        self.backend_url = "https://haven-fastapi-backend.onrender.com"  # Your Render backend URL
+        self.backend_url = "https://srv-d1sq8ser433s73eke7v0.onrender.com"  # Your Render backend URL
         self.token_key = 'oauth_access_token'
         self.user_key = 'oauth_user_profile'
 
@@ -506,6 +506,25 @@ custom_css = """
         visibility: visible;
         opacity: 1;
     }
+
+    /* Success and error message styling */
+    .success-message {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+        padding: 12px;
+        border-radius: 5px;
+        margin: 10px 0;
+    }
+
+    .error-message {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+        padding: 12px;
+        border-radius: 5px;
+        margin: 10px 0;
+    }
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
@@ -540,7 +559,8 @@ translations = {
         "full_name": "Full Name",
         "email_id": "Email ID",
         "phone_number": "Phone Number",
-        "enter_otp": "Enter OTP",
+        "password": "Password",
+        "confirm_password": "Confirm Password",
         "continue_btn": "Continue",
         "not_registered": "Not registered?",
         "create_account": "Create an account",
@@ -592,7 +612,8 @@ translations = {
         "full_name": "पूरा नाम",
         "email_id": "ईमेल आईडी",
         "phone_number": "फोन नंबर",
-        "enter_otp": "ओटीपी दर्ज करें",
+        "password": "पासवर्ड",
+        "confirm_password": "पासवर्ड की पुष्टि करें",
         "continue_btn": "जारी रखें",
         "not_registered": "पंजीकृत नहीं हैं?",
         "create_account": "खाता बनाएं",
@@ -644,7 +665,8 @@ translations = {
         "full_name": "முழு பெயர்",
         "email_id": "மின்னஞ்சல் ஐடி",
         "phone_number": "தொலைபேசி எண்",
-        "enter_otp": "ஓடிபி உள்ளிடவும்",
+        "password": "கடவுச்சொல்",
+        "confirm_password": "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
         "continue_btn": "தொடரவும்",
         "not_registered": "பதிவு செய்யப்படவில்லையா?",
         "create_account": "கணக்கை உருவாக்கவும்",
@@ -696,7 +718,8 @@ translations = {
         "full_name": "పూర్తి పేరు",
         "email_id": "ఇమెయిల్ ఐడి",
         "phone_number": "ఫోన్ నంబర్",
-        "enter_otp": "ఓటిపిని నమోదు చేయండి",
+        "password": "పాస్‌వర్డ్",
+        "confirm_password": "పాస్‌వర్డ్‌ను నిర్ధారించండి",
         "continue_btn": "కొనసాగించండి",
         "not_registered": "నమోదు కాలేదా?",
         "create_account": "ఖాతాను సృష్టించండి",
@@ -875,6 +898,38 @@ def render_user_profile_widget():
             oauth_service.logout()
 
 
+# --- Enhanced Error Handling Functions --- #
+def safe_json_response(response):
+    """Safely extract JSON from response with fallback error handling"""
+    try:
+        return response.json()
+    except (ValueError, json.JSONDecodeError):
+        # If response is not JSON, return a generic error structure
+        return {
+            "detail": f"Server error (Status: {response.status_code}). Please try again later.",
+            "status_code": response.status_code,
+            "response_text": response.text[:200] if response.text else "No response content"
+        }
+
+
+def display_error_message(error_msg):
+    """Display error message with consistent styling"""
+    st.markdown(f"""
+    <div class="error-message">
+        <strong>Error:</strong> {error_msg}
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def display_success_message(success_msg):
+    """Display success message with consistent styling"""
+    st.markdown(f"""
+    <div class="success-message">
+        <strong>Success:</strong> {success_msg}
+    </div>
+    """, unsafe_allow_html=True)
+
+
 # --- API Interaction Functions ---
 @st.cache_data(ttl=300)  # Cache data for 5 minutes
 def fetch_all_campaigns():
@@ -891,7 +946,9 @@ def fetch_all_campaigns():
         st.error(f"Could not connect to backend at {BACKEND_URL}. Please ensure the backend is running.")
         return []
     except requests.exceptions.HTTPError as e:
-        st.error(f"HTTP error fetching campaigns: {e.response.status_code} - {e.response.text}")
+        error_data = safe_json_response(e.response)
+        st.error(
+            f"HTTP error fetching campaigns: {e.response.status_code} - {error_data.get('detail', 'Unknown error')}")
         return []
     except Exception as e:
         st.error(f"An unexpected error occurred: {e}")
@@ -918,7 +975,8 @@ def create_campaign_backend(campaign_data):
         response.raise_for_status()
         return response.json()
     except requests.exceptions.HTTPError as e:
-        st.error(f"Error creating campaign: {e.response.json().get('detail', 'Unknown error')}")
+        error_data = safe_json_response(e.response)
+        st.error(f"Error creating campaign: {error_data.get('detail', 'Unknown error')}")
         return None
     except requests.exceptions.RequestException as e:
         st.error(f"Error creating campaign: {e}")
@@ -926,7 +984,7 @@ def create_campaign_backend(campaign_data):
 
 
 def login_user(email, password):
-    """Authenticates user with the backend."""
+    """Authenticates user with the backend using JWT."""
     try:
         response = requests.post(f"{BACKEND_URL}/login", json={"email": email, "password": password})
         response.raise_for_status()
@@ -936,28 +994,52 @@ def login_user(email, password):
         st.session_state.logged_in = True
         st.session_state.username = email  # Or fetch username from token_data
         st.session_state.current_page = "home"
-        st.success(f"Welcome, {email}!")
+        display_success_message(f"Welcome, {email}!")
         st.rerun()
     except requests.exceptions.HTTPError as e:
-        st.error(f"Login failed: {e.response.json().get('detail', 'Incorrect email or password')}")
+        error_data = safe_json_response(e.response)
+        display_error_message(f"Login failed: {error_data.get('detail', 'Incorrect email or password')}")
     except requests.exceptions.RequestException as e:
-        st.error(f"Login failed: Could not connect to backend. Is it running? {e}")
+        display_error_message(f"Login failed: Could not connect to backend. Is it running? {e}")
 
 
 def register_user_backend(user_data):
-    """Registers a new user with the backend."""
+    """Registers a new user with the backend using JWT authentication."""
     try:
-        response = requests.post(f"{BACKEND_URL}/register", json=user_data)
+        # Validate required fields
+        if user_data.get("type") == "individual":
+            required_fields = ["full_name", "email", "phone_number", "password"]
+        else:
+            required_fields = ["organization_name", "email", "organization_phone", "organization_type", "password"]
+
+        missing_fields = [field for field in required_fields if not user_data.get(field)]
+        if missing_fields:
+            display_error_message(f"Please fill in all required fields: {', '.join(missing_fields)}")
+            return None
+
+        # Validate password confirmation
+        if user_data.get("password") != user_data.get("confirm_password"):
+            display_error_message("Passwords do not match. Please try again.")
+            return None
+
+        # Remove confirm_password from data sent to backend
+        registration_data = {k: v for k, v in user_data.items() if k != "confirm_password"}
+
+        response = requests.post(f"{BACKEND_URL}/register", json=registration_data)
         response.raise_for_status()
-        st.success("Registration successful! Please log in.")
+
+        result = response.json()
+        display_success_message("Registration successful! You can now log in with your credentials.")
         st.session_state.current_page = "login"
         st.rerun()
-        return response.json()
+        return result
+
     except requests.exceptions.HTTPError as e:
-        st.error(f"Registration failed: {e.response.json().get('detail', 'Unknown error')}")
+        error_data = safe_json_response(e.response)
+        display_error_message(f"Registration failed: {error_data.get('detail', 'Unknown error')}")
         return None
     except requests.exceptions.RequestException as e:
-        st.error(f"Registration failed: Could not connect to backend. Is it running? {e}")
+        display_error_message(f"Registration failed: Could not connect to backend. Is it running? {e}")
         return None
 
 
@@ -971,7 +1053,7 @@ def logout_user():
         st.session_state.username = None
         st.session_state.user_role = "user"
         st.session_state.current_page = "login"
-        st.success("Logged out successfully.")
+        display_success_message("Logged out successfully.")
         st.rerun()
 
 
@@ -1130,7 +1212,7 @@ def render_login_page():
     # Traditional login form - FIXED with submit button
     with st.form(key='login_form'):
         email = st.text_input(t("email_id"), key="login_email")
-        password = st.text_input(t("enter_otp"), type="password", key="login_password")
+        password = st.text_input(t("password"), type="password", key="login_password")
 
         # FIXED: Added submit button inside the form
         submit_button = st.form_submit_button(t("continue_btn"))
@@ -1144,7 +1226,10 @@ def render_login_page():
         """, unsafe_allow_html=True)
 
         if submit_button:
-            login_user(email, password)
+            if email and password:
+                login_user(email, password)
+            else:
+                display_error_message("Please enter both email and password.")
 
     # Navigation to register page
     if st.button("Create Account", key="nav_to_register"):
@@ -1175,9 +1260,16 @@ def render_register_page():
             full_name = st.text_input(t("full_name"), key="reg_full_name")
             email = st.text_input(t("email_id"), key="reg_email")
             phone_number = st.text_input(t("phone_number"), key="reg_phone_number")
-            otp = st.text_input(t("enter_otp"), key="reg_otp")
-            user_data = {"full_name": full_name, "email": email, "phone_number": phone_number, "otp": otp,
-                         "type": "individual"}
+            password = st.text_input(t("password"), type="password", key="reg_password")
+            confirm_password = st.text_input(t("confirm_password"), type="password", key="reg_confirm_password")
+            user_data = {
+                "full_name": full_name,
+                "email": email,
+                "phone_number": phone_number,
+                "password": password,
+                "confirm_password": confirm_password,
+                "type": "individual"
+            }
 
         elif st.session_state.registration_type == 'organization':
             org_name = st.text_input(t("organization_name"), key="reg_org_name")
@@ -1185,9 +1277,18 @@ def render_register_page():
             org_type = st.selectbox(t("select_org_type"), ["", "NGO", "Startup", "Charity"], key="reg_org_type")
             brief_description = st.text_area(t("brief_description"), max_chars=100, key="reg_brief_desc")
             email = st.text_input(t("email_id"), key="reg_email_org")
-            otp = st.text_input(t("enter_otp"), key="reg_otp_org")
-            user_data = {"organization_name": org_name, "organization_phone": org_phone, "organization_type": org_type,
-                         "brief_description": brief_description, "email": email, "otp": otp, "type": "organization"}
+            password = st.text_input(t("password"), type="password", key="reg_password_org")
+            confirm_password = st.text_input(t("confirm_password"), type="password", key="reg_confirm_password_org")
+            user_data = {
+                "organization_name": org_name,
+                "organization_phone": org_phone,
+                "organization_type": org_type,
+                "brief_description": brief_description,
+                "email": email,
+                "password": password,
+                "confirm_password": confirm_password,
+                "type": "organization"
+            }
 
         st.markdown(f"""
             </div>
@@ -1367,21 +1468,20 @@ if st.sidebar.button("Test Backend Connection"):
     try:
         response = requests.get(f"{BACKEND_URL}/health")
         if response.status_code == 200:
-            st.success(f"✅ Backend connected successfully!")
+            display_success_message("Backend connected successfully!")
             health_data = response.json()
             if 'oauth' in health_data:
                 oauth_info = health_data['oauth']
                 st.info(
                     f"OAuth Status: Google: {'✅' if oauth_info.get('google_configured') else '❌'}, Facebook: {'✅' if oauth_info.get('facebook_configured') else '❌'}")
         else:
-            st.error(f"❌ Backend connection failed. Status: {response.status_code}")
+            display_error_message(f"Backend connection failed. Status: {response.status_code}")
     except Exception as e:
-        st.error(f"❌ Failed to connect to backend: {str(e)}")
+        display_error_message(f"Failed to connect to backend: {str(e)}")
 
 # Add Font Awesome for icons
 st.markdown(
     "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css\">",
     unsafe_allow_html=True)
-
 
 
