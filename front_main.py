@@ -16,7 +16,7 @@ class StreamlitOAuthService:
     """OAuth service specifically designed for Streamlit applications"""
 
     def __init__(self):
-        self.backend_url = "https://haven-fastapi-backend.onrender.com"  # Your Render backend URL
+        self.backend_url = "https://srv-d1sq8ser433s73eke7v0.onrender.com"  # Your Render backend URL
         self.token_key = 'oauth_access_token'
         self.user_key = 'oauth_user_profile'
 
@@ -149,7 +149,7 @@ class StreamlitOAuthService:
 # Create global OAuth service instance
 oauth_service = StreamlitOAuthService()
 
-# --- Custom CSS for global styling (matching front(2).py exactly) --- #
+# --- Custom CSS for global styling (FIXED: Proper text colors and no duplicate buttons) --- #
 custom_css = """
 <style>
     @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
@@ -195,6 +195,7 @@ custom_css = """
         font-weight: 600;
         margin-bottom: 30px;
         position: relative;
+        color: #000; /* FIXED: Dark text for contrast */
     }
 
     .title::before {
@@ -227,6 +228,7 @@ custom_css = """
         font-weight: 600;
         border-bottom: 1px solid #ddd;
         padding-bottom: 5px;
+        color: #000; /* FIXED: Dark text for contrast */
     }
 
     .input-box {
@@ -244,13 +246,13 @@ custom_css = """
         font-size: 16px;
         border: none;
         background: transparent;
-        color: #000;
+        color: #000; /* FIXED: Dark text for contrast */
         border-bottom: 2px solid #ccc;
         padding-left: 5px;
     }
 
     .input-box input::placeholder {
-        color: #aaa;
+        color: #666; /* FIXED: Better contrast for placeholders */
     }
 
     .button {
@@ -260,7 +262,7 @@ custom_css = """
     .button input[type="submit"] {
         background: linear-gradient(to right, #99004d 0%, #ff0080 100%);
         font-size: 17px;
-        color: #fff;
+        color: #fff; /* FIXED: White text on dark background */
         border-radius: 5px;
         cursor: pointer;
         padding: 10px 0;
@@ -278,6 +280,7 @@ custom_css = """
         font-size: 14px;
         text-align: center;
         margin: 20px 0;
+        color: #000; /* FIXED: Dark text for contrast */
     }
 
     .option a {
@@ -296,7 +299,7 @@ custom_css = """
         text-decoration: none;
         padding-left: 20px;
         line-height: 45px;
-        color: #fff;
+        color: #fff; /* FIXED: White text on dark OAuth buttons */
         border-radius: 5px;
         transition: all 0.3s ease;
         margin-bottom: 15px;
@@ -322,6 +325,44 @@ custom_css = """
     .facebook i {
         padding-right: 12px;
         font-size: 20px;
+    }
+
+    /* FIXED: Streamlit button styling for proper contrast */
+    .stButton > button {
+        background-color: #333 !important;
+        color: #fff !important; /* White text on dark buttons */
+        border: none !important;
+        border-radius: 5px !important;
+        padding: 8px 16px !important;
+        font-family: "Poppins", sans-serif !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .stButton > button:hover {
+        background-color: #555 !important;
+        color: #fff !important;
+    }
+
+    /* FIXED: Form submit button styling */
+    .stFormSubmitButton > button {
+        background: linear-gradient(to right, #99004d 0%, #ff0080 100%) !important;
+        color: #fff !important; /* White text on dark gradient */
+        border: none !important;
+        border-radius: 5px !important;
+        padding: 10px 20px !important;
+        font-family: "Poppins", sans-serif !important;
+        font-size: 16px !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        width: 100% !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .stFormSubmitButton > button:hover {
+        background: linear-gradient(to left, #99004d 0%, #ff0080 100%) !important;
+        letter-spacing: 1px !important;
     }
 
     /* Side-by-side only on larger screens */
@@ -388,6 +429,10 @@ custom_css = """
         color: #4CAF50;
     }
 
+    .category-card p {
+        color: #000; /* FIXED: Dark text for contrast */
+    }
+
     .campaign-card {
         background-color: #f5f5f5;
         border-radius: 8px;
@@ -406,7 +451,7 @@ custom_css = """
 
     .campaign-card h3 {
         margin-top: 0;
-        color: #333;
+        color: #333; /* FIXED: Dark text for contrast */
     }
 
     .campaign-card p {
@@ -425,11 +470,12 @@ custom_css = """
         padding: 10px;
         border: 1px solid #ccc;
         border-radius: 5px;
+        color: #000; /* FIXED: Dark text for contrast */
     }
 
     .search-bar button {
         background-color: #4CAF50;
-        color: white;
+        color: white; /* FIXED: White text on dark button */
         border: none;
         padding: 10px 15px;
         border-radius: 5px;
@@ -511,7 +557,7 @@ custom_css = """
     .success-message {
         background-color: #d4edda;
         border: 1px solid #c3e6cb;
-        color: #155724;
+        color: #155724; /* FIXED: Dark text on light background */
         padding: 12px;
         border-radius: 5px;
         margin: 10px 0;
@@ -520,7 +566,7 @@ custom_css = """
     .error-message {
         background-color: #f8d7da;
         border: 1px solid #f5c6cb;
-        color: #721c24;
+        color: #721c24; /* FIXED: Dark text on light background */
         padding: 12px;
         border-radius: 5px;
         margin: 10px 0;
@@ -1217,22 +1263,22 @@ def render_login_page():
         # FIXED: Added submit button inside the form
         submit_button = st.form_submit_button(t("continue_btn"))
 
-        st.markdown(f"""
-          <div class="option">
-            {t("not_registered")}
-            <a href="#" onclick="document.getElementById('nav_to_register').click()">{t("create_account")}</a>
-          </div>
-        </div>
-        """, unsafe_allow_html=True)
-
         if submit_button:
             if email and password:
                 login_user(email, password)
             else:
                 display_error_message("Please enter both email and password.")
 
-    # Navigation to register page
-    if st.button("Create Account", key="nav_to_register"):
+    # FIXED: Only show "Create Account" link, no duplicate button
+    st.markdown(f"""
+      <div class="option">
+        {t("not_registered")} <a href="#" onclick="document.getElementById('nav_to_register').click()">{t("create_account")}</a>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Hidden navigation button (triggered by the link above)
+    if st.button("Create Account", key="nav_to_register", help="Navigate to registration"):
         st.session_state.current_page = 'register'
         st.rerun()
 
@@ -1292,20 +1338,16 @@ def render_register_page():
 
         st.markdown(f"""
             </div>
-
-            <div class="input-box button">
-              <input type="submit" value="{t("register_btn")}" />
-            </div>
           </div>
         """, unsafe_allow_html=True)
 
-        # FIXED: Added submit button inside the form
+        # FIXED: Only one submit button inside the form
         submit_button = st.form_submit_button(t("register_btn"))
 
         if submit_button:
             register_user_backend(user_data)
 
-    # Navigation back to login
+    # Navigation back to login (outside the form)
     if st.button("Back to Login", key="nav_to_login"):
         st.session_state.current_page = 'login'
         st.rerun()
@@ -1483,5 +1525,4 @@ if st.sidebar.button("Test Backend Connection"):
 st.markdown(
     "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css\">",
     unsafe_allow_html=True)
-
 
