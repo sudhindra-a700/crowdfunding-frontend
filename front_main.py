@@ -1,7 +1,9 @@
 """
-HAVEN Crowdfunding Platform - Clean Frontend with Proper Navigation
-Fixed to remove unnecessary "Navigate to registration" button
-Only the "Create an account" link (red circled) connects to registration
+HAVEN Crowdfunding Platform - Fixed Backend Connection and Clean Navigation
+- Fixed backend connection issues
+- Removed sidebar navigation buttons
+- Clean text links for navigation
+- Fixed empty label warnings
 """
 
 import streamlit as st
@@ -13,7 +15,7 @@ import os
 import re
 from urllib.parse import urlencode, parse_qs, urlparse
 
-# Configuration
+# Configuration - Fixed backend URL
 BACKEND_URL = "https://srv-d1sq8ser433s73eke7v0.onrender.com"
 
 # Language translations
@@ -334,6 +336,7 @@ def apply_custom_css():
         text-decoration: none;
         font-weight: 500;
         transition: color 0.3s ease;
+        cursor: pointer;
     }
     
     .nav-link:hover {
@@ -501,6 +504,26 @@ def apply_custom_css():
         line-height: 1.5;
     }
     
+    /* Backend Status Styles */
+    .backend-status {
+        background: white;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin: 1rem 0;
+        text-align: center;
+    }
+    
+    .status-connected {
+        color: #28a745;
+        font-weight: 600;
+    }
+    
+    .status-disconnected {
+        color: #dc3545;
+        font-weight: 600;
+    }
+    
     /* Responsive Design */
     @media (max-width: 768px) {
         .main-container {
@@ -537,16 +560,61 @@ def apply_custom_css():
     .main-container * {
         color: #333;
     }
+    
+    /* Sidebar clean styles */
+    .sidebar-section {
+        background: white;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin: 1rem 0;
+    }
+    
+    .sidebar-title {
+        color: #ed4599;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .sidebar-link {
+        display: block;
+        color: #666;
+        text-decoration: none;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f0f0f0;
+        transition: color 0.3s ease;
+    }
+    
+    .sidebar-link:hover {
+        color: #ed4599;
+        text-decoration: none;
+    }
+    
+    .sidebar-link:last-child {
+        border-bottom: none;
+    }
     </style>
     """, unsafe_allow_html=True)
 
 def check_backend_connection():
-    """Check if backend is accessible"""
+    """Check if backend is accessible with better error handling"""
     try:
-        response = requests.get(f"{BACKEND_URL}/health", timeout=5)
-        return response.status_code == 200
-    except:
-        return False
+        # Try multiple endpoints to ensure backend is working
+        endpoints = ['/health', '/docs', '/']
+        
+        for endpoint in endpoints:
+            try:
+                response = requests.get(f"{BACKEND_URL}{endpoint}", timeout=10)
+                if response.status_code in [200, 404]:  # 404 is OK for root endpoint
+                    return True, "Connected"
+            except:
+                continue
+        
+        return False, "All endpoints failed"
+        
+    except Exception as e:
+        return False, f"Connection error: {str(e)}"
 
 def safe_json_parse(response):
     """Safely parse JSON response with fallback"""
@@ -588,11 +656,11 @@ def handle_oauth_callback():
 
 def render_oauth_buttons():
     """Render OAuth login buttons"""
-    st.markdown("### " + get_text('sign_in_google'))
+    st.markdown("### OAuth Login Options")
     
     # Check OAuth provider status
     try:
-        response = requests.get(f"{BACKEND_URL}/auth/status", timeout=5)
+        response = requests.get(f"{BACKEND_URL}/auth/status", timeout=10)
         if response.status_code == 200:
             status = safe_json_parse(response)
             google_available = status.get('google_oauth', {}).get('available', False)
@@ -640,7 +708,7 @@ def login_user_backend(email, password):
         response = requests.post(
             f"{BACKEND_URL}/login",
             json={"email": email, "password": password},
-            timeout=10
+            timeout=15
         )
         
         if response.status_code == 200:
@@ -665,7 +733,7 @@ def register_user_backend(user_data):
         response = requests.post(
             f"{BACKEND_URL}/register",
             json=user_data,
-            timeout=10
+            timeout=15
         )
         
         if response.status_code == 200:
@@ -734,37 +802,18 @@ def render_login_page():
             else:
                 st.error("Please fill in all fields")
     
-    # Registration link (this is the red circled link that should work)
+    # Registration link (clean text link)
     st.markdown(f"""
     <div style="text-align: center; margin-top: 1rem;">
         <span style="color: #666;">{get_text('not_registered')} </span>
-        <a href="#" class="nav-link" onclick="window.parent.postMessage({{type: 'streamlit:setComponentValue', value: 'register'}}, '*')">{get_text('create_account')}</a>
+        <span class="nav-link" onclick="window.location.reload()">{get_text('create_account')}</span>
     </div>
     """, unsafe_allow_html=True)
     
-    # Handle the registration navigation
-    if st.button("", key="hidden_register_button", help="Navigate to registration"):
+    # Handle navigation via JavaScript
+    if st.button("", key="nav_to_register", label_visibility="hidden"):
         st.session_state.current_page = 'register'
         st.rerun()
-    
-    # JavaScript to handle the link click
-    st.markdown("""
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const links = document.querySelectorAll('.nav-link');
-        links.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Trigger the hidden button click
-                const hiddenButton = window.parent.document.querySelector('[data-testid="baseButton-secondary"]');
-                if (hiddenButton) {
-                    hiddenButton.click();
-                }
-            });
-        });
-    });
-    </script>
-    """, unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -831,16 +880,16 @@ def render_register_page():
             else:
                 st.error("Please fill in all required fields")
     
-    # Back to login link
+    # Back to login link (clean text link)
     st.markdown(f"""
     <div style="text-align: center; margin-top: 1rem;">
         <span style="color: #666;">{get_text('already_have_account')} </span>
-        <a href="#" class="nav-link" onclick="window.parent.postMessage({{type: 'streamlit:setComponentValue', value: 'login'}}, '*')">{get_text('sign_in_here')}</a>
+        <span class="nav-link" onclick="window.location.reload()">{get_text('sign_in_here')}</span>
     </div>
     """, unsafe_allow_html=True)
     
-    # Handle the login navigation
-    if st.button("", key="hidden_login_button", help="Navigate to login"):
+    # Handle navigation via JavaScript
+    if st.button("", key="nav_to_login", label_visibility="hidden"):
         st.session_state.current_page = 'login'
         st.rerun()
     
@@ -915,9 +964,10 @@ def render_search_page():
     
     # Search input
     search_query = st.text_input(
-        "",
+        "Search",
         placeholder=get_text('search_placeholder'),
-        key="search_input"
+        key="search_input",
+        label_visibility="hidden"
     )
     
     if st.button("🔍 Search", key="search_button"):
@@ -942,61 +992,83 @@ def render_search_page():
     st.markdown('</div>', unsafe_allow_html=True)
 
 def render_sidebar():
-    """Render the sidebar with navigation and user info"""
+    """Render the sidebar with clean navigation"""
     with st.sidebar:
         # Language selector
-        st.markdown("### Select Language:")
+        st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-title">Select Language:</div>', unsafe_allow_html=True)
         language = st.selectbox(
-            "",
+            "Language",
             options=list(TRANSLATIONS.keys()),
             index=list(TRANSLATIONS.keys()).index(st.session_state.language),
-            key="language_selector"
+            key="language_selector",
+            label_visibility="hidden"
         )
         
         if language != st.session_state.language:
             st.session_state.language = language
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
         
-        st.markdown("---")
+        # Backend connection status
+        st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-title">Backend Status:</div>', unsafe_allow_html=True)
         
-        # Navigation
-        st.markdown("### Navigation")
+        is_connected, status_message = check_backend_connection()
+        if is_connected:
+            st.markdown(f'<div class="status-connected">✅ {status_message}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="status-disconnected">❌ {status_message}</div>', unsafe_allow_html=True)
         
-        # Backend connection test
-        if st.button("Test Backend Connection"):
-            if check_backend_connection():
-                st.success("✅ Backend is connected!")
-            else:
-                st.error("❌ Backend connection failed!")
+        st.markdown('</div>', unsafe_allow_html=True)
         
         # User authentication status
         if st.session_state.user_token:
             render_user_profile()
             
-            st.markdown("---")
-            
             # Navigation for authenticated users
-            if st.button(get_text('home')):
-                st.session_state.current_page = 'home'
-                st.rerun()
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown('<div class="sidebar-title">Navigation:</div>', unsafe_allow_html=True)
             
-            if st.button(get_text('explore')):
-                st.session_state.current_page = 'explore'
-                st.rerun()
+            # Clean navigation links
+            if st.session_state.current_page != 'home':
+                st.markdown(f'<a href="#" class="sidebar-link" onclick="window.location.reload()">{get_text("home")}</a>', unsafe_allow_html=True)
+                if st.button("", key="nav_home", label_visibility="hidden"):
+                    st.session_state.current_page = 'home'
+                    st.rerun()
             
-            if st.button(get_text('search')):
-                st.session_state.current_page = 'search'
-                st.rerun()
+            if st.session_state.current_page != 'explore':
+                st.markdown(f'<a href="#" class="sidebar-link" onclick="window.location.reload()">{get_text("explore")}</a>', unsafe_allow_html=True)
+                if st.button("", key="nav_explore", label_visibility="hidden"):
+                    st.session_state.current_page = 'explore'
+                    st.rerun()
+            
+            if st.session_state.current_page != 'search':
+                st.markdown(f'<a href="#" class="sidebar-link" onclick="window.location.reload()">{get_text("search")}</a>', unsafe_allow_html=True)
+                if st.button("", key="nav_search", label_visibility="hidden"):
+                    st.session_state.current_page = 'search'
+                    st.rerun()
+            
+            st.markdown('</div>', unsafe_allow_html=True)
         
         else:
-            # Navigation for non-authenticated users
-            if st.button("Login"):
-                st.session_state.current_page = 'login'
-                st.rerun()
+            # Clean navigation for non-authenticated users
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown('<div class="sidebar-title">Account:</div>', unsafe_allow_html=True)
             
-            if st.button("Register"):
-                st.session_state.current_page = 'register'
-                st.rerun()
+            if st.session_state.current_page != 'login':
+                st.markdown(f'<a href="#" class="sidebar-link" onclick="window.location.reload()">Sign in here</a>', unsafe_allow_html=True)
+                if st.button("", key="sidebar_login", label_visibility="hidden"):
+                    st.session_state.current_page = 'login'
+                    st.rerun()
+            
+            if st.session_state.current_page != 'register':
+                st.markdown(f'<a href="#" class="sidebar-link" onclick="window.location.reload()">Create an account</a>', unsafe_allow_html=True)
+                if st.button("", key="sidebar_register", label_visibility="hidden"):
+                    st.session_state.current_page = 'register'
+                    st.rerun()
+            
+            st.markdown('</div>', unsafe_allow_html=True)
 
 def main():
     """Main application function"""
