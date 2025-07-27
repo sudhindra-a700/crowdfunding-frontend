@@ -8,7 +8,7 @@ import re
 from urllib.parse import urlencode, parse_qs, urlparse
 
 BACKEND_URL = "https://haven-fastapi-backend.onrender.com"
-FRONTEND_BASE_URL = "https://haven-streamlit-frontend.onrender.com"  # <<< IMPORTANT: REPLACE THIS WITH YOUR ACTUAL DEPLOYED STREAMLIT FRONTEND URL
+FRONTEND_BASE_URL = "https://haven-streamlit-frontend.onrender.com"
 
 TRANSLATIONS = {
     'English': {
@@ -205,7 +205,7 @@ TRANSLATIONS = {
         'search_placeholder': 'క్యాంపెయిన్‌లను వెతకడానికి కీవర్డ్‌లను నమోదు చేయండి...',
         'search_tips': 'వెతుకులాట చిట్కాలు',
         'use_keywords': 'క్యాంపెయిన్‌కు సంబంధించిన నిర్దిష్ట కీవర్డ్‌లను ఉపయోగించండి',
-        'filter_category': 'మెరుగైన ఫలితాల కోసం వర్గం వారీగా ఫిల్టర్ చేయండి',
+        'filter_category': 'బెటర్ ఫలితాల కోసం వర్గం వారీగా ఫిల్టర్ చేయండి',
         'check_spelling': 'స్పెల్లింగ్ తనిఖీ చేసి వేర్వేరు పదాలను ప్రయత్నించండి',
         'register_individual': 'వ్యక్తిగతంగా నమోదు చేసుకోండి',
         'register_organization': 'సంస్థగా నమోదు చేసుకోండి',
@@ -273,7 +273,7 @@ def apply_custom_css():
         font-weight: 600;
         margin: 20px 0 10px 0;
         position: relative;
-        color: #000;
+        color: #2d5a2d; /* Darker green for titles for contrast */
     }
 
     .html-title:before {
@@ -292,7 +292,7 @@ def apply_custom_css():
         font-weight: 600;
         margin-bottom: 30px;
         position: relative;
-        color: #000;
+        color: #2d5a2d; /* Darker green for titles for contrast */
     }
 
     .html-title-register::before {
@@ -320,14 +320,14 @@ def apply_custom_css():
         font-size: 16px;
         border: none;
         background: transparent;
-        color: #000 !important;
+        color: #333 !important; /* Slightly darker input text for contrast */
         border-bottom: 2px solid #ccc;
         padding-left: 5px;
         font-family: 'Poppins', sans-serif;
     }
 
     .html-input-box input::placeholder {
-        color: #aaa;
+        color: #777; /* Darker placeholder for contrast */
     }
 
     .stTextInput > div > div > input,
@@ -339,7 +339,7 @@ def apply_custom_css():
         border-radius: 0 !important;
         padding: 5px !important;
         font-size: 16px !important;
-        color: #000 !important;
+        color: #333 !important; /* Slightly darker input text for contrast */
         font-family: 'Poppins', sans-serif !important;
         height: 45px !important;
     }
@@ -352,7 +352,7 @@ def apply_custom_css():
     }
 
     .stTextInput > div > div > input::placeholder {
-        color: #aaa !important;
+        color: #777 !important; /* Darker placeholder for contrast */
     }
 
     .html-button {
@@ -405,7 +405,7 @@ def apply_custom_css():
         font-size: 14px;
         text-align: center;
         margin: 20px 0;
-        color: #000;
+        color: #333; /* Darker text for contrast */
     }
 
     .html-option a {
@@ -480,7 +480,7 @@ def apply_custom_css():
         font-weight: 600;
         border-bottom: 1px solid #ddd;
         padding-bottom: 5px;
-        color: #000;
+        color: #2d5a2d; /* Darker green for section titles */
     }
 
     .html-input-box-register {
@@ -537,7 +537,7 @@ def apply_custom_css():
     }
 
     .sidebar-title {
-        color: #4CAF50;
+        color: #2d5a2d; /* Darker green for sidebar titles */
         font-weight: 600;
         margin-bottom: 0.5rem;
         font-size: 1.1rem;
@@ -545,7 +545,7 @@ def apply_custom_css():
 
     .sidebar-link {
         display: block;
-        color: #666;
+        color: #333; /* Darker text for contrast */
         text-decoration: none;
         padding: 0.5rem 0;
         border-bottom: 1px solid #f0f0f0;
@@ -612,7 +612,7 @@ def apply_custom_css():
     }
 
     .stMarkdown p, .stMarkdown div, .stMarkdown span {
-        color: #333 !important;
+        color: #333 !important; /* Ensure all markdown text is dark for contrast */
     }
 
     .app-title {
@@ -628,7 +628,7 @@ def apply_custom_css():
     }
 
     .app-subtitle {
-        color: #666;
+        color: #333; /* Darker subtitle for contrast */
         text-align: center;
         font-size: 1.2rem;
         margin-bottom: 2rem;
@@ -661,7 +661,7 @@ def apply_custom_css():
     .category-title {
         font-size: 1.2rem;
         font-weight: 600;
-        color: #333;
+        color: #333; /* Darker category title for contrast */
         margin-bottom: 0.5rem;
     }
 
@@ -698,12 +698,12 @@ def apply_custom_css():
     .campaign-title {
         font-size: 1.3rem;
         font-weight: 600;
-        color: #333;
+        color: #333; /* Darker campaign title for contrast */
         margin-bottom: 0.5rem;
     }
 
     .campaign-description {
-        color: #666;
+        color: #666; /* Darker campaign description for contrast */
         margin-bottom: 1rem;
         line-height: 1.5;
     }
@@ -746,7 +746,7 @@ def apply_custom_css():
     }
 
     .search-tips ul {
-        color: #666;
+        color: #666; /* Darker search tips list for contrast */
         margin: 0;
         padding-left: 1.5rem;
     }
@@ -754,6 +754,18 @@ def apply_custom_css():
     .search-tips li {
         margin-bottom: 0.5rem;
         line-height: 1.5;
+    }
+
+    .welcome-banner {
+        background-color: #e6ffe6; /* Light green background */
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: 600;
+        color: #2d5a2d; /* Dark green text for contrast */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -774,146 +786,140 @@ def check_backend_connection():
         return False, "All endpoints failed"
 
     except Exception as e:
-        return False, f"Connection error: {str(e)}"
+        return False, f"Connection error: {str(e)}")
 
+        def safe_json_parse(response):
+            try:
+                return response.json()
+            except:
+                return {"detail": f"Server error (Status: {response.status_code})"}
 
-def safe_json_parse(response):
-    try:
-        return response.json()
-    except:
-        return {"detail": f"Server error (Status: {response.status_code})"}
+        def handle_oauth_callback():
+            try:
+                query_params = st.query_params
 
+                access_token = query_params.get('access_token')
+                if access_token:
+                    st.session_state.user_token = access_token
 
-def handle_oauth_callback():
-    try:
-        query_params = st.query_params
+                    user_info = query_params.get('user_info')
+                    if user_info:
+                        try:
+                            import json
+                            st.session_state.user_info = json.loads(user_info)
+                        except:
+                            st.session_state.user_info = {"name": "OAuth User", "email": "user@oauth.com"}
 
-        access_token = query_params.get('access_token')
-        if access_token:
-            st.session_state.user_token = access_token
+                    st.session_state.current_page = 'home'
+                    st.success("Successfully logged in with OAuth!")
+                    st.rerun()
 
-            user_info = query_params.get('user_info')
-            if user_info:
-                try:
-                    import json
-                    st.session_state.user_info = json.loads(user_info)
-                except:
-                    st.session_state.user_info = {"name": "OAuth User", "email": "user@oauth.com"}
+                error = query_params.get('error')
+                if error:
+                    st.error(f"OAuth login failed: {error}")
 
-            st.session_state.current_page = 'home'
-            st.success("Successfully logged in with OAuth!")
-            st.rerun()
+            except Exception as e:
+                st.error(f"Error handling OAuth callback: {str(e)}")
 
-        error = query_params.get('error')
-        if error:
-            st.error(f"OAuth login failed: {error}")
+        def render_oauth_buttons():
+            try:
+                response = requests.get(f"{BACKEND_URL}/auth/status", timeout=10)
+                if response.status_code == 200:
+                    status = safe_json_parse(response)
+                    google_available = status.get('google_oauth', {}).get('available', False)
+                    facebook_available = status.get('facebook_oauth', {}).get('available', False)
+                else:
+                    google_available = False
+                    facebook_available = False
+            except:
+                google_available = False
+                facebook_available = False
 
-    except Exception as e:
-        st.error(f"Error handling OAuth callback: {str(e)}")
-
-
-def render_oauth_buttons():
-    try:
-        response = requests.get(f"{BACKEND_URL}/auth/status", timeout=10)
-        if response.status_code == 200:
-            status = safe_json_parse(response)
-            google_available = status.get('google_oauth', {}).get('available', False)
-            facebook_available = status.get('facebook_oauth', {}).get('available', False)
-        else:
-            google_available = False
-            facebook_available = False
-    except:
-        google_available = False
-        facebook_available = False
-
-    if google_available:
-        google_url = f"{BACKEND_URL}/auth/google"
-        st.markdown(f"""
+            if google_available:
+                google_url = f"{BACKEND_URL}/auth/google"
+                st.markdown(f"""
         <a href="{google_url}" class="html-oauth-google">
             <i class="fab fa-google"></i>{get_text('sign_in_google')}
         </a>
         """, unsafe_allow_html=True)
-    else:
-        st.markdown(f"""
+            else:
+                st.markdown(f"""
         <div class="html-oauth-google" style="background: #ccc; color: #666; cursor: not-allowed;">
             <i class="fab fa-google"></i>{get_text('sign_in_google')}
         </div>
         """, unsafe_allow_html=True)
 
-    if facebook_available:
-        facebook_url = f"{BACKEND_URL}/auth/facebook"
-        st.markdown(f"""
+            if facebook_available:
+                facebook_url = f"{BACKEND_URL}/auth/facebook"
+                st.markdown(f"""
         <a href="{facebook_url}" class="html-oauth-facebook">
             <i class="fab fa-facebook-f"></i>{get_text('sign_in_facebook')}
         </a>
         """, unsafe_allow_html=True)
-    else:
-        st.markdown(f"""
+            else:
+                st.markdown(f"""
         <div class="html-oauth-facebook" style="background: #ccc; color: #666; cursor: not-allowed;">
             <i class="fab fa-facebook-f"></i>{get_text('sign_in_facebook')}
         </div>
         """, unsafe_allow_html=True)
 
-
-def login_user_backend(email, password):
-    try:
-        response = requests.post(
-            f"{BACKEND_URL}/login",
-            json={"email": email, "password": password},
-            timeout=15
-        )
-
-        if response.status_code == 200:
-            data = safe_json_parse(response)
-            st.session_state.user_token = data.get('access_token')
-            st.session_state.user_info = data.get('user_info', {})
-            st.session_state.current_page = 'home'
-            st.success("Login successful!")
-            st.rerun()
-        else:
-            error_data = safe_json_parse(response)
-            st.error(f"Login failed: {error_data.get('detail', 'Unknown error')}")
-
-    except requests.exceptions.RequestException as e:
-        st.error(f"Connection error: {str(e)}")
-    except Exception as e:
-        st.error(f"Login error: {str(e)}")
-
-
-def register_user_backend(user_data):
-    try:
-        response = requests.post(
-            f"{BACKEND_URL}/register",
-            json=user_data,
-            timeout=15
-        )
-
-        if response.status_code == 200:
-            st.success("Registration successful! Please login with your credentials.")
-            st.session_state.current_page = 'login'
-            st.rerun()
-        else:
+        def login_user_backend(email, password):
             try:
-                error_data = response.json()
-                error_message = error_data.get('detail', 'Unknown error')
-            except:
-                error_message = f"Registration failed (Status: {response.status_code})"
+                response = requests.post(
+                    f"{BACKEND_URL}/login",
+                    json={"email": email, "password": password},
+                    timeout=15
+                )
 
-            st.error(f"Registration failed: {error_message}")
+                if response.status_code == 200:
+                    data = safe_json_parse(response)
+                    st.session_state.user_token = data.get('access_token')
+                    st.session_state.user_info = data.get('user_info', {})
+                    st.session_state.current_page = 'home'
+                    st.success("Login successful!")
+                    st.rerun()
+                else:
+                    error_data = safe_json_parse(response)
+                    st.error(f"Login failed: {error_data.get('detail', 'Unknown error')}")
 
-    except requests.exceptions.RequestException as e:
-        st.error(f"Connection error: {str(e)}")
-    except Exception as e:
-        st.error(f"Registration error: {str(e)}")
+            except requests.exceptions.RequestException as e:
+                st.error(f"Connection error: {str(e)}")
+            except Exception as e:
+                st.error(f"Login error: {str(e)}")
 
+        def register_user_backend(user_data):
+            try:
+                response = requests.post(
+                    f"{BACKEND_URL}/register",
+                    json=user_data,
+                    timeout=15
+                )
 
-def render_user_profile():
-    if st.session_state.user_info:
-        user_info = st.session_state.user_info
-        name = user_info.get('name', 'User')
-        email = user_info.get('email', 'user@example.com')
+                if response.status_code == 200:
+                    st.success("Registration successful! Please login with your credentials.")
+                    st.session_state.current_page = 'login'
+                    st.rerun()
+                else:
+                    try:
+                        error_data = response.json()
+                        error_message = error_data.get('detail', 'Unknown error')
+                    except:
+                        error_message = f"Registration failed (Status: {response.status_code})"
 
-        st.markdown(f"""
+                    st.error(f"Registration failed: {error_message}")
+
+            except requests.exceptions.RequestException as e:
+                st.error(f"Connection error: {str(e)}")
+            except Exception as e:
+                st.error(f"Registration error: {str(e)}")
+
+        def render_user_profile():
+            if st.session_state.user_info:
+                user_info = st.session_state.user_info
+                name = user_info.get('name', 'User')
+                email = user_info.get('email', 'user@example.com')
+
+                st.markdown(f"""
         <div class="user-profile">
             <div class="user-avatar">{name[0].upper()}</div>
             <div class="user-name">{name}</div>
@@ -921,148 +927,148 @@ def render_user_profile():
         </div>
         """, unsafe_allow_html=True)
 
-        if st.button(get_text('logout')):
-            st.session_state.user_token = None
-            st.session_state.user_info = None
-            st.session_state.current_page = 'login'
-            st.rerun()
+                if st.button(get_text('logout')):
+                    st.session_state.user_token = None
+                    st.session_state.user_info = None
+                    st.session_state.current_page = 'login'
+                    st.rerun()
 
+        def render_login_page():
+            st.markdown('<div class="html-container">', unsafe_allow_html=True)
 
-def render_login_page():
-    st.markdown('<div class="html-container">', unsafe_allow_html=True)
+            st.markdown(f'<div class="html-title">{get_text("login")}</div>', unsafe_allow_html=True)
 
-    st.markdown(f'<div class="html-title">{get_text("login")}</div>', unsafe_allow_html=True)
+            with st.form(key='login_form'):
+                email = st.text_input("", placeholder="Enter Your Email", key="login_email")
+                password = st.text_input("", type="password", placeholder="Enter Your Password", key="login_password")
 
-    with st.form(key='login_form'):
-        email = st.text_input("", placeholder="Enter Your Email", key="login_email")
-        password = st.text_input("", type="password", placeholder="Enter Your Password", key="login_password")
+                submit_button = st.form_submit_button(get_text('continue'))
 
-        submit_button = st.form_submit_button(get_text('continue'))
+                if submit_button:
+                    if email and password:
+                        login_user_backend(email, password)
+                    else:
+                        st.error("Please fill in all fields")
 
-        if submit_button:
-            if email and password:
-                login_user_backend(email, password)
-            else:
-                st.error("Please fill in all fields")
-
-    st.markdown(f"""
+            st.markdown(f"""
     <div class="html-option">
         {get_text('not_registered')}
         <a href="{FRONTEND_BASE_URL}?page=register" target="_blank">{get_text('create_account')}</a>
     </div>
     """, unsafe_allow_html=True)
 
-    render_oauth_buttons()
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-def render_register_page():
-    st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
-
-    st.markdown(f'<div class="html-title-register">{get_text("register")}</div>', unsafe_allow_html=True)
-
-    with st.form(key='register_form'):
-
-        registration_type = st.selectbox(
-            "Select Registration Type",
-            options=[get_text('individual'), get_text('organization')],
-            key="reg_type_select"
-        )
-
-        if registration_type == get_text('individual'):
-            st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
-            st.markdown(f'<h3>{get_text("register_individual")}</h3>', unsafe_allow_html=True)
-
-            full_name = st.text_input("", placeholder="Full Name", key="reg_full_name")
-            email = st.text_input("", placeholder="Email ID", key="reg_email")
-            phone = st.text_input("", placeholder="Phone Number", key="reg_phone")
-            password = st.text_input("", type="password", placeholder="Password", key="reg_password")
-            confirm_password = st.text_input("", type="password", placeholder="Confirm Password",
-                                             key="reg_confirm_password")
+            render_oauth_buttons()
 
             st.markdown('</div>', unsafe_allow_html=True)
-            user_data_for_backend = {
-                "email": email,
-                "password": password,
-                "user_type": "individual",
-                "full_name": full_name,
-                "phone": phone,
-                "address": ""  # Assuming address is optional or not collected here
-            }
-            is_valid_input = bool(full_name and email and phone and password and confirm_password)
 
-        elif registration_type == get_text('organization'):
-            st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
-            st.markdown(f'<h3>{get_text("register_organization")}</h3>', unsafe_allow_html=True)
+        def render_register_page():
+            st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
 
-            org_name = st.text_input("", placeholder="Organization Name", key="reg_org_name")
-            org_phone = st.text_input("", placeholder="Organization Phone Number", key="reg_org_phone")
-            org_type = st.selectbox("",
-                                    options=["", get_text('ngo'), get_text('startup'), get_text('charity')],
-                                    key="reg_org_type_select")  # Renamed key to avoid conflict
-            org_description = st.text_input("", placeholder=get_text('description'), key="reg_org_description")
-            email = st.text_input("", placeholder="Email ID", key="reg_email_org")  # Separate email for org
-            password = st.text_input("", type="password", placeholder="Password",
-                                     key="reg_password_org")  # Separate password for org
-            confirm_password = st.text_input("", type="password", placeholder="Confirm Password",
-                                             key="reg_confirm_password_org")  # Separate confirm password for org
+            st.markdown(f'<div class="html-title-register">{get_text("register")}</div>', unsafe_allow_html=True)
 
-            st.markdown('</div>', unsafe_allow_html=True)
-            user_data_for_backend = {
-                "email": email,
-                "password": password,
-                "user_type": "organization",
-                "organization_name": org_name,
-                "phone": org_phone,
-                "organization_type": org_type,
-                "description": org_description,
-                "address": ""  # Assuming address is optional or not collected here
-            }
-            is_valid_input = bool(org_name and org_phone and org_type and email and password and confirm_password)
-        else:
-            user_data_for_backend = {}
-            is_valid_input = False  # No type selected, so invalid
+            with st.form(key='register_form'):
 
-        submit_button = st.form_submit_button(get_text('register'))
+                registration_type = st.selectbox(
+                    "Select Registration Type",
+                    options=[get_text('individual'), get_text('organization')],
+                    key="reg_type_select"
+                )
 
-        if submit_button:
-            if not is_valid_input:
-                st.error("Please fill in all required fields for the selected registration type.")
-            elif password != confirm_password:
-                st.error("Passwords do not match")
-            elif len(password) < 6:
-                st.error("Password must be at least 6 characters long")
-            else:
-                register_user_backend(user_data_for_backend)
+                if registration_type == get_text('individual'):
+                    st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
+                    st.markdown(f'<h3>{get_text("register_individual')}</h3>', unsafe_allow_html=True)
 
-    st.markdown(f"""
+            full_name =
+                    st.text_input("", placeholder="Full Name", key="reg_full_name")
+                    email = st.text_input("", placeholder="Email ID", key="reg_email")
+                    phone = st.text_input("", placeholder="Phone Number", key="reg_phone")
+                    password = st.text_input("", type="password", placeholder="Password", key="reg_password")
+                    confirm_password = st.text_input("", type="password", placeholder="Confirm Password",
+                                                     key="reg_confirm_password")
+
+                    st.markdown('</div>', unsafe_allow_html=True)
+                    user_data_for_backend = {
+                        "email": email,
+                        "password": password,
+                        "user_type": "individual",
+                        "full_name": full_name,
+                        "phone": phone,
+                        "address": ""
+                    }
+                    is_valid_input = bool(full_name and email and phone and password and confirm_password)
+
+                    elif registration_type == get_text('organization'):
+                    st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
+                    st.markdown(f'<h3>{get_text("register_organization')}</h3>', unsafe_allow_html=True)
+
+            org_name =
+                    st.text_input("", placeholder="Organization Name", key="reg_org_name")
+                    org_phone = st.text_input("", placeholder="Organization Phone Number", key="reg_org_phone")
+                    org_type = st.selectbox("",
+                                            options=["", get_text('ngo'), get_text('startup'), get_text('charity')],
+                                            key="reg_org_type_select")
+                    org_description = st.text_input("", placeholder=get_text('description'), key="reg_org_description")
+                    email = st.text_input("", placeholder="Email ID", key="reg_email_org")
+                    password = st.text_input("", type="password", placeholder="Password", key="reg_password_org")
+                    confirm_password = st.text_input("", type="password", placeholder="Confirm Password",
+                                                     key="reg_confirm_password_org")
+
+                    st.markdown('</div>', unsafe_allow_html=True)
+                    user_data_for_backend = {
+                        "email": email,
+                        "password": password,
+                        "user_type": "organization",
+                        "organization_name": org_name,
+                        "phone": org_phone,
+                        "organization_type": org_type,
+                        "description": org_description,
+                        "address": ""
+                    }
+                    is_valid_input = bool(
+                        org_name and org_phone and org_type and email and password and confirm_password)
+                    else:
+                    user_data_for_backend = {}
+                    is_valid_input = False
+
+                    submit_button = st.form_submit_button(get_text('register'))
+
+                    if submit_button:
+                        if
+                    not is_valid_input:
+                    st.error("Please fill in all required fields for the selected registration type.")
+                    elif password != confirm_password:
+                    st.error("Passwords do not match")
+                    elif len(password) < 6:
+                    st.error("Password must be at least 6 characters long")
+                    else:
+                    register_user_backend(user_data_for_backend)
+
+                    st.markdown(f"""
     <div class="html-option">
         {get_text('already_have_account')}
         <a href="{FRONTEND_BASE_URL}?page=login" target="_blank">{get_text('sign_in_here')}</a>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
+        def render_home_page():
+            st.markdown(f'<h1 class="app-title">{get_text("welcome")}</h1>', unsafe_allow_html=True)
+            st.markdown(f'<p class="app-subtitle">{get_text("platform_description")}</p>', unsafe_allow_html=True)
 
-def render_home_page():
-    st.markdown(f'<h1 class="app-title">{get_text("welcome")}</h1>', unsafe_allow_html=True)
-    st.markdown(f'<p class="app-subtitle">{get_text("platform_description")}</p>', unsafe_allow_html=True)
+            st.markdown(f"## {get_text('trending_campaigns')}")
 
-    st.markdown(f"## {get_text('trending_campaigns')}")
+            campaigns = [
+                {"title": "Clean Water Initiative", "description": "Providing clean water access to rural communities",
+                 "progress": 75, "raised": "$15,000", "goal": "$20,000"},
+                {"title": "Education for All", "description": "Building schools in underserved areas", "progress": 60,
+                 "raised": "$30,000", "goal": "$50,000"},
+                {"title": "Green Energy Project", "description": "Solar panel installation for villages",
+                 "progress": 40, "raised": "$8,000", "goal": "$20,000"}
+            ]
 
-    campaigns = [
-        {"title": "Clean Water Initiative", "description": "Providing clean water access to rural communities",
-         "progress": 75, "raised": "$15,000", "goal": "$20,000"},
-        {"title": "Education for All", "description": "Building schools in underserved areas", "progress": 60,
-         "raised": "$30,000", "goal": "$50,000"},
-        {"title": "Green Energy Project", "description": "Solar panel installation for villages", "progress": 40,
-         "raised": "$8,000", "goal": "$20,000"}
-    ]
-
-    for campaign in campaigns:
-        st.markdown(f"""
+            for campaign in campaigns:
+                st.markdown(f"""
         <div class="campaign-card">
             <div class="campaign-image">{campaign['title']}</div>
             <div class="campaign-content">
@@ -1079,24 +1085,23 @@ def render_home_page():
         </div>
         """, unsafe_allow_html=True)
 
+        def render_explore_page():
+            st.markdown(f'<h1 class="app-title">{get_text("explore")}</h1>', unsafe_allow_html=True)
+            st.markdown(f"## {get_text('categories')}")
 
-def render_explore_page():
-    st.markdown(f'<h1 class="app-title">{get_text("explore")}</h1>', unsafe_allow_html=True)
-    st.markdown(f"## {get_text('categories')}")
+            categories = [
+                {"name": get_text('technology'), "icon": "fas fa-laptop-code"},
+                {"name": get_text('health'), "icon": "fas fa-heartbeat"},
+                {"name": get_text('education'), "icon": "fas fa-graduation-cap"},
+                {"name": get_text('environment'), "icon": "fas fa-leaf"},
+                {"name": get_text('arts'), "icon": "fas fa-palette"},
+                {"name": get_text('community'), "icon": "fas fa-users"}
+            ]
 
-    categories = [
-        {"name": get_text('technology'), "icon": "fas fa-laptop-code"},
-        {"name": get_text('health'), "icon": "fas fa-heartbeat"},
-        {"name": get_text('education'), "icon": "fas fa-graduation-cap"},
-        {"name": get_text('environment'), "icon": "fas fa-leaf"},
-        {"name": get_text('arts'), "icon": "fas fa-palette"},
-        {"name": get_text('community'), "icon": "fas fa-users"}
-    ]
-
-    cols = st.columns(2)
-    for i, category in enumerate(categories):
-        with cols[i % 2]:
-            st.markdown(f"""
+            cols = st.columns(2)
+            for i, category in enumerate(categories):
+                with cols[i % 2]:
+                    st.markdown(f"""
             <div class="category-card">
                 <div class="category-icon">
                     <i class="{category['icon']}"></i>
@@ -1105,25 +1110,24 @@ def render_explore_page():
             </div>
             """, unsafe_allow_html=True)
 
+        def render_search_page():
+            st.markdown(f'<h1 class="app-title">{get_text("search_campaigns")}</h1>', unsafe_allow_html=True)
 
-def render_search_page():
-    st.markdown(f'<h1 class="app-title">{get_text("search_campaigns")}</h1>', unsafe_allow_html=True)
+            st.markdown('<div class="search-container">', unsafe_allow_html=True)
 
-    st.markdown('<div class="search-container">', unsafe_allow_html=True)
+            search_query = st.text_input(
+                "Search Campaigns",
+                placeholder=get_text('search_placeholder'),
+                key="search_input"
+            )
 
-    search_query = st.text_input(
-        "Search Campaigns",
-        placeholder=get_text('search_placeholder'),
-        key="search_input"
-    )
+            if st.button("🔍 Search", key="search_button"):
+                if search_query:
+                    st.success(f"Searching for: {search_query}")
+                else:
+                    st.warning("Please enter a search term")
 
-    if st.button("🔍 Search", key="search_button"):
-        if search_query:
-            st.success(f"Searching for: {search_query}")
-        else:
-            st.warning("Please enter a search term")
-
-    st.markdown(f"""
+            st.markdown(f"""
     <div class="search-tips">
         <h4><i class="fas fa-lightbulb"></i> {get_text('search_tips')}</h4>
         <ul>
@@ -1134,118 +1138,112 @@ def render_search_page():
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-def render_sidebar():
-    with st.sidebar:
-        st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
-        st.markdown('<div class="sidebar-title">Select Language:</div>', unsafe_allow_html=True)
-        language = st.selectbox(
-            "Choose Language",
-            options=list(TRANSLATIONS.keys()),
-            index=list(TRANSLATIONS.keys()).index(st.session_state.language),
-            key="language_selector"
-        )
-
-        if language != st.session_state.language:
-            st.session_state.language = language
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
-        st.markdown('<div class="sidebar-title">Backend Status:</div>', unsafe_allow_html=True)
-
-        is_connected, status_message = check_backend_connection()
-        if is_connected:
-            st.markdown(f'<div class="status-connected">✅ {status_message}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'<div class="status-disconnected">❌ {status_message}</div>', unsafe_allow_html=True)
-
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        if st.session_state.user_token:
-            render_user_profile()
-
-            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
-            st.markdown('<div class="sidebar-title">Navigation:</div>', unsafe_allow_html=True)
-
-            if st.session_state.current_page != 'home':
-                if st.button(get_text("home"), key="nav_home"):
-                    st.session_state.current_page = 'home'
-                    st.rerun()
-
-            if st.session_state.current_page != 'explore':
-                if st.button(get_text("explore"), key="nav_explore"):
-                    st.session_state.current_page = 'explore'
-                    st.rerun()
-
-            if st.session_state.current_page != 'search':
-                if st.button(get_text("search"), key="nav_search"):
-                    st.session_state.current_page = 'search'
-                    st.rerun()
-
             st.markdown('</div>', unsafe_allow_html=True)
 
-        else:
-            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
-            st.markdown('<div class="sidebar-title">Account:</div>', unsafe_allow_html=True)
+        def render_sidebar():
+            with st.sidebar:
+                st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+                st.markdown('<div class="sidebar-title">Select Language:</div>', unsafe_allow_html=True)
+                language = st.selectbox(
+                    "Choose Language",
+                    options=list(TRANSLATIONS.keys()),
+                    index=list(TRANSLATIONS.keys()).index(st.session_state.language),
+                    key="language_selector"
+                )
 
-            # Sidebar links now trigger internal Streamlit navigation directly
-            if st.session_state.current_page != 'login':
-                if st.button(get_text('sign_in_here'), key="sidebar_login_btn"):  # Changed key to avoid conflict
-                    st.session_state.current_page = 'login'
+                if language != st.session_state.language:
+                    st.session_state.language = language
                     st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
 
-            if st.session_state.current_page != 'register':
-                if st.button(get_text('create_account'), key="sidebar_register_btn"):  # Changed key to avoid conflict
-                    st.session_state.current_page = 'register'
-                    st.rerun()
+                st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+                st.markdown('<div class="sidebar-title">Backend Status:</div>', unsafe_allow_html=True)
 
-            st.markdown('</div>', unsafe_allow_html=True)
+                is_connected, status_message = check_backend_connection()
+                if is_connected:
+                    st.markdown(f'<div class="status-connected">✅ {status_message}</div>', unsafe_allow_html=True)
+                else:
+                    st.markdown(f'<div class="status-disconnected">❌ {status_message}</div>', unsafe_allow_html=True)
 
+                st.markdown('</div>', unsafe_allow_html=True)
 
-def main():
-    st.set_page_config(
-        page_title="HAVEN - Crowdfunding Platform",
-        page_icon="�",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
+                if st.session_state.user_token:
+                    render_user_profile()
 
-    apply_custom_css()
+                    st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+                    st.markdown('<div class="sidebar-title">Navigation:</div>', unsafe_allow_html=True)
 
-    handle_oauth_callback()
+                    if st.session_state.current_page != 'home':
+                        if st.button(get_text("home"), key="nav_home"):
+                            st.session_state.current_page = 'home'
+                            st.rerun()
 
-    # Handle 'page' query parameter for direct URL navigation (new tabs)
-    query_params = st.query_params
-    if 'page' in query_params:
-        requested_page = query_params['page']
-        if requested_page in ['login', 'register', 'home', 'explore', 'search']:
-            st.session_state.current_page = requested_page
-        # After setting, clear the query parameter from the URL to prevent re-triggering
-        # This is a common pattern, but st.query_params is read-only for setting URL state.
-        # A true URL clear would involve a redirect, which can be complex in Streamlit.
-        # For now, we rely on session_state to manage the current view.
+                    if st.session_state.current_page != 'explore':
+                        if st.button(get_text("explore"), key="nav_explore"):
+                            st.session_state.current_page = 'explore'
+                            st.rerun()
 
-    render_sidebar()
+                    if st.session_state.current_page != 'search':
+                        if st.button(get_text("search"), key="nav_search"):
+                            st.session_state.current_page = 'search'
+                            st.rerun()
 
-    if st.session_state.current_page == 'login':
-        render_login_page()
-    elif st.session_state.current_page == 'register':
-        render_register_page()
-    elif st.session_state.current_page == 'home':
-        render_home_page()
-    elif st.session_state.current_page == 'explore':
-        render_explore_page()
-    elif st.session_state.current_page == 'search':
-        render_search_page()
-    else:
-        st.session_state.current_page = 'login'  # Default to login if current_page is not set or invalid
-        render_login_page()
+                    st.markdown('</div>', unsafe_allow_html=True)
 
+                else:
+                    st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+                    st.markdown('<div class="sidebar-title">Account:</div>', unsafe_allow_html=True)
 
-if __name__ == "__main__":
-    main()
+                    if st.session_state.current_page != 'login':
+                        if st.button(get_text('sign_in_here'), key="sidebar_login_btn"):
+                            st.session_state.current_page = 'login'
+                            st.rerun()
+
+                    if st.session_state.current_page != 'register':
+                        if st.button(get_text('create_account'), key="sidebar_register_btn"):
+                            st.session_state.current_page = 'register'
+                            st.rerun()
+
+                    st.markdown('</div>', unsafe_allow_html=True)
+
+        def main():
+            st.set_page_config(
+                page_title="HAVEN - Crowdfunding Platform",
+                page_icon="🏠",
+                layout="wide",
+                initial_sidebar_state="expanded"
+            )
+
+            apply_custom_css()
+
+            # Add the welcome message at the very top
+            st.markdown('<div class="welcome-banner">Welcome to HAVEN Crowdfunding!</div>', unsafe_allow_html=True)
+
+            handle_oauth_callback()
+
+            query_params = st.query_params
+            if 'page' in query_params:
+                requested_page = query_params['page']
+                if requested_page in ['login', 'register', 'home', 'explore', 'search']:
+                    st.session_state.current_page = requested_page
+
+            render_sidebar()
+
+            if st.session_state.current_page == 'login':
+                render_login_page()
+            elif st.session_state.current_page == 'register':
+                render_register_page()
+            elif st.session_state.current_page == 'home':
+                render_home_page()
+            elif st.session_state.current_page == 'explore':
+                render_explore_page()
+            elif st.session_state.current_page == 'search':
+                render_search_page()
+            else:
+                st.session_state.current_page = 'login'
+                render_login_page()
+
+        if __name__ == "__main__":
+            main()
 
 
