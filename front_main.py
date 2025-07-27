@@ -38,8 +38,8 @@ TRANSLATIONS = {
         'search': 'Search',
         'profile': 'Profile',
         'logout': 'Logout',
-        'welcome': 'HAVEN', # Changed to HAVEN
-        'platform_description': 'Help not just some people, but Help Humanity.', # Changed tagline
+        'welcome_banner_text': 'HAVEN', # New key for the main banner title
+        'welcome_banner_tagline': 'Help not just some people, but Help Humanity.', # New key for the banner tagline
         'trending_campaigns': 'Trending Campaigns',
         'categories': 'Categories',
         'technology': 'Technology',
@@ -103,8 +103,8 @@ TRANSLATIONS = {
         'search': 'खोजें',
         'profile': 'प्रोफाइल',
         'logout': 'लॉगआउट',
-        'welcome': 'हेवन', # Changed to HAVEN
-        'platform_description': 'केवल कुछ लोगों की नहीं, बल्कि मानवता की मदद करें।', # Changed tagline
+        'welcome_banner_text': 'हेवन', # New key for the main banner title
+        'welcome_banner_tagline': 'केवल कुछ लोगों की नहीं, बल्कि मानवता की मदद करें।', # New key for the banner tagline
         'trending_campaigns': 'ट्रेंडिंग कैंपेन',
         'categories': 'श्रेणियां',
         'technology': 'तकनीक',
@@ -169,8 +169,8 @@ TRANSLATIONS = {
         'search': 'தேடவும்',
         'profile': 'சுயவிவரம்',
         'logout': 'வெளியேறவும்',
-        'welcome': 'ஹேவன்', # Changed to HAVEN
-        'platform_description': 'சிலருக்கு மட்டுமல்ல, மனிதகுலத்திற்கு உதவுங்கள்.', # Changed tagline
+        'welcome_banner_text': 'ஹேவன்', # New key for the main banner title
+        'welcome_banner_tagline': 'சிலருக்கு மட்டுமல்ல, மனிதகுலத்திற்கு உதவுங்கள்.', # New key for the banner tagline
         'trending_campaigns': 'டிரெண்டிங் பிரச்சாரங்கள்',
         'categories': 'வகைகள்',
         'technology': 'தொழில்நுட்பம்',
@@ -235,8 +235,8 @@ TRANSLATIONS = {
         'search': 'వెతకండి',
         'profile': 'ప్రొఫైల్',
         'logout': 'లాగ్అవుట్',
-        'welcome': 'హేవెన్', # Changed to HAVEN
-        'platform_description': 'కేవలం కొందరికి కాదు, మానవత్వానికి సహాయం చేయండి.', # Changed tagline
+        'welcome_banner_text': 'హేవెన్', # New key for the main banner title
+        'welcome_banner_tagline': 'కేవలం కొందరికి కాదు, మానవత్వానికి సహాయం చేయండి.', # New key for the banner tagline
         'trending_campaigns': 'ట్రెండింగ్ క్యాంపెయిన్‌లు',
         'categories': 'వర్గాలు',
         'technology': 'సాంకేతికత',
@@ -399,22 +399,22 @@ def apply_custom_css():
     .stTextInput > div > div > input,
     .stSelectbox > div > div > select,
     .stTextArea > div > div > textarea {
-        background: transparent !important;
-        border: none !important;
-        border-bottom: 2px solid #ccc !important;
-        border-radius: 0 !important;
-        padding: 5px !important;
+        background: #f8f8f8 !important; /* Added light background color */
+        border: 1px solid #ddd !important; /* Added full border */
+        border-radius: 5px !important; /* Rounded corners for input fields */
+        padding: 10px !important; /* Increased padding */
         font-size: 16px !important;
-        color: #333 !important; /* Slightly darker input text for contrast */
+        color: #333 !important;
         font-family: 'Poppins', sans-serif !important;
         height: 45px !important;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.06); /* Subtle inner shadow */
     }
 
     .stTextInput > div > div > input:focus,
     .stSelectbox > div > div > select:focus,
     .stTextArea > div > div > textarea:focus {
-        border-bottom: 2px solid #4CAF50 !important;
-        box-shadow: none !important;
+        border-color: #4CAF50 !important; /* Highlight border on focus */
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important; /* Subtle focus ring */
     }
 
     .stTextInput > div > div > input::placeholder {
@@ -824,17 +824,30 @@ def apply_custom_css():
         line-height: 1.5;
     }
 
-    .welcome-banner {
+    .welcome-banner-main-title { /* New class for the main "HAVEN" title */
         background-color: #e6ffe6; /* Light green background */
-        padding: 15px 20px;
-        margin-bottom: 20px;
-        border-radius: 8px;
+        padding: 15px 20px 5px 20px; /* Adjusted padding */
+        border-radius: 8px 8px 0 0; /* Rounded top corners */
         text-align: center;
-        font-size: 24px;
-        font-weight: 600;
+        font-size: 30px;
+        font-weight: 700;
         color: #2d5a2d; /* Dark green text for contrast */
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        margin-bottom: 0; /* Remove bottom margin to connect with tagline */
     }
+
+    .welcome-banner-tagline { /* New class for the tagline */
+        background-color: #e6ffe6; /* Same light green background */
+        padding: 0 20px 15px 20px; /* Adjusted padding */
+        border-radius: 0 0 8px 8px; /* Rounded bottom corners */
+        text-align: center;
+        font-family: 'Great Vibes', cursive;
+        font-size: 1.8rem;
+        color: #333;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        margin-top: 0; /* Remove top margin to connect with main title */
+    }
+
 
     /* Styles for the Create Campaign button (plus sign) */
     .create-campaign-button {
@@ -1417,9 +1430,7 @@ def render_create_campaign_page():
 
 
 def render_home_page():
-    st.markdown(f'<h1 class="app-title">{get_text("welcome")}</h1>', unsafe_allow_html=True)
-    st.markdown(f'<p class="app-subtitle">{get_text("platform_description")}</p>', unsafe_allow_html=True)
-
+    st.markdown(f'<h1 class="app-title">{get_text("explore")}</h1>', unsafe_allow_html=True) # Changed to explore
     st.markdown(f"## {get_text('trending_campaigns')}")
 
     # Fetch campaigns from backend
@@ -1590,7 +1601,10 @@ def main():
 
     apply_custom_css()
 
-    st.markdown('<div class="welcome-banner">Welcome to HAVEN Crowdfunding!</div>', unsafe_allow_html=True)
+    # Updated banner rendering with new classes for better control
+    st.markdown(f'<div class="welcome-banner-main-title">{get_text("welcome_banner_text")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="welcome-banner-tagline">{get_text("welcome_banner_tagline")}</div>', unsafe_allow_html=True)
+
 
     handle_oauth_callback()
 
