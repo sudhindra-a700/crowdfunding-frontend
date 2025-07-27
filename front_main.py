@@ -1021,8 +1021,8 @@ def check_backend_connection():
                 )
 
                 if registration_type == get_text('individual'):
-                    st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
-                    st.markdown(f'<h3>{get_text("register_individual')}</h3>', unsafe_allow_html=True)
+                    st.markdown(f"""<div class="html-form-box"><h3>{get_text("register_individual")}</h3>""",
+                                unsafe_allow_html=True)
 
             full_name =
                     st.text_input("", placeholder="Full Name", key="reg_full_name")
