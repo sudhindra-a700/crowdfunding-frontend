@@ -1024,8 +1024,7 @@ def check_backend_connection():
                     st.markdown(f"""<div class="html-form-box"><h3>{get_text("register_individual")}</h3>""",
                                 unsafe_allow_html=True)
 
-            full_name =
-                    st.text_input("", placeholder="Full Name", key="reg_full_name")
+                    full_name =st.text_input("", placeholder="Full Name", key="reg_full_name")
                     email = st.text_input("", placeholder="Email ID", key="reg_email")
                     phone = st.text_input("", placeholder="Phone Number", key="reg_phone")
                     password = st.text_input("", type="password", placeholder="Password", key="reg_password")
@@ -1043,12 +1042,10 @@ def check_backend_connection():
                     }
                     is_valid_input = bool(full_name and email and phone and password and confirm_password)
 
-                    elif registration_type == get_text('organization'):
-                    st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
-                    st.markdown(f'<h3>{get_text("register_organization')}</h3>', unsafe_allow_html=True)
+                elif registration_type == get_text('organization'):
+                    st.markdown(f"""<div class="html-form-box"><h3>{get_text("register_organization")}</h3>""", unsafe_allow_html=True)
 
-            org_name =
-                    st.text_input("", placeholder="Organization Name", key="reg_org_name")
+                    org_name =st.text_input("", placeholder="Organization Name", key="reg_org_name")
                     org_phone = st.text_input("", placeholder="Organization Phone Number", key="reg_org_phone")
                     org_type = st.selectbox("",
                                             options=["", get_text('ngo'), get_text('startup'), get_text('charity')],
