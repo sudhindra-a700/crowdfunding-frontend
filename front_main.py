@@ -8,6 +8,7 @@ import re
 from urllib.parse import urlencode, parse_qs, urlparse
 
 BACKEND_URL = "https://haven-fastapi-backend.onrender.com"
+FRONTEND_BASE_URL = "https://haven-streamlit-frontend.onrender.com"  # <<< IMPORTANT: REPLACE THIS WITH YOUR ACTUAL DEPLOYED STREAMLIT FRONTEND URL
 
 TRANSLATIONS = {
     'English': {
@@ -58,7 +59,7 @@ TRANSLATIONS = {
         'organization_type': 'Organization Type',
         'ngo': 'NGO',
         'startup': 'Startup',
-        'charity': 'Charity',
+        'charity': 'Chariy',
         'description': 'Brief Description (max 100 chars)'
     },
     'Hindi': {
@@ -947,7 +948,7 @@ def render_login_page():
     st.markdown(f"""
     <div class="html-option">
         {get_text('not_registered')}
-        <a onclick="document.querySelector('[data-testid=\\"stButton-primary\\"]').click()">{get_text('create_account')}</a>
+        <a href="{FRONTEND_BASE_URL}?page=register" target="_blank">{get_text('create_account')}</a>
     </div>
     """, unsafe_allow_html=True)
 
@@ -962,75 +963,83 @@ def render_register_page():
     st.markdown(f'<div class="html-title-register">{get_text("register")}</div>', unsafe_allow_html=True)
 
     with st.form(key='register_form'):
-        st.markdown('<div class="html-form-wrapper">', unsafe_allow_html=True)
 
-        st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
-        st.markdown(f'<h3>{get_text("register_individual")}</h3>', unsafe_allow_html=True)
+        registration_type = st.selectbox(
+            "Select Registration Type",
+            options=[get_text('individual'), get_text('organization')],
+            key="reg_type_select"
+        )
 
-        full_name = st.text_input("", placeholder="Full Name", key="reg_full_name")
-        email = st.text_input("", placeholder="Email ID", key="reg_email")
-        phone = st.text_input("", placeholder="Phone Number", key="reg_phone")
-        password = st.text_input("", type="password", placeholder="Password", key="reg_password")
-        confirm_password = st.text_input("", type="password", placeholder="Confirm Password",
-                                         key="reg_confirm_password")
+        if registration_type == get_text('individual'):
+            st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
+            st.markdown(f'<h3>{get_text("register_individual")}</h3>', unsafe_allow_html=True)
 
-        st.markdown('</div>', unsafe_allow_html=True)
+            full_name = st.text_input("", placeholder="Full Name", key="reg_full_name")
+            email = st.text_input("", placeholder="Email ID", key="reg_email")
+            phone = st.text_input("", placeholder="Phone Number", key="reg_phone")
+            password = st.text_input("", type="password", placeholder="Password", key="reg_password")
+            confirm_password = st.text_input("", type="password", placeholder="Confirm Password",
+                                             key="reg_confirm_password")
 
-        st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
-        st.markdown(f'<h3>{get_text("register_organization")}</h3>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            user_data_for_backend = {
+                "email": email,
+                "password": password,
+                "user_type": "individual",
+                "full_name": full_name,
+                "phone": phone,
+                "address": ""  # Assuming address is optional or not collected here
+            }
+            is_valid_input = bool(full_name and email and phone and password and confirm_password)
 
-        org_name = st.text_input("", placeholder="Organization Name", key="reg_org_name")
-        org_phone = st.text_input("", placeholder="Organization Phone Number", key="reg_org_phone")
-        org_type = st.selectbox("",
-                                options=["", get_text('ngo'), get_text('startup'), get_text('charity')],
-                                key="reg_org_type")
-        org_description = st.text_input("", placeholder=get_text('description'), key="reg_org_description")
+        elif registration_type == get_text('organization'):
+            st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
+            st.markdown(f'<h3>{get_text("register_organization")}</h3>', unsafe_allow_html=True)
 
-        st.markdown('</div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+            org_name = st.text_input("", placeholder="Organization Name", key="reg_org_name")
+            org_phone = st.text_input("", placeholder="Organization Phone Number", key="reg_org_phone")
+            org_type = st.selectbox("",
+                                    options=["", get_text('ngo'), get_text('startup'), get_text('charity')],
+                                    key="reg_org_type_select")  # Renamed key to avoid conflict
+            org_description = st.text_input("", placeholder=get_text('description'), key="reg_org_description")
+            email = st.text_input("", placeholder="Email ID", key="reg_email_org")  # Separate email for org
+            password = st.text_input("", type="password", placeholder="Password",
+                                     key="reg_password_org")  # Separate password for org
+            confirm_password = st.text_input("", type="password", placeholder="Confirm Password",
+                                             key="reg_confirm_password_org")  # Separate confirm password for org
+
+            st.markdown('</div>', unsafe_allow_html=True)
+            user_data_for_backend = {
+                "email": email,
+                "password": password,
+                "user_type": "organization",
+                "organization_name": org_name,
+                "phone": org_phone,
+                "organization_type": org_type,
+                "description": org_description,
+                "address": ""  # Assuming address is optional or not collected here
+            }
+            is_valid_input = bool(org_name and org_phone and org_type and email and password and confirm_password)
+        else:
+            user_data_for_backend = {}
+            is_valid_input = False  # No type selected, so invalid
 
         submit_button = st.form_submit_button(get_text('register'))
 
         if submit_button:
-            if full_name and email and phone and password:
-                if password != confirm_password:
-                    st.error("Passwords do not match")
-                elif len(password) < 6:
-                    st.error("Password must be at least 6 characters long")
-                else:
-                    user_data = {
-                        "email": email,
-                        "password": password,
-                        "user_type": "individual",
-                        "full_name": full_name,
-                        "phone": phone,
-                        "address": ""
-                    }
-                    register_user_backend(user_data)
-            elif org_name and org_phone and org_type and email and password:
-                if password != confirm_password:
-                    st.error("Passwords do not match")
-                elif len(password) < 6:
-                    st.error("Password must be at least 6 characters long")
-                else:
-                    user_data = {
-                        "email": email,
-                        "password": password,
-                        "user_type": "organization",
-                        "organization_name": org_name,
-                        "phone": org_phone,
-                        "organization_type": org_type,
-                        "description": org_description,
-                        "address": ""
-                    }
-                    register_user_backend(user_data)
+            if not is_valid_input:
+                st.error("Please fill in all required fields for the selected registration type.")
+            elif password != confirm_password:
+                st.error("Passwords do not match")
+            elif len(password) < 6:
+                st.error("Password must be at least 6 characters long")
             else:
-                st.error("Please fill in all required fields for either Individual or Organization registration")
+                register_user_backend(user_data_for_backend)
 
     st.markdown(f"""
     <div class="html-option">
         {get_text('already_have_account')}
-        <a onclick="document.querySelector('[data-testid=\\"stButton-secondary\\"]').click()">{get_text('sign_in_here')}</a>
+        <a href="{FRONTEND_BASE_URL}?page=login" target="_blank">{get_text('sign_in_here')}</a>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1182,25 +1191,14 @@ def render_sidebar():
             st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
             st.markdown('<div class="sidebar-title">Account:</div>', unsafe_allow_html=True)
 
+            # Sidebar links now trigger internal Streamlit navigation directly
             if st.session_state.current_page != 'login':
-                st.markdown(f"""
-                <div class="sidebar-link" onclick="document.querySelector('[data-testid=\\"stButton-secondary\\"]').click()">
-                    {get_text('sign_in_here')}
-                </div>
-                """, unsafe_allow_html=True)
-
-                if st.button("Go to Login", key="sidebar_login", help="Internal navigation to Login"):
+                if st.button(get_text('sign_in_here'), key="sidebar_login_btn"):  # Changed key to avoid conflict
                     st.session_state.current_page = 'login'
                     st.rerun()
 
             if st.session_state.current_page != 'register':
-                st.markdown(f"""
-                <div class="sidebar-link" onclick="document.querySelector('[data-testid=\\"stButton-primary\\"]').click()">
-                    {get_text('create_account')}
-                </div>
-                """, unsafe_allow_html=True)
-
-                if st.button("Go to Register", key="sidebar_register", help="Internal navigation to Register"):
+                if st.button(get_text('create_account'), key="sidebar_register_btn"):  # Changed key to avoid conflict
                     st.session_state.current_page = 'register'
                     st.rerun()
 
@@ -1210,7 +1208,7 @@ def render_sidebar():
 def main():
     st.set_page_config(
         page_title="HAVEN - Crowdfunding Platform",
-        page_icon="🏠",
+        page_icon="�",
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -1219,14 +1217,16 @@ def main():
 
     handle_oauth_callback()
 
-    if st.session_state.current_page == 'login':
-        if st.button("Navigate to Register", key="nav_to_register", help="Internal navigation to Register"):
-            st.session_state.current_page = 'register'
-            st.rerun()
-    elif st.session_state.current_page == 'register':
-        if st.button("Navigate to Login", key="nav_to_login", help="Internal navigation to Login"):
-            st.session_state.current_page = 'login'
-            st.rerun()
+    # Handle 'page' query parameter for direct URL navigation (new tabs)
+    query_params = st.query_params
+    if 'page' in query_params:
+        requested_page = query_params['page']
+        if requested_page in ['login', 'register', 'home', 'explore', 'search']:
+            st.session_state.current_page = requested_page
+        # After setting, clear the query parameter from the URL to prevent re-triggering
+        # This is a common pattern, but st.query_params is read-only for setting URL state.
+        # A true URL clear would involve a redirect, which can be complex in Streamlit.
+        # For now, we rely on session_state to manage the current view.
 
     render_sidebar()
 
@@ -1241,9 +1241,11 @@ def main():
     elif st.session_state.current_page == 'search':
         render_search_page()
     else:
+        st.session_state.current_page = 'login'  # Default to login if current_page is not set or invalid
         render_login_page()
 
 
 if __name__ == "__main__":
     main()
+
 
