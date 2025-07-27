@@ -38,8 +38,8 @@ TRANSLATIONS = {
         'search': 'Search',
         'profile': 'Profile',
         'logout': 'Logout',
-        'welcome': 'Welcome to HAVEN',
-        'platform_description': 'Your trusted crowdfunding platform for meaningful projects',
+        'welcome': 'HAVEN',
+        'platform_description': 'Help not just some people, but Help Humanity.',
         'trending_campaigns': 'Trending Campaigns',
         'categories': 'Categories',
         'technology': 'Technology',
@@ -103,8 +103,8 @@ TRANSLATIONS = {
         'search': 'खोजें',
         'profile': 'प्रोफाइल',
         'logout': 'लॉगआउट',
-        'welcome': 'हेवन में आपका स्वागत है',
-        'platform_description': 'सार्थक परियोजनाओं के लिए आपका विश्वसनीय क्राउडफंडिंग प्लेटफॉर्म',
+        'welcome': 'हेवन',
+        'platform_description': 'केवल कुछ लोगों की नहीं, बल्कि मानवता की मदद करें।',
         'trending_campaigns': 'ट्रेंडिंग कैंपेन',
         'categories': 'श्रेणियां',
         'technology': 'तकनीक',
@@ -169,8 +169,8 @@ TRANSLATIONS = {
         'search': 'தேடவும்',
         'profile': 'சுயவிவரம்',
         'logout': 'வெளியேறவும்',
-        'welcome': 'ஹேவனுக்கு வரவேற்கிறோம்',
-        'platform_description': 'அர்த்தமுள்ள திட்டங்களுக்கான உங்கள் நம்பகமான க்ரவுட்ஃபண்டிங் தளம்',
+        'welcome': 'ஹேவன்',
+        'platform_description': 'சிலருக்கு மட்டுமல்ல, மனிதகுலத்திற்கு உதவுங்கள்.',
         'trending_campaigns': 'டிரெண்டிங் பிரச்சாரங்கள்',
         'categories': 'வகைகள்',
         'technology': 'தொழில்நுட்பம்',
@@ -235,8 +235,8 @@ TRANSLATIONS = {
         'search': 'వెతకండి',
         'profile': 'ప్రొఫైల్',
         'logout': 'లాగ్అవుట్',
-        'welcome': 'హేవెన్‌కు స్వాగతం',
-        'platform_description': 'అర్థవంతమైన ప్రాజెక్టుల కోసం మీ విశ్వసనీయ క్రౌడ్‌ఫండింగ్ ప్లాట్‌ఫారమ్',
+        'welcome': 'హేవెన్',
+        'platform_description': 'కేవలం కొందరికి కాదు, మానవత్వానికి సహాయం చేయండి.',
         'trending_campaigns': 'ట్రెండింగ్ క్యాంపెయిన్‌లు',
         'categories': 'వర్గాలు',
         'technology': 'సాంకేతికత',
@@ -301,7 +301,7 @@ def apply_custom_css():
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
     @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
-
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
     .stApp {
         background-color: #f0f2e6 !important;
         font-family: 'Poppins', sans-serif;
@@ -698,6 +698,8 @@ def apply_custom_css():
         font-size: 1.2rem;
         margin-bottom: 2rem;
         font-weight: 400;
+        font-family: 'Great Vibes', cursive; /* Applied Great Vibes font */
+        font-size: 1.8rem;
     }
 
     .category-card {
