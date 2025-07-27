@@ -8,7 +8,7 @@ import re
 from urllib.parse import urlencode, parse_qs, urlparse
 
 BACKEND_URL = "https://haven-fastapi-backend.onrender.com"
-FRONTEND_BASE_URL = "https://your-streamlit-frontend-url.onrender.com"  # <<< IMPORTANT: REPLACE THIS WITH YOUR ACTUAL DEPLOYED STREAMLIT FRONTEND URL
+FRONTEND_BASE_URL = "https://haven-streamlit-frontend.onrender.com"  # <<< IMPORTANT: REPLACE THIS WITH YOUR ACTUAL DEPLOYED STREAMLIT FRONTEND URL
 
 TRANSLATIONS = {
     'English': {
