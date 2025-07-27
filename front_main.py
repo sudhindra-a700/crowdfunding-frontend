@@ -207,7 +207,7 @@ TRANSLATIONS = {
         'submit_campaign': 'பிரச்சாரத்தை சமர்ப்பி',
         'campaign_creation_success': 'பிரச்சாரம் வெற்றிகரமாக உருவாக்கப்பட்டது!',
         'campaign_creation_failed': 'பிரச்சார உருவாக்கம் தோல்வியடைந்தது:',
-        'only_org_can_create_campaign': 'அமைப்பு கணக்குகள் மட்டுமே பிரச்சாரங்களை உருவாக்க முடியும்.'
+        'only_org_can_create_campaign': 'அமைப்பு கணக்குகள் மட்டுமே பிரச்சாரங்களை உருவாக்க முடியும்।'
     },
     'Telugu': {
         'title': 'హేవెన్',
@@ -1613,23 +1613,27 @@ def check_backend_connection():
 
             render_sidebar()
 
-            if st.session_state.current_page == 'login':
-                render_login_page()
-            elif st.session_state.current_page == 'register':
-                render_register_page()
-            elif st.session_state.current_page == 'complete_oauth_profile':
-                render_complete_oauth_profile_page()
-            elif st.session_state.current_page == 'create_campaign':
-                render_create_campaign_page()
-            elif st.session_state.current_page == 'home':
-                render_home_page()
-            elif st.session_state.current_page == 'explore':
-                render_explore_page()
-            elif st.session_state.current_page == 'search':
-                render_search_page()
-            else:
-                st.session_state.current_page = 'login'
-                render_login_page()
+            try:  # Added try-except block here
+                if st.session_state.current_page == 'login':
+                    render_login_page()
+                elif st.session_state.current_page == 'register':
+                    render_register_page()
+                elif st.session_state.current_page == 'complete_oauth_profile':
+                    render_complete_oauth_profile_page()
+                elif st.session_state.current_page == 'create_campaign':
+                    render_create_campaign_page()
+                elif st.session_state.current_page == 'home':
+                    render_home_page()
+                elif st.session_state.current_page == 'explore':
+                    render_explore_page()
+                elif st.session_state.current_page == 'search':
+                    render_search_page()
+                else:
+                    st.session_state.current_page = 'login'
+                    render_login_page()
+            except Exception as e:
+                st.error(f"An unexpected error occurred in the main application flow: {e}")
+                st.exception(e)  # This will print the full traceback in Streamlit's UI and logs
 
         if __name__ == "__main__":
             main()
