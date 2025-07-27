@@ -8,7 +8,7 @@ import re
 from urllib.parse import urlencode, parse_qs, urlparse
 
 BACKEND_URL = "https://haven-fastapi-backend.onrender.com"
-FRONTEND_BASE_URL = "https://haven-streamlit-frontend.onrender.com"
+FRONTEND_BASE_URL = "https://haven-streamlit-frontend.onrender.com"  # <<< IMPORTANT: REPLACE THIS WITH YOUR ACTUAL DEPLOYED STREAMLIT FRONTEND URL
 
 TRANSLATIONS = {
     'English': {
@@ -60,7 +60,10 @@ TRANSLATIONS = {
         'ngo': 'NGO',
         'startup': 'Startup',
         'charity': 'Chariy',
-        'description': 'Brief Description (max 100 chars)'
+        'description': 'Brief Description (max 100 chars)',
+        'complete_profile_title': 'Complete Your Profile',
+        'provide_details': 'Please provide the additional details to complete your registration.',
+        'update_profile': 'Update Profile'
     },
     'Hindi': {
         'title': 'हेवन',
@@ -111,7 +114,10 @@ TRANSLATIONS = {
         'ngo': 'एनजीओ',
         'startup': 'स्टार्टअप',
         'charity': 'चैरिटी',
-        'description': 'संक्षिप्त विवरण (अधिकतम 100 अक्षर)'
+        'description': 'संक्षिप्त विवरण (अधिकतम 100 अक्षर)',
+        'complete_profile_title': 'अपनी प्रोफ़ाइल पूरी करें',
+        'provide_details': 'अपनी प्रोफ़ाइल पूरी करने के लिए कृपया अतिरिक्त विवरण प्रदान करें।',
+        'update_profile': 'प्रोफ़ाइल अपडेट करें'
     },
     'Tamil': {
         'title': 'ஹேவன்',
@@ -162,7 +168,10 @@ TRANSLATIONS = {
         'ngo': 'என்ஜிஓ',
         'startup': 'ஸ்டார்ட்அப்',
         'charity': 'தொண்டு',
-        'description': 'சுருக்கமான விளக்கம் (அதிகபட்சம் 100 எழுத்துக்கள்)'
+        'description': 'சுருக்கமான விளக்கம் (அதிகபட்சம் 100 எழுத்துக்கள்)',
+        'complete_profile_title': 'உங்கள் சுயவிவரத்தை பூர்த்தி செய்யவும்',
+        'provide_details': 'உங்கள் பதிவை முடிக்க கூடுதல் விவரங்களை வழங்கவும்.',
+        'update_profile': 'சுயவிவரத்தை புதுப்பிக்கவும்'
     },
     'Telugu': {
         'title': 'హేవెన్',
@@ -213,7 +222,10 @@ TRANSLATIONS = {
         'ngo': 'ఎన్‌జిఓ',
         'startup': 'స్టార్టప్',
         'charity': 'దాతృత్వం',
-        'description': 'సంక్షిప్త వివరణ (గరిష్టంగా 100 అక్షరాలు)'
+        'description': 'సంక్షిప్త వివరణ (గరిష్టంగా 100 అక్షరాలు)',
+        'complete_profile_title': 'మీ ప్రొఫైల్‌ను పూర్తి చేయండి',
+        'provide_details': 'మీ ప్రొఫైల్‌ను పూర్తి చేయడానికి దయచేసి అదనపు వివరాలను అందించండి.',
+        'update_profile': 'ప్రొఫైల్‌ను అప్‌డేట్ చేయండి'
     }
 }
 
@@ -802,16 +814,22 @@ def check_backend_connection():
                 if access_token:
                     st.session_state.user_token = access_token
 
-                    user_info = query_params.get('user_info')
-                    if user_info:
+                    user_info_str = query_params.get('user_info')
+                    if user_info_str:
                         try:
-                            import json
-                            st.session_state.user_info = json.loads(user_info)
-                        except:
+                            st.session_state.user_info = json.loads(user_info_str)
+                        except json.JSONDecodeError:
                             st.session_state.user_info = {"name": "OAuth User", "email": "user@oauth.com"}
+                    else:
+                        st.session_state.user_info = {"name": "OAuth User", "email": "user@oauth.com"}  # Fallback
 
-                    st.session_state.current_page = 'home'
-                    st.success("Successfully logged in with OAuth!")
+                    # Check if this was an OAuth registration flow
+                    if query_params.get('register_oauth') == 'true':
+                        st.session_state.current_page = 'complete_oauth_profile'
+                        st.success("Please complete your profile details.")
+                    else:
+                        st.session_state.current_page = 'home'
+                        st.success("Successfully logged in with OAuth!")
                     st.rerun()
 
                 error = query_params.get('error')
@@ -821,7 +839,7 @@ def check_backend_connection():
             except Exception as e:
                 st.error(f"Error handling OAuth callback: {str(e)}")
 
-        def render_oauth_buttons():
+        def render_oauth_buttons(is_register_page=False):
             try:
                 response = requests.get(f"{BACKEND_URL}/auth/status", timeout=10)
                 if response.status_code == 200:
@@ -835,8 +853,13 @@ def check_backend_connection():
                 google_available = False
                 facebook_available = False
 
+            google_params = {"register_oauth": "true"} if is_register_page else {}
+            facebook_params = {"register_oauth": "true"} if is_register_page else {}
+
+            google_url = f"{BACKEND_URL}/auth/google?{urlencode(google_params)}"
+            facebook_url = f"{BACKEND_URL}/auth/facebook?{urlencode(facebook_params)}"
+
             if google_available:
-                google_url = f"{BACKEND_URL}/auth/google"
                 st.markdown(f"""
         <a href="{google_url}" class="html-oauth-google">
             <i class="fab fa-google"></i>{get_text('sign_in_google')}
@@ -850,7 +873,6 @@ def check_backend_connection():
         """, unsafe_allow_html=True)
 
             if facebook_available:
-                facebook_url = f"{BACKEND_URL}/auth/facebook"
                 st.markdown(f"""
         <a href="{facebook_url}" class="html-oauth-facebook">
             <i class="fab fa-facebook-f"></i>{get_text('sign_in_facebook')}
@@ -913,6 +935,30 @@ def check_backend_connection():
             except Exception as e:
                 st.error(f"Registration error: {str(e)}")
 
+        def update_user_profile_backend(user_data, token):
+            try:
+                headers = {"Authorization": f"Bearer {token}"}
+                response = requests.post(
+                    f"{BACKEND_URL}/update_profile",  # This endpoint needs to be implemented in your FastAPI backend
+                    json=user_data,
+                    headers=headers,
+                    timeout=15
+                )
+
+                if response.status_code == 200:
+                    st.success("Profile updated successfully!")
+                    st.session_state.user_info.update(user_data)  # Update local session state
+                    st.session_state.current_page = 'home'
+                    st.rerun()
+                else:
+                    error_data = safe_json_parse(response)
+                    st.error(f"Profile update failed: {error_data.get('detail', 'Unknown error')}")
+
+            except requests.exceptions.RequestException as e:
+                st.error(f"Connection error: {str(e)}")
+            except Exception as e:
+                st.error(f"Profile update error: {str(e)}")
+
         def render_user_profile():
             if st.session_state.user_info:
                 user_info = st.session_state.user_info
@@ -957,7 +1003,7 @@ def check_backend_connection():
     </div>
     """, unsafe_allow_html=True)
 
-            render_oauth_buttons()
+            render_oauth_buttons(is_register_page=False)  # Not a register page, so no register_oauth param
 
             st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1050,7 +1096,100 @@ def check_backend_connection():
     </div>
     """, unsafe_allow_html=True)
 
+                    st.markdown("""
+    <div class="oauth-divider">
+        <span>or sign up with social account</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+                    render_oauth_buttons(is_register_page=True)  # Pass True to indicate this is for registration
+
                     st.markdown('</div>', unsafe_allow_html=True)
+
+        def render_complete_oauth_profile_page():
+            st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
+            st.markdown(f'<div class="html-title-register">{get_text("complete_profile_title")}</div>',
+                        unsafe_allow_html=True)
+            st.markdown(
+                f'<p style="color: #333; text-align: center; margin-bottom: 20px;">{get_text("provide_details")}</p>',
+                unsafe_allow_html=True)
+
+            user_info = st.session_state.get('user_info', {})
+            oauth_email = user_info.get('email', '')
+            oauth_name = user_info.get('name', '')
+
+            with st.form(key='complete_profile_form'):
+                st.markdown('<div class="html-form-wrapper">', unsafe_allow_html=True)
+
+                # Display pre-filled OAuth info
+                st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
+                st.markdown(f'<h3>OAuth Details</h3>', unsafe_allow_html=True)
+                st.text_input("Email", value=oauth_email, disabled=True, key="oauth_email_display")
+                st.text_input("Name", value=oauth_name, disabled=True, key="oauth_name_display")
+                st.markdown('</div>', unsafe_allow_html=True)
+
+                # Collect additional details
+                st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
+                st.markdown(f'<h3>Additional Details</h3>', unsafe_allow_html=True)
+
+                registration_type = st.selectbox(
+                    "Select Your User Type",
+                    options=[get_text('individual'), get_text('organization')],
+                    key="complete_reg_type_select"
+                )
+
+                if registration_type == get_text('individual'):
+                    phone = st.text_input("", placeholder="Phone Number", key="complete_phone")
+                    address = st.text_area("", placeholder="Address", key="complete_address")
+
+                    user_data_to_send = {
+                        "user_type": "individual",
+                        "phone": phone,
+                        "address": address,
+                        "email": oauth_email,  # Include email for backend identification
+                        "full_name": oauth_name  # Include name
+                    }
+                    is_valid_input = bool(phone and address)  # Basic validation
+
+                elif registration_type == get_text('organization'):
+                    org_name = st.text_input("", placeholder="Organization Name", key="complete_org_name")
+                    org_phone = st.text_input("", placeholder="Organization Phone Number", key="complete_org_phone")
+                    org_type = st.selectbox("",
+                                            options=["", get_text('ngo'), get_text('startup'), get_text('charity')],
+                                            key="complete_org_type_select")
+                    org_description = st.text_input("", placeholder=get_text('description'),
+                                                    key="complete_org_description")
+                    address = st.text_area("", placeholder="Address", key="complete_address_org")
+
+                    user_data_to_send = {
+                        "user_type": "organization",
+                        "organization_name": org_name,
+                        "phone": org_phone,  # Using org_phone here
+                        "organization_type": org_type,
+                        "description": org_description,
+                        "address": address,
+                        "email": oauth_email,  # Include email for backend identification
+                        "full_name": oauth_name  # Include name
+                    }
+                    is_valid_input = bool(
+                        org_name and org_phone and org_type and org_description and address)  # Basic validation
+
+                else:
+                    user_data_to_send = {}
+                    is_valid_input = False
+
+                st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)  # Close html-form-wrapper
+
+                submit_button = st.form_submit_button(get_text('update_profile'))
+
+                if submit_button:
+                    if not is_valid_input:
+                        st.error("Please fill in all required fields for your selected user type.")
+                    else:
+                        update_user_profile_backend(user_data_to_send, st.session_state.user_token)
+
+            st.markdown('</div>', unsafe_allow_html=True)
 
         def render_home_page():
             st.markdown(f'<h1 class="app-title">{get_text("welcome")}</h1>', unsafe_allow_html=True)
@@ -1216,7 +1355,6 @@ def check_backend_connection():
 
             apply_custom_css()
 
-            # Add the welcome message at the very top
             st.markdown('<div class="welcome-banner">Welcome to HAVEN Crowdfunding!</div>', unsafe_allow_html=True)
 
             handle_oauth_callback()
@@ -1224,7 +1362,7 @@ def check_backend_connection():
             query_params = st.query_params
             if 'page' in query_params:
                 requested_page = query_params['page']
-                if requested_page in ['login', 'register', 'home', 'explore', 'search']:
+                if requested_page in ['login', 'register', 'home', 'explore', 'search', 'complete_oauth_profile']:
                     st.session_state.current_page = requested_page
 
             render_sidebar()
@@ -1233,6 +1371,8 @@ def check_backend_connection():
                 render_login_page()
             elif st.session_state.current_page == 'register':
                 render_register_page()
+            elif st.session_state.current_page == 'complete_oauth_profile':
+                render_complete_oauth_profile_page()
             elif st.session_state.current_page == 'home':
                 render_home_page()
             elif st.session_state.current_page == 'explore':
@@ -1245,5 +1385,4 @@ def check_backend_connection():
 
         if __name__ == "__main__":
             main()
-
 
