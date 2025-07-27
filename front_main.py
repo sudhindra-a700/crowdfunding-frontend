@@ -1069,22 +1069,21 @@ def check_backend_connection():
                     }
                     is_valid_input = bool(
                         org_name and org_phone and org_type and email and password and confirm_password)
-                    else:
+                else:
                     user_data_for_backend = {}
                     is_valid_input = False
 
                     submit_button = st.form_submit_button(get_text('register'))
 
-                    if submit_button:
-                        if
-                    not is_valid_input:
-                    st.error("Please fill in all required fields for the selected registration type.")
+                if submit_button:
+                    if not is_valid_input:
+                       st.error("Please fill in all required fields for the selected registration type.")
                     elif password != confirm_password:
-                    st.error("Passwords do not match")
+                        st.error("Passwords do not match")
                     elif len(password) < 6:
-                    st.error("Password must be at least 6 characters long")
+                        st.error("Password must be at least 6 characters long")
                     else:
-                    register_user_backend(user_data_for_backend)
+                        register_user_backend(user_data_for_backend)
 
                     st.markdown(f"""
     <div class="html-option">
