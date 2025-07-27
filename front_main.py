@@ -1,11 +1,3 @@
-"""
-HAVEN Crowdfunding Platform - HTML/CSS Design Integration
-- Integrated exact HTML/CSS design from login.html and register.html
-- Maintained light green background color (#f0f2e6)
-- Streamlit 1.36.0 compatible
-- Full OAuth functionality preserved
-"""
-
 import streamlit as st
 import requests
 import json
@@ -15,10 +7,8 @@ import os
 import re
 from urllib.parse import urlencode, parse_qs, urlparse
 
-# Configuration - Fixed backend URL
-BACKEND_URL = "https://srv-d1sq8ser433s73eke7v0.onrender.com"
+BACKEND_URL = "https://haven-fastapi-backend.onrender.com"
 
-# Language translations
 TRANSLATIONS = {
     'English': {
         'title': 'HAVEN',
@@ -226,7 +216,6 @@ TRANSLATIONS = {
     }
 }
 
-# Initialize session state
 if 'current_page' not in st.session_state:
     st.session_state.current_page = 'login'
 if 'language' not in st.session_state:
@@ -236,29 +225,26 @@ if 'user_token' not in st.session_state:
 if 'user_info' not in st.session_state:
     st.session_state.user_info = None
 
+
 def get_text(key):
-    """Get translated text for the current language"""
     return TRANSLATIONS[st.session_state.language].get(key, key)
 
+
 def apply_custom_css():
-    """Apply custom CSS styling with HTML design integration"""
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
     @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
-    
-    /* Global Styles - Light Green Background */
+
     .stApp {
         background-color: #f0f2e6 !important;
         font-family: 'Poppins', sans-serif;
     }
-    
-    /* Hide Streamlit elements */
+
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    
-    /* HTML Design Integration - Login/Register Container */
+
     .html-container {
         background: #fff;
         width: 100%;
@@ -269,7 +255,7 @@ def apply_custom_css():
         margin: 20px auto;
         color: #000;
     }
-    
+
     .html-container-wide {
         background: #fff;
         width: 100%;
@@ -280,8 +266,7 @@ def apply_custom_css():
         margin: 20px auto;
         color: #000;
     }
-    
-    /* HTML Title Styles */
+
     .html-title {
         font-size: 30px;
         font-weight: 600;
@@ -289,7 +274,7 @@ def apply_custom_css():
         position: relative;
         color: #000;
     }
-    
+
     .html-title:before {
         content: "";
         position: absolute;
@@ -298,9 +283,9 @@ def apply_custom_css():
         left: 0;
         bottom: 3px;
         border-radius: 5px;
-        background: linear-gradient(to right, #ed4599 0%, #ff0080 100%);
+        background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%);
     }
-    
+
     .html-title-register {
         font-size: 30px;
         font-weight: 600;
@@ -308,7 +293,7 @@ def apply_custom_css():
         position: relative;
         color: #000;
     }
-    
+
     .html-title-register::before {
         content: "";
         position: absolute;
@@ -317,17 +302,16 @@ def apply_custom_css():
         left: 0;
         bottom: -5px;
         border-radius: 5px;
-        background: linear-gradient(to right, #ed4599 0%, #ff0080 100%);
+        background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%);
     }
-    
-    /* HTML Input Styles */
+
     .html-input-box {
         width: 100%;
         height: 45px;
         margin-top: 20px;
         position: relative;
     }
-    
+
     .html-input-box input, .html-input-box select {
         width: 100%;
         height: 100%;
@@ -340,12 +324,11 @@ def apply_custom_css():
         padding-left: 5px;
         font-family: 'Poppins', sans-serif;
     }
-    
+
     .html-input-box input::placeholder {
         color: #aaa;
     }
-    
-    /* Override Streamlit input styles to match HTML design */
+
     .stTextInput > div > div > input,
     .stSelectbox > div > div > select,
     .stTextArea > div > div > textarea {
@@ -359,25 +342,24 @@ def apply_custom_css():
         font-family: 'Poppins', sans-serif !important;
         height: 45px !important;
     }
-    
+
     .stTextInput > div > div > input:focus,
     .stSelectbox > div > div > select:focus,
     .stTextArea > div > div > textarea:focus {
-        border-bottom: 2px solid #ed4599 !important;
+        border-bottom: 2px solid #4CAF50 !important;
         box-shadow: none !important;
     }
-    
+
     .stTextInput > div > div > input::placeholder {
         color: #aaa !important;
     }
-    
-    /* HTML Button Styles */
+
     .html-button {
         margin-top: 30px;
     }
-    
+
     .html-submit-button {
-        background: linear-gradient(to right, #99004d 0%, #ff0080 100%) !important;
+        background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%) !important;
         font-size: 17px !important;
         color: #fff !important;
         border-radius: 5px !important;
@@ -389,16 +371,15 @@ def apply_custom_css():
         font-family: 'Poppins', sans-serif !important;
         font-weight: 500 !important;
     }
-    
+
     .html-submit-button:hover {
         letter-spacing: 1px;
-        background: linear-gradient(to left, #99004d 0%, #ff0080 100%) !important;
+        background: linear-gradient(to left, #4CAF50 0%, #388E3C 100%) !important;
         color: #fff !important;
     }
-    
-    /* Override Streamlit button styles */
+
     .stButton > button {
-        background: linear-gradient(to right, #99004d 0%, #ff0080 100%) !important;
+        background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%) !important;
         font-size: 17px !important;
         color: #fff !important;
         border-radius: 5px !important;
@@ -410,36 +391,34 @@ def apply_custom_css():
         font-family: 'Poppins', sans-serif !important;
         font-weight: 500 !important;
     }
-    
+
     .stButton > button:hover {
         letter-spacing: 1px;
-        background: linear-gradient(to left, #99004d 0%, #ff0080 100%) !important;
+        background: linear-gradient(to left, #4CAF50 0%, #388E3C 100%) !important;
         color: #fff !important;
         transform: none !important;
         box-shadow: none !important;
     }
-    
-    /* HTML Option/Link Styles */
+
     .html-option {
         font-size: 14px;
         text-align: center;
         margin: 20px 0;
         color: #000;
     }
-    
+
     .html-option a {
-        color: #ed4599 !important;
+        color: #4CAF50 !important;
         text-decoration: none;
         font-weight: 500;
         cursor: pointer;
     }
-    
+
     .html-option a:hover {
-        color: #ff0080 !important;
+        color: #388E3C !important;
         text-decoration: underline;
     }
-    
-    /* HTML OAuth Button Styles */
+
     .html-oauth-google, .html-oauth-facebook {
         display: block;
         height: 45px;
@@ -455,46 +434,45 @@ def apply_custom_css():
         font-family: 'Poppins', sans-serif;
         font-weight: 500;
     }
-    
+
     .html-oauth-google {
         background: linear-gradient(to right, #db4437 0%, #e57373 100%);
     }
-    
+
     .html-oauth-google:hover {
         background: linear-gradient(to left, #db4437 0%, #e57373 100%);
         color: #fff !important;
         text-decoration: none;
     }
-    
+
     .html-oauth-facebook {
         background: linear-gradient(to right, #3b5998 0%, #476bb8 100%);
     }
-    
+
     .html-oauth-facebook:hover {
         background: linear-gradient(to left, #3b5998 0%, #476bb8 100%);
         color: #fff !important;
         text-decoration: none;
     }
-    
+
     .html-oauth-google i, .html-oauth-facebook i {
         padding-right: 12px;
         font-size: 20px;
     }
-    
-    /* HTML Register Form Styles */
+
     .html-form-wrapper {
         display: flex;
         flex-direction: column;
         gap: 30px;
     }
-    
+
     .html-form-box {
         background: #fafafa;
         padding: 20px;
         border-radius: 8px;
         flex: 1;
     }
-    
+
     .html-form-box h3 {
         margin-bottom: 10px;
         font-size: 18px;
@@ -503,54 +481,52 @@ def apply_custom_css():
         padding-bottom: 5px;
         color: #000;
     }
-    
+
     .html-input-box-register {
         width: 100%;
         height: 45px;
         margin-top: 15px;
         position: relative;
     }
-    
-    /* Responsive Design */
+
     @media (min-width: 768px) {
         .html-form-wrapper {
             flex-direction: row;
         }
-        
+
         .html-form-box {
             width: 48%;
         }
     }
-    
+
     @media (max-width: 480px) {
         .html-container {
             padding: 20px 15px;
         }
-        
+
         .html-container-wide {
             padding: 20px 15px;
         }
-        
+
         .html-title, .html-title-register {
             font-size: 24px;
         }
-        
+
         .html-input-box, .html-input-box-register {
             height: 40px;
         }
-        
+
         .html-input-box input, .html-input-box select,
         .html-input-box-register input, .html-input-box-register select {
             font-size: 14px;
         }
-        
+
         .html-submit-button {
             font-size: 15px !important;
             padding: 8px 0 !important;
         }
     }
-    
-    /* Sidebar Styles */
+
     .sidebar-section {
         background: white;
         padding: 1rem;
@@ -558,14 +534,14 @@ def apply_custom_css():
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         margin: 1rem 0;
     }
-    
+
     .sidebar-title {
-        color: #ed4599;
+        color: #4CAF50;
         font-weight: 600;
         margin-bottom: 0.5rem;
         font-size: 1.1rem;
     }
-    
+
     .sidebar-link {
         display: block;
         color: #666;
@@ -575,28 +551,26 @@ def apply_custom_css():
         transition: color 0.3s ease;
         cursor: pointer;
     }
-    
+
     .sidebar-link:hover {
-        color: #ed4599;
+        color: #4CAF50;
         text-decoration: none;
     }
-    
+
     .sidebar-link:last-child {
         border-bottom: none;
     }
-    
-    /* Backend Status Styles */
+
     .status-connected {
         color: #28a745;
         font-weight: 600;
     }
-    
+
     .status-disconnected {
         color: #dc3545;
         font-weight: 600;
     }
-    
-    /* User Profile Widget */
+
     .user-profile {
         background: white;
         padding: 1rem;
@@ -604,12 +578,12 @@ def apply_custom_css():
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         margin: 1rem 0;
     }
-    
+
     .user-avatar {
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #ed4599 0%, #ff0080 100%);
+        background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -618,33 +592,30 @@ def apply_custom_css():
         font-size: 1.2rem;
         margin: 0 auto 0.5rem;
     }
-    
+
     .user-name {
         text-align: center;
         font-weight: 600;
         color: #333;
         margin-bottom: 0.5rem;
     }
-    
+
     .user-email {
         text-align: center;
         color: #666;
         font-size: 0.9rem;
     }
-    
-    /* Hide Streamlit labels */
+
     .stTextInput label, .stSelectbox label, .stTextArea label {
         display: none !important;
     }
-    
-    /* Text color fixes */
+
     .stMarkdown p, .stMarkdown div, .stMarkdown span {
         color: #333 !important;
     }
-    
-    /* Other page styles */
+
     .app-title {
-        background: linear-gradient(135deg, #ed4599 0%, #ff0080 100%);
+        background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -654,7 +625,7 @@ def apply_custom_css():
         margin-bottom: 0.5rem;
         font-family: 'Poppins', sans-serif;
     }
-    
+
     .app-subtitle {
         color: #666;
         text-align: center;
@@ -662,8 +633,7 @@ def apply_custom_css():
         margin-bottom: 2rem;
         font-weight: 400;
     }
-    
-    /* Campaign and category cards */
+
     .category-card {
         background: white;
         padding: 1.5rem;
@@ -674,26 +644,26 @@ def apply_custom_css():
         margin: 1rem 0;
         border: 2px solid transparent;
     }
-    
+
     .category-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        border-color: #ed4599;
+        border-color: #4CAF50;
     }
-    
+
     .category-icon {
         font-size: 2.5rem;
-        color: #ed4599;
+        color: #4CAF50;
         margin-bottom: 1rem;
     }
-    
+
     .category-title {
         font-size: 1.2rem;
         font-weight: 600;
         color: #333;
         margin-bottom: 0.5rem;
     }
-    
+
     .campaign-card {
         background: white;
         border-radius: 12px;
@@ -702,16 +672,16 @@ def apply_custom_css():
         transition: all 0.3s ease;
         margin: 1rem 0;
     }
-    
+
     .campaign-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     }
-    
+
     .campaign-image {
         width: 100%;
         height: 200px;
-        background: linear-gradient(135deg, #ed4599 0%, #ff0080 100%);
+        background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -719,24 +689,24 @@ def apply_custom_css():
         font-size: 1.5rem;
         font-weight: 600;
     }
-    
+
     .campaign-content {
         padding: 1.5rem;
     }
-    
+
     .campaign-title {
         font-size: 1.3rem;
         font-weight: 600;
         color: #333;
         margin-bottom: 0.5rem;
     }
-    
+
     .campaign-description {
         color: #666;
         margin-bottom: 1rem;
         line-height: 1.5;
     }
-    
+
     .campaign-progress {
         background: #f0f2e6;
         border-radius: 10px;
@@ -744,15 +714,14 @@ def apply_custom_css():
         margin: 1rem 0;
         overflow: hidden;
     }
-    
+
     .campaign-progress-bar {
-        background: linear-gradient(135deg, #ed4599 0%, #ff0080 100%);
+        background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
         height: 100%;
         border-radius: 10px;
         transition: width 0.3s ease;
     }
-    
-    /* Search styles */
+
     .search-container {
         background: white;
         padding: 2rem;
@@ -760,27 +729,27 @@ def apply_custom_css():
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         margin: 1rem 0;
     }
-    
+
     .search-tips {
         background: #f8f9fa;
         padding: 1.5rem;
         border-radius: 10px;
         margin-top: 1rem;
-        border-left: 4px solid #ed4599;
+        border-left: 4px solid #4CAF50;
     }
-    
+
     .search-tips h4 {
-        color: #ed4599;
+        color: #4CAF50;
         margin-bottom: 1rem;
         font-weight: 600;
     }
-    
+
     .search-tips ul {
         color: #666;
         margin: 0;
         padding-left: 1.5rem;
     }
-    
+
     .search-tips li {
         margin-bottom: 0.5rem;
         line-height: 1.5;
@@ -788,43 +757,40 @@ def apply_custom_css():
     </style>
     """, unsafe_allow_html=True)
 
+
 def check_backend_connection():
-    """Check if backend is accessible with better error handling"""
     try:
-        # Try multiple endpoints to ensure backend is working
         endpoints = ['/health', '/docs', '/']
-        
+
         for endpoint in endpoints:
             try:
                 response = requests.get(f"{BACKEND_URL}{endpoint}", timeout=10)
-                if response.status_code in [200, 404]:  # 404 is OK for root endpoint
+                if response.status_code in [200, 404]:
                     return True, "Connected"
             except:
                 continue
-        
+
         return False, "All endpoints failed"
-        
+
     except Exception as e:
         return False, f"Connection error: {str(e)}"
 
+
 def safe_json_parse(response):
-    """Safely parse JSON response with fallback"""
     try:
         return response.json()
     except:
         return {"detail": f"Server error (Status: {response.status_code})"}
 
+
 def handle_oauth_callback():
-    """Handle OAuth callback from URL parameters"""
     try:
         query_params = st.query_params
-        
-        # Check for access token
+
         access_token = query_params.get('access_token')
         if access_token:
             st.session_state.user_token = access_token
-            
-            # Get user info
+
             user_info = query_params.get('user_info')
             if user_info:
                 try:
@@ -832,22 +798,20 @@ def handle_oauth_callback():
                     st.session_state.user_info = json.loads(user_info)
                 except:
                     st.session_state.user_info = {"name": "OAuth User", "email": "user@oauth.com"}
-            
+
             st.session_state.current_page = 'home'
             st.success("Successfully logged in with OAuth!")
             st.rerun()
-            
-        # Check for error
+
         error = query_params.get('error')
         if error:
             st.error(f"OAuth login failed: {error}")
-            
+
     except Exception as e:
         st.error(f"Error handling OAuth callback: {str(e)}")
 
+
 def render_oauth_buttons():
-    """Render OAuth login buttons with HTML design"""
-    # Check OAuth provider status
     try:
         response = requests.get(f"{BACKEND_URL}/auth/status", timeout=10)
         if response.status_code == 200:
@@ -860,8 +824,7 @@ def render_oauth_buttons():
     except:
         google_available = False
         facebook_available = False
-    
-    # Google OAuth Button
+
     if google_available:
         google_url = f"{BACKEND_URL}/auth/google"
         st.markdown(f"""
@@ -875,8 +838,7 @@ def render_oauth_buttons():
             <i class="fab fa-google"></i>{get_text('sign_in_google')}
         </div>
         """, unsafe_allow_html=True)
-    
-    # Facebook OAuth Button
+
     if facebook_available:
         facebook_url = f"{BACKEND_URL}/auth/facebook"
         st.markdown(f"""
@@ -891,15 +853,15 @@ def render_oauth_buttons():
         </div>
         """, unsafe_allow_html=True)
 
+
 def login_user_backend(email, password):
-    """Login user via backend API"""
     try:
         response = requests.post(
             f"{BACKEND_URL}/login",
             json={"email": email, "password": password},
             timeout=15
         )
-        
+
         if response.status_code == 200:
             data = safe_json_parse(response)
             st.session_state.user_token = data.get('access_token')
@@ -910,47 +872,46 @@ def login_user_backend(email, password):
         else:
             error_data = safe_json_parse(response)
             st.error(f"Login failed: {error_data.get('detail', 'Unknown error')}")
-            
+
     except requests.exceptions.RequestException as e:
         st.error(f"Connection error: {str(e)}")
     except Exception as e:
         st.error(f"Login error: {str(e)}")
 
+
 def register_user_backend(user_data):
-    """Register user via backend API"""
     try:
         response = requests.post(
             f"{BACKEND_URL}/register",
             json=user_data,
             timeout=15
         )
-        
+
         if response.status_code == 200:
             st.success("Registration successful! Please login with your credentials.")
             st.session_state.current_page = 'login'
             st.rerun()
         else:
-            # Safe error handling for non-JSON responses
             try:
                 error_data = response.json()
                 error_message = error_data.get('detail', 'Unknown error')
             except:
                 error_message = f"Registration failed (Status: {response.status_code})"
-            
+
             st.error(f"Registration failed: {error_message}")
-            
+
     except requests.exceptions.RequestException as e:
         st.error(f"Connection error: {str(e)}")
     except Exception as e:
         st.error(f"Registration error: {str(e)}")
 
+
 def render_user_profile():
-    """Render user profile widget"""
     if st.session_state.user_info:
         user_info = st.session_state.user_info
         name = user_info.get('name', 'User')
         email = user_info.get('email', 'user@example.com')
-        
+
         st.markdown(f"""
         <div class="user-profile">
             <div class="user-avatar">{name[0].upper()}</div>
@@ -958,89 +919,80 @@ def render_user_profile():
             <div class="user-email">{email}</div>
         </div>
         """, unsafe_allow_html=True)
-        
+
         if st.button(get_text('logout')):
             st.session_state.user_token = None
             st.session_state.user_info = None
             st.session_state.current_page = 'login'
             st.rerun()
 
+
 def render_login_page():
-    """Render the login page with HTML design"""
     st.markdown('<div class="html-container">', unsafe_allow_html=True)
-    
-    # Title with HTML styling
+
     st.markdown(f'<div class="html-title">{get_text("login")}</div>', unsafe_allow_html=True)
-    
-    # Login form
+
     with st.form(key='login_form'):
         email = st.text_input("", placeholder="Enter Your Email", key="login_email")
         password = st.text_input("", type="password", placeholder="Enter Your Password", key="login_password")
-        
+
         submit_button = st.form_submit_button(get_text('continue'))
-        
+
         if submit_button:
             if email and password:
                 login_user_backend(email, password)
             else:
                 st.error("Please fill in all fields")
-    
-    # Registration link with HTML styling
+
     st.markdown(f"""
     <div class="html-option">
         {get_text('not_registered')}
-        <a onclick="document.querySelector('[data-testid=\\"baseButton-secondary\\"]').click()">{get_text('create_account')}</a>
+        <a onclick="document.querySelector('[data-testid=\\"stButton-primary\\"]').click()">{get_text('create_account')}</a>
     </div>
     """, unsafe_allow_html=True)
-    
-    # OAuth buttons with HTML styling
+
     render_oauth_buttons()
-    
+
     st.markdown('</div>', unsafe_allow_html=True)
 
+
 def render_register_page():
-    """Render the registration page with HTML design"""
     st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
-    
-    # Title with HTML styling
+
     st.markdown(f'<div class="html-title-register">{get_text("register")}</div>', unsafe_allow_html=True)
-    
-    # Registration form
+
     with st.form(key='register_form'):
         st.markdown('<div class="html-form-wrapper">', unsafe_allow_html=True)
-        
-        # Individual Registration Section
+
         st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
         st.markdown(f'<h3>{get_text("register_individual")}</h3>', unsafe_allow_html=True)
-        
+
         full_name = st.text_input("", placeholder="Full Name", key="reg_full_name")
         email = st.text_input("", placeholder="Email ID", key="reg_email")
         phone = st.text_input("", placeholder="Phone Number", key="reg_phone")
         password = st.text_input("", type="password", placeholder="Password", key="reg_password")
-        confirm_password = st.text_input("", type="password", placeholder="Confirm Password", key="reg_confirm_password")
-        
+        confirm_password = st.text_input("", type="password", placeholder="Confirm Password",
+                                         key="reg_confirm_password")
+
         st.markdown('</div>', unsafe_allow_html=True)
-        
-        # Organization Registration Section
+
         st.markdown('<div class="html-form-box">', unsafe_allow_html=True)
         st.markdown(f'<h3>{get_text("register_organization")}</h3>', unsafe_allow_html=True)
-        
+
         org_name = st.text_input("", placeholder="Organization Name", key="reg_org_name")
         org_phone = st.text_input("", placeholder="Organization Phone Number", key="reg_org_phone")
-        org_type = st.selectbox("", 
-                               options=["", get_text('ngo'), get_text('startup'), get_text('charity')],
-                               key="reg_org_type")
+        org_type = st.selectbox("",
+                                options=["", get_text('ngo'), get_text('startup'), get_text('charity')],
+                                key="reg_org_type")
         org_description = st.text_input("", placeholder=get_text('description'), key="reg_org_description")
-        
+
         st.markdown('</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
-        
+
         submit_button = st.form_submit_button(get_text('register'))
-        
+
         if submit_button:
-            # Determine registration type based on filled fields
             if full_name and email and phone and password:
-                # Individual registration
                 if password != confirm_password:
                     st.error("Passwords do not match")
                 elif len(password) < 6:
@@ -1056,7 +1008,6 @@ def render_register_page():
                     }
                     register_user_backend(user_data)
             elif org_name and org_phone and org_type and email and password:
-                # Organization registration
                 if password != confirm_password:
                     st.error("Passwords do not match")
                 elif len(password) < 6:
@@ -1075,32 +1026,32 @@ def render_register_page():
                     register_user_backend(user_data)
             else:
                 st.error("Please fill in all required fields for either Individual or Organization registration")
-    
-    # Back to login link with HTML styling
+
     st.markdown(f"""
     <div class="html-option">
         {get_text('already_have_account')}
-        <a onclick="document.querySelector('[data-testid=\\"baseButton-secondary\\"]').click()">{get_text('sign_in_here')}</a>
+        <a onclick="document.querySelector('[data-testid=\\"stButton-secondary\\"]').click()">{get_text('sign_in_here')}</a>
     </div>
     """, unsafe_allow_html=True)
-    
+
     st.markdown('</div>', unsafe_allow_html=True)
 
+
 def render_home_page():
-    """Render the home page"""
     st.markdown(f'<h1 class="app-title">{get_text("welcome")}</h1>', unsafe_allow_html=True)
     st.markdown(f'<p class="app-subtitle">{get_text("platform_description")}</p>', unsafe_allow_html=True)
-    
-    # Trending campaigns
+
     st.markdown(f"## {get_text('trending_campaigns')}")
-    
-    # Sample campaigns
+
     campaigns = [
-        {"title": "Clean Water Initiative", "description": "Providing clean water access to rural communities", "progress": 75, "raised": "$15,000", "goal": "$20,000"},
-        {"title": "Education for All", "description": "Building schools in underserved areas", "progress": 60, "raised": "$30,000", "goal": "$50,000"},
-        {"title": "Green Energy Project", "description": "Solar panel installation for villages", "progress": 40, "raised": "$8,000", "goal": "$20,000"}
+        {"title": "Clean Water Initiative", "description": "Providing clean water access to rural communities",
+         "progress": 75, "raised": "$15,000", "goal": "$20,000"},
+        {"title": "Education for All", "description": "Building schools in underserved areas", "progress": 60,
+         "raised": "$30,000", "goal": "$50,000"},
+        {"title": "Green Energy Project", "description": "Solar panel installation for villages", "progress": 40,
+         "raised": "$8,000", "goal": "$20,000"}
     ]
-    
+
     for campaign in campaigns:
         st.markdown(f"""
         <div class="campaign-card">
@@ -1119,12 +1070,11 @@ def render_home_page():
         </div>
         """, unsafe_allow_html=True)
 
+
 def render_explore_page():
-    """Render the explore page"""
     st.markdown(f'<h1 class="app-title">{get_text("explore")}</h1>', unsafe_allow_html=True)
     st.markdown(f"## {get_text('categories')}")
-    
-    # Categories
+
     categories = [
         {"name": get_text('technology'), "icon": "fas fa-laptop-code"},
         {"name": get_text('health'), "icon": "fas fa-heartbeat"},
@@ -1133,8 +1083,7 @@ def render_explore_page():
         {"name": get_text('arts'), "icon": "fas fa-palette"},
         {"name": get_text('community'), "icon": "fas fa-users"}
     ]
-    
-    # Display categories in a grid
+
     cols = st.columns(2)
     for i, category in enumerate(categories):
         with cols[i % 2]:
@@ -1147,27 +1096,24 @@ def render_explore_page():
             </div>
             """, unsafe_allow_html=True)
 
+
 def render_search_page():
-    """Render the search page"""
     st.markdown(f'<h1 class="app-title">{get_text("search_campaigns")}</h1>', unsafe_allow_html=True)
-    
+
     st.markdown('<div class="search-container">', unsafe_allow_html=True)
-    
-    # Search input
+
     search_query = st.text_input(
         "Search Campaigns",
         placeholder=get_text('search_placeholder'),
         key="search_input"
     )
-    
+
     if st.button("🔍 Search", key="search_button"):
         if search_query:
             st.success(f"Searching for: {search_query}")
-            # Here you would implement actual search functionality
         else:
             st.warning("Please enter a search term")
-    
-    # Search tips
+
     st.markdown(f"""
     <div class="search-tips">
         <h4><i class="fas fa-lightbulb"></i> {get_text('search_tips')}</h4>
@@ -1178,13 +1124,12 @@ def render_search_page():
         </ul>
     </div>
     """, unsafe_allow_html=True)
-    
+
     st.markdown('</div>', unsafe_allow_html=True)
 
+
 def render_sidebar():
-    """Render the sidebar with clean navigation - Streamlit 1.36.0 compatible"""
     with st.sidebar:
-        # Language selector
         st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
         st.markdown('<div class="sidebar-title">Select Language:</div>', unsafe_allow_html=True)
         language = st.selectbox(
@@ -1193,113 +1138,98 @@ def render_sidebar():
             index=list(TRANSLATIONS.keys()).index(st.session_state.language),
             key="language_selector"
         )
-        
+
         if language != st.session_state.language:
             st.session_state.language = language
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
-        
-        # Backend connection status
+
         st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
         st.markdown('<div class="sidebar-title">Backend Status:</div>', unsafe_allow_html=True)
-        
+
         is_connected, status_message = check_backend_connection()
         if is_connected:
             st.markdown(f'<div class="status-connected">✅ {status_message}</div>', unsafe_allow_html=True)
         else:
             st.markdown(f'<div class="status-disconnected">❌ {status_message}</div>', unsafe_allow_html=True)
-        
+
         st.markdown('</div>', unsafe_allow_html=True)
-        
-        # User authentication status
+
         if st.session_state.user_token:
             render_user_profile()
-            
-            # Navigation for authenticated users
+
             st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
             st.markdown('<div class="sidebar-title">Navigation:</div>', unsafe_allow_html=True)
-            
-            # Clean navigation with regular buttons
+
             if st.session_state.current_page != 'home':
                 if st.button(get_text("home"), key="nav_home"):
                     st.session_state.current_page = 'home'
                     st.rerun()
-            
+
             if st.session_state.current_page != 'explore':
                 if st.button(get_text("explore"), key="nav_explore"):
                     st.session_state.current_page = 'explore'
                     st.rerun()
-            
+
             if st.session_state.current_page != 'search':
                 if st.button(get_text("search"), key="nav_search"):
                     st.session_state.current_page = 'search'
                     st.rerun()
-            
+
             st.markdown('</div>', unsafe_allow_html=True)
-        
+
         else:
-            # Clean navigation for non-authenticated users - TEXT LINKS ONLY
             st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
             st.markdown('<div class="sidebar-title">Account:</div>', unsafe_allow_html=True)
-            
-            # Text links with click handlers
+
             if st.session_state.current_page != 'login':
                 st.markdown(f"""
-                <div class="sidebar-link" onclick="window.streamlit_login_click = true">
+                <div class="sidebar-link" onclick="document.querySelector('[data-testid=\\"stButton-secondary\\"]').click()">
                     {get_text('sign_in_here')}
                 </div>
                 """, unsafe_allow_html=True)
-                
-                # Hidden button for navigation
-                if st.button("Go to Login", key="sidebar_login"):
+
+                if st.button("Go to Login", key="sidebar_login", help="Internal navigation to Login"):
                     st.session_state.current_page = 'login'
                     st.rerun()
-            
+
             if st.session_state.current_page != 'register':
                 st.markdown(f"""
-                <div class="sidebar-link" onclick="window.streamlit_register_click = true">
+                <div class="sidebar-link" onclick="document.querySelector('[data-testid=\\"stButton-primary\\"]').click()">
                     {get_text('create_account')}
                 </div>
                 """, unsafe_allow_html=True)
-                
-                # Hidden button for navigation
-                if st.button("Go to Register", key="sidebar_register"):
+
+                if st.button("Go to Register", key="sidebar_register", help="Internal navigation to Register"):
                     st.session_state.current_page = 'register'
                     st.rerun()
-            
+
             st.markdown('</div>', unsafe_allow_html=True)
 
+
 def main():
-    """Main application function"""
     st.set_page_config(
         page_title="HAVEN - Crowdfunding Platform",
         page_icon="🏠",
         layout="wide",
         initial_sidebar_state="expanded"
     )
-    
-    # Apply custom CSS
+
     apply_custom_css()
-    
-    # Handle OAuth callback
+
     handle_oauth_callback()
-    
-    # Navigation handlers for main page links
+
     if st.session_state.current_page == 'login':
-        # Hidden navigation button for register page
-        if st.button("Navigate to Register", key="nav_to_register"):
+        if st.button("Navigate to Register", key="nav_to_register", help="Internal navigation to Register"):
             st.session_state.current_page = 'register'
             st.rerun()
     elif st.session_state.current_page == 'register':
-        # Hidden navigation button for login page
-        if st.button("Navigate to Login", key="nav_to_login"):
+        if st.button("Navigate to Login", key="nav_to_login", help="Internal navigation to Login"):
             st.session_state.current_page = 'login'
             st.rerun()
-    
-    # Render sidebar
+
     render_sidebar()
-    
-    # Main content area
+
     if st.session_state.current_page == 'login':
         render_login_page()
     elif st.session_state.current_page == 'register':
@@ -1312,6 +1242,7 @@ def main():
         render_search_page()
     else:
         render_login_page()
+
 
 if __name__ == "__main__":
     main()
