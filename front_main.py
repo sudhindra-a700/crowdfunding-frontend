@@ -63,7 +63,9 @@ TRANSLATIONS = {
         'description': 'Brief Description (max 100 chars)',
         'complete_profile_title': 'Complete Your Profile',
         'provide_details': 'Please provide the additional details to complete your registration.',
-        'update_profile': 'Update Profile'
+        'update_profile': 'Update Profile',
+        'contact_person_details': 'Contact Person Details',
+        'organization_details': 'Organization Details'
     },
     'Hindi': {
         'title': 'हेवन',
@@ -117,7 +119,9 @@ TRANSLATIONS = {
         'description': 'संक्षिप्त विवरण (अधिकतम 100 अक्षर)',
         'complete_profile_title': 'अपनी प्रोफ़ाइल पूरी करें',
         'provide_details': 'अपनी प्रोफ़ाइल पूरी करने के लिए कृपया अतिरिक्त विवरण प्रदान करें।',
-        'update_profile': 'प्रोफ़ाइल अपडेट करें'
+        'update_profile': 'प्रोफ़ाइल अपडेट करें',
+        'contact_person_details': 'संपर्क व्यक्ति विवरण',
+        'organization_details': 'संगठन विवरण'
     },
     'Tamil': {
         'title': 'ஹேவன்',
@@ -171,7 +175,9 @@ TRANSLATIONS = {
         'description': 'சுருக்கமான விளக்கம் (அதிகபட்சம் 100 எழுத்துக்கள்)',
         'complete_profile_title': 'உங்கள் சுயவிவரத்தை பூர்த்தி செய்யவும்',
         'provide_details': 'உங்கள் பதிவை முடிக்க கூடுதல் விவரங்களை வழங்கவும்.',
-        'update_profile': 'சுயவிவரத்தை புதுப்பிக்கவும்'
+        'update_profile': 'சுயவிவரத்தை புதுப்பிக்கவும்',
+        'contact_person_details': 'தொடர்பு நபர் விவரங்கள்',
+        'organization_details': 'அமைப்பு விவரங்கள்'
     },
     'Telugu': {
         'title': 'హేవెన్',
@@ -225,7 +231,9 @@ TRANSLATIONS = {
         'description': 'సంక్షిప్త వివరణ (గరిష్టంగా 100 అక్షరాలు)',
         'complete_profile_title': 'మీ ప్రొఫైల్‌ను పూర్తి చేయండి',
         'provide_details': 'మీ ప్రొఫైల్‌ను పూర్తి చేయడానికి దయచేసి అదనపు వివరాలను అందించండి.',
-        'update_profile': 'ప్రొఫైల్‌ను అప్‌డేట్ చేయండి'
+        'update_profile': 'ప్రొఫైల్‌ను అప్‌డేట్ చేయండి',
+        'contact_person_details': 'సంప్రదింపు వ్యక్తి వివరాలు',
+        'organization_details': 'సంస్థ వివరాలు'
     }
 }
 
@@ -1029,8 +1037,7 @@ def render_register_page():
         )
 
         if registration_type == get_text('individual'):
-            # Changed back to f-string for simplicity and common usage, assuming previous error was transient or due to other factors.
-            st.markdown(f"""<div class="html-form-box"><h3>{get_text("register_individual")}</h3></div>""",
+            st.markdown(f"""<div class="html-form-box"><h3>{get_text("register_individual")}</h3>""",
                         unsafe_allow_html=True)
 
             full_name = st.text_input("", placeholder="Full Name", key="reg_full_name")
@@ -1039,10 +1046,10 @@ def render_register_page():
             password = st.text_input("", type="password", placeholder="Password", key="reg_password")
             confirm_password = st.text_input("", type="password", placeholder="Confirm Password",
                                              key="reg_confirm_password")
+            address = st.text_area("", placeholder="Address",
+                                   key="reg_address_individual")  # Added address for individual
 
-            # This div closing tag was missing in the previous version, potentially causing rendering issues.
-            # It should close the html-form-box opened above.
-            # st.markdown('</div>', unsafe_allow_html=True) # This was commented out in previous version's thought process. Re-adding it.
+            st.markdown('</div>', unsafe_allow_html=True)
 
             user_data_for_backend = {
                 "email": email,
@@ -1050,41 +1057,48 @@ def render_register_page():
                 "user_type": "individual",
                 "full_name": full_name,
                 "phone": phone,
-                "address": ""
+                "address": address
             }
-            is_valid_input = bool(full_name and email and phone and password and confirm_password)
+            is_valid_input = bool(full_name and email and phone and password and confirm_password and address)
 
         elif registration_type == get_text('organization'):
-            # Changed back to f-string for simplicity and common usage.
-            st.markdown(f"""<div class="html-form-box"><h3>{get_text("register_organization")}</h3></div>""",
+            st.markdown(f"""<div class="html-form-box"><h3>{get_text("contact_person_details")}</h3>""",
+                        unsafe_allow_html=True)
+
+            contact_full_name = st.text_input("", placeholder="Contact Person Full Name", key="reg_contact_full_name")
+            email = st.text_input("", placeholder="Contact Person Email ID (for login)", key="reg_email_org_contact")
+            contact_phone = st.text_input("", placeholder="Contact Person Phone Number", key="reg_contact_phone")
+            password = st.text_input("", type="password", placeholder="Password", key="reg_password_org_contact")
+            confirm_password = st.text_input("", type="password", placeholder="Confirm Password",
+                                             key="reg_confirm_password_org_contact")
+
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            st.markdown(f"""<div class="html-form-box"><h3>{get_text("organization_details")}</h3>""",
                         unsafe_allow_html=True)
 
             org_name = st.text_input("", placeholder="Organization Name", key="reg_org_name")
-            org_phone = st.text_input("", placeholder="Organization Phone Number", key="reg_org_phone")
             org_type = st.selectbox("",
                                     options=["", get_text('ngo'), get_text('startup'), get_text('charity')],
                                     key="reg_org_type_select")
             org_description = st.text_input("", placeholder=get_text('description'), key="reg_org_description")
-            email = st.text_input("", placeholder="Email ID", key="reg_email_org")
-            password = st.text_input("", type="password", placeholder="Password", key="reg_password_org")
-            confirm_password = st.text_input("", type="password", placeholder="Confirm Password",
-                                             key="reg_confirm_password_org")
+            address = st.text_area("", placeholder="Organization Address", key="reg_address_organization")
 
-            # This div closing tag was missing in the previous version, potentially causing rendering issues.
-            # It should close the html-form-box opened above.
-            # st.markdown('</div>', unsafe_allow_html=True) # This was commented out in previous version's thought process. Re-adding it.
+            st.markdown('</div>', unsafe_allow_html=True)
 
             user_data_for_backend = {
-                "email": email,
+                "email": email,  # This is the contact person's email for login
                 "password": password,
                 "user_type": "organization",
+                "contact_full_name": contact_full_name,
+                "contact_phone": contact_phone,
                 "organization_name": org_name,
-                "phone": org_phone,
                 "organization_type": org_type,
                 "description": org_description,
-                "address": ""
+                "address": address  # This is the organization's address
             }
-            is_valid_input = bool(org_name and org_phone and org_type and email and password and confirm_password)
+            is_valid_input = bool(contact_full_name and email and contact_phone and password and confirm_password and
+                                  org_name and org_type and org_description and address)
         else:
             user_data_for_backend = {}
             is_valid_input = False
@@ -1159,25 +1173,31 @@ def render_complete_oauth_profile_page():
             is_valid_input = bool(phone and address)
 
         elif registration_type == get_text('organization'):
+            st.markdown(f"""<h4>{get_text("contact_person_details")}</h4>""", unsafe_allow_html=True)
+            contact_full_name = st.text_input("Contact Person Full Name", value=oauth_name, disabled=True,
+                                              key="complete_contact_full_name")
+            contact_phone = st.text_input("", placeholder="Contact Person Phone Number", key="complete_contact_phone")
+
+            st.markdown(f"""<h4>{get_text("organization_details")}</h4>""", unsafe_allow_html=True)
             org_name = st.text_input("", placeholder="Organization Name", key="complete_org_name")
-            org_phone = st.text_input("", placeholder="Organization Phone Number", key="complete_org_phone")
-            org_type = st.selectbox("",
+            org_type = st.selectbox("Organization Type",
                                     options=["", get_text('ngo'), get_text('startup'), get_text('charity')],
                                     key="complete_org_type_select")
             org_description = st.text_input("", placeholder=get_text('description'), key="complete_org_description")
-            address = st.text_area("", placeholder="Address", key="complete_address_org")
+            address = st.text_area("", placeholder="Organization Address", key="complete_address_org")
 
             user_data_to_send = {
                 "user_type": "organization",
+                "email": oauth_email,  # This is the contact person's email for login
+                "contact_full_name": contact_full_name,
+                "contact_phone": contact_phone,
                 "organization_name": org_name,
-                "phone": org_phone,
                 "organization_type": org_type,
                 "description": org_description,
-                "address": address,
-                "email": oauth_email,
-                "full_name": oauth_name
+                "address": address
             }
-            is_valid_input = bool(org_name and org_phone and org_type and org_description and address)
+            is_valid_input = bool(
+                contact_full_name and contact_phone and org_name and org_type and org_description and address)
 
         else:
             user_data_to_send = {}
@@ -1338,21 +1358,8 @@ def render_sidebar():
 
             st.markdown('</div>', unsafe_allow_html=True)
 
-        else:
-            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
-            st.markdown('<div class="sidebar-title">Account:</div>', unsafe_allow_html=True)
-
-            if st.session_state.current_page != 'login':
-                if st.button(get_text('sign_in_here'), key="sidebar_login_btn"):
-                    st.session_state.current_page = 'login'
-                    st.rerun()
-
-            if st.session_state.current_page != 'register':
-                if st.button(get_text('create_account'), key="sidebar_register_btn"):
-                    st.session_state.current_page = 'register'
-                    st.rerun()
-
-            st.markdown('</div>', unsafe_allow_html=True)
+        # Removed the "Sign in here" and "Create an account" buttons from the sidebar
+        # as per user request. Navigation will now happen via links on the main forms.
 
 
 def main():
@@ -1396,3 +1403,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
