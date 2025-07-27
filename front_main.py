@@ -798,7 +798,7 @@ def check_backend_connection():
         return False, "All endpoints failed"
 
     except Exception as e:
-        return False, f"Connection error: {str(e)}")
+        return False, f"Connection error: {str(e)}"
 
         def safe_json_parse(response):
             try:
