@@ -38,8 +38,8 @@ TRANSLATIONS = {
         'search': 'Search',
         'profile': 'Profile',
         'logout': 'Logout',
-        'welcome': 'HAVEN',
-        'platform_description': 'Help not just some people, but Help Humanity.',
+        'welcome': 'HAVEN', # Changed to HAVEN
+        'platform_description': 'Help not just some people, but Help Humanity.', # Changed tagline
         'trending_campaigns': 'Trending Campaigns',
         'categories': 'Categories',
         'technology': 'Technology',
@@ -103,8 +103,8 @@ TRANSLATIONS = {
         'search': 'खोजें',
         'profile': 'प्रोफाइल',
         'logout': 'लॉगआउट',
-        'welcome': 'हेवन',
-        'platform_description': 'केवल कुछ लोगों की नहीं, बल्कि मानवता की मदद करें।',
+        'welcome': 'हेवन', # Changed to HAVEN
+        'platform_description': 'केवल कुछ लोगों की नहीं, बल्कि मानवता की मदद करें।', # Changed tagline
         'trending_campaigns': 'ट्रेंडिंग कैंपेन',
         'categories': 'श्रेणियां',
         'technology': 'तकनीक',
@@ -169,8 +169,8 @@ TRANSLATIONS = {
         'search': 'தேடவும்',
         'profile': 'சுயவிவரம்',
         'logout': 'வெளியேறவும்',
-        'welcome': 'ஹேவன்',
-        'platform_description': 'சிலருக்கு மட்டுமல்ல, மனிதகுலத்திற்கு உதவுங்கள்.',
+        'welcome': 'ஹேவன்', # Changed to HAVEN
+        'platform_description': 'சிலருக்கு மட்டுமல்ல, மனிதகுலத்திற்கு உதவுங்கள்.', # Changed tagline
         'trending_campaigns': 'டிரெண்டிங் பிரச்சாரங்கள்',
         'categories': 'வகைகள்',
         'technology': 'தொழில்நுட்பம்',
@@ -235,8 +235,8 @@ TRANSLATIONS = {
         'search': 'వెతకండి',
         'profile': 'ప్రొఫైల్',
         'logout': 'లాగ్అవుట్',
-        'welcome': 'హేవెన్',
-        'platform_description': 'కేవలం కొందరికి కాదు, మానవత్వానికి సహాయం చేయండి.',
+        'welcome': 'హేవెన్', # Changed to HAVEN
+        'platform_description': 'కేవలం కొందరికి కాదు, మానవత్వానికి సహాయం చేయండి.', # Changed tagline
         'trending_campaigns': 'ట్రెండింగ్ క్యాంపెయిన్‌లు',
         'categories': 'వర్గాలు',
         'technology': 'సాంకేతికత',
@@ -301,7 +301,8 @@ def apply_custom_css():
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
     @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
-    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); /* Added Great Vibes font */
+
     .stApp {
         background-color: #f0f2e6 !important;
         font-family: 'Poppins', sans-serif;
@@ -699,7 +700,7 @@ def apply_custom_css():
         margin-bottom: 2rem;
         font-weight: 400;
         font-family: 'Great Vibes', cursive; /* Applied Great Vibes font */
-        font-size: 1.8rem;
+        font-size: 1.8rem; /* Increased font size for tagline */
     }
 
     .category-card {
