@@ -1400,9 +1400,9 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-    render_oauth_buttons(is_register_page=True)
+render_oauth_buttons(is_register_page=True)
 
-    st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 def render_complete_oauth_profile_page():
     st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
