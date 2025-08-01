@@ -885,7 +885,7 @@ def apply_custom_css():
     </style>
     """, unsafe_allow_html=True)
 
-   st.markdown(f"""
+st.markdown(f"""
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 <script>
