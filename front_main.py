@@ -884,7 +884,6 @@ def apply_custom_css():
     }
     </style>
     """, unsafe_allow_html=True)
-
 st.markdown(f"""
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
@@ -899,75 +898,23 @@ st.markdown(f"""
         try {{
             const userCredential = await auth.signInWithEmailAndPassword(email, password);
             const idToken = await userCredential.user.getIdToken();
-            window.parent.postMessage({
-                streamlit: {
-                    type: 'SET_PAGE_STATE',
-                    payload: {
-                        id_token: idToken,
-                        action: 'login'
-                    }
+            const data = encodeURIComponent(JSON.stringify({
+                type: 'SET_PAGE_STATE',
+                payload: {
+                    id_token: idToken,
+                    action: 'login'
                 }
-            }, '*');
+            }));
+            window.parent.location.search = `?data=${data}`;
         }} catch (error) {{
-            window.parent.postMessage({
-                streamlit: {
-                    type: 'SET_PAGE_STATE',
-                    payload: {
-                        error: error.message,
-                        action: 'login_error'
-                    }
+            const data = encodeURIComponent(JSON.stringify({
+                type: 'SET_PAGE_STATE',
+                payload: {
+                    error: error.message,
+                    action: 'login_error'
                 }
-            }, '*');
-        }}
-    }};
-
-    window.createUserWithEmailPassword = async (email, password) => {{
-        try {{
-            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-            const idToken = await userCredential.user.getIdToken();
-            window.parent.postMessage({
-                streamlit: {
-                    type: 'SET_PAGE_STATE',
-                    payload: {
-                        id_token: idToken,
-                        action: 'register'
-                    }
-                }
-            }, '*');
-        }} catch (error) {{
-            window.parent.postMessage({
-                streamlit: {
-                    type: 'SET_PAGE_STATE',
-                    payload: {
-                        error: error.message,
-                        action: 'register_error'
-                    }
-                }
-            }, '*');
-        }}
-    }};
-
-    window.signOutFirebase = async () => {{
-        try {{
-            await auth.signOut();
-            window.parent.postMessage({
-                streamlit: {
-                    type: 'SET_PAGE_STATE',
-                    payload: {
-                        action: 'logout_success'
-                    }
-                }
-            }, '*');
-        }} catch (error) {{
-            window.parent.postMessage({
-                streamlit: {
-                    type: 'SET_PAGE_STATE',
-                    payload: {
-                        error: error.message,
-                        action: 'logout_error'
-                    }
-                }
-            }, '*');
+            }));
+            window.parent.location.search = `?data=${data}`;
         }}
     }};
 </script>
