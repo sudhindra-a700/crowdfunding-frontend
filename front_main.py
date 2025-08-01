@@ -1387,7 +1387,7 @@ window.createUserWithEmailPassword("{email}", "{password}");
 st.session_state.temp_registration_data = user_data_for_backend
 st.session_state.temp_registration_data['email'] = email # Store email for reference
 
-    st.markdown(f"""
+st.markdown(f"""
 <div class="html-option">
 {get_text('already_have_account')}
 <a href="{FRONTEND_BASE_URL}?page=login" target="_blank">{get_text('sign_in_here')}</a>
