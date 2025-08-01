@@ -1644,7 +1644,7 @@ window.addEventListener('message', event => {
     }
 });
 </script>
-""", height=0, width=0, key="js_listener")
+""", height=0, width=0)
 
     # Handle messages from JavaScript
     if "streamlit" in st.query_params:
