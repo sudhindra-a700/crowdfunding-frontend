@@ -917,6 +917,52 @@ st.markdown(f"""
             window.parent.location.search = `?data=${data}`;
         }}
     }};
+
+    window.createUserWithEmailPassword = async (email, password) => {{
+        try {{
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const idToken = await userCredential.user.getIdToken();
+            const data = encodeURIComponent(JSON.stringify({
+                type: 'SET_PAGE_STATE',
+                payload: {
+                    id_token: idToken,
+                    action: 'register'
+                }
+            }));
+            window.parent.location.search = `?data=${data}`;
+        }} catch (error) {{
+            const data = encodeURIComponent(JSON.stringify({
+                type: 'SET_PAGE_STATE',
+                payload: {
+                    error: error.message,
+                    action: 'register_error'
+                }
+            }));
+            window.parent.location.search = `?data=${data}`;
+        }}
+    }};
+
+    window.signOutFirebase = async () => {{
+        try {{
+            await auth.signOut();
+            const data = encodeURIComponent(JSON.stringify({
+                type: 'SET_PAGE_STATE',
+                payload: {
+                    action: 'logout_success'
+                }
+            }));
+            window.parent.location.search = `?data=${data}`;
+        }} catch (error) {{
+            const data = encodeURIComponent(JSON.stringify({
+                type: 'SET_PAGE_STATE',
+                payload: {
+                    error: error.message,
+                    action: 'logout_error'
+                }
+            }));
+            window.parent.location.search = `?data=${data}`;
+        }}
+    }};
 </script>
 """, unsafe_allow_html=True)
 def check_backend_connection():
