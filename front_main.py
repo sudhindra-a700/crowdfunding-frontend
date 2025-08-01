@@ -900,7 +900,7 @@ def apply_custom_css():
         // Initialize Firebase
         const firebaseConfig = {json.dumps(FIREBASE_CONFIG)};
         if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig)
     }
         const auth = firebase.auth();
 
