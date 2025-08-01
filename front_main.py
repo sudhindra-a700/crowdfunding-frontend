@@ -1,337 +1,40 @@
 import streamlit as st
 import requests
-import json
-import base64
-import time
 import os
+import json
 import re
-from urllib.parse import urlencode, parse_qs, urlparse
 
-# Get backend URL from environment or use default
-BACKEND_URL = os.getenv("BACKEND_URL", "https://haven-fastapi-backend.onrender.com")
-FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "https://haven-streamlit-frontend.onrender.com")
+# Set page config for wide layout and initial title
+st.set_page_config(layout="wide", page_title="HAVEN Crowdfunding")
 
-TRANSLATIONS = {
-    'English': {
-        'title': 'HAVEN',
-        'subtitle': 'Crowdfunding Platform',
-        'login': 'Login',
-        'register': 'Register',
-        'email': 'Email',
-        'password': 'Password',
-        'confirm_password': 'Confirm Password',
-        'continue': 'Continue',
-        'not_registered': 'Not registered?',
-        'create_account': 'Create an account',
-        'already_have_account': 'Already have an account?',
-        'sign_in_here': 'Sign in here',
-        'sign_in_google': 'Sign in with Google',
-        'sign_in_facebook': 'Sign in with Facebook',
-        'individual': 'Individual',
-        'organization': 'Organization',
-        'full_name': 'Full Name',
-        'organization_name': 'Organization Name',
-        'phone': 'Phone Number',
-        'address': 'Address',
-        'registration_type': 'Registration Type',
-        'home': 'Home',
-        'explore': 'Explore',
-        'search': 'Search',
-        'profile': 'Profile',
-        'logout': 'Logout',
-        'welcome_banner_text': 'HAVEN',
-        'welcome_banner_tagline': 'Help not just some people, but Help Humanity.',
-        'trending_campaigns': 'Trending Campaigns',
-        'categories': 'Categories',
-        'technology': 'Technology',
-        'health': 'Health',
-        'education': 'Education',
-        'environment': 'Environment',
-        'arts': 'Arts & Culture',
-        'community': 'Community',
-        'search_campaigns': 'Search Campaigns',
-        'search_placeholder': 'Enter keywords to search for campaigns...',
-        'search_tips': 'Search Tips',
-        'use_keywords': 'Use specific keywords related to the campaign',
-        'filter_category': 'Filter by category for better results',
-        'check_spelling': 'Check spelling and try different terms',
-        'register_individual': 'Register as an Individual',
-        'register_organization': 'Register as an Organization',
-        'organization_type': 'Organization Type',
-        'ngo': 'NGO',
-        'startup': 'Startup',
-        'charity': 'Charity',
-        'description': 'Brief Description (max 100 chars)',
-        'complete_profile_title': 'Complete Your Profile',
-        'provide_details': 'Please provide the additional details to complete your registration.',
-        'update_profile': 'Update Profile',
-        'contact_person_details': 'Contact Person Details',
-        'organization_details': 'Organization Details',
-        'create_campaign': 'Create Campaign',
-        'campaign_name': 'Campaign Name',
-        'campaign_description_full': 'Campaign Description',
-        'goal_amount': 'Goal Amount',
-        'campaign_category': 'Campaign Category',
-        'upload_image': 'Upload Campaign Image',
-        'submit_campaign': 'Submit Campaign',
-        'campaign_creation_success': 'Campaign created successfully!',
-        'campaign_creation_failed': 'Campaign creation failed:',
-        'only_org_can_create_campaign': 'Only organization accounts can create campaigns.'
-    },
-    'Hindi': {
-        'title': 'हेवन',
-        'subtitle': 'क्राउडफंडिंग प्लेटफॉर्म',
-        'login': 'लॉगिन',
-        'register': 'रजिस्टर',
-        'email': 'ईमेल',
-        'password': 'पासवर्ड की पुष्टि करें',
-        'continue': 'जारी रखें',
-        'not_registered': 'पंजीकृत नहीं हैं?',
-        'create_account': 'खाता बनाएं',
-        'already_have_account': 'पहले से खाता है?',
-        'sign_in_here': 'यहाँ साइन इन करें',
-        'sign_in_google': 'Google से साइन इन करें',
-        'sign_in_facebook': 'Facebook से साइन इन करें',
-        'individual': 'व्यक्तिगत',
-        'organization': 'संगठन',
-        'full_name': 'पूरा नाम',
-        'organization_name': 'संगठन का नाम',
-        'phone': 'फोन नंबर',
-        'address': 'पता',
-        'registration_type': 'पंजीकरण प्रकार',
-        'home': 'होम',
-        'explore': 'एक्सप्लोर',
-        'search': 'खोजें',
-        'profile': 'प्रोफाइल',
-        'logout': 'लॉगआउट',
-        'welcome_banner_text': 'हेवन',
-        'welcome_banner_tagline': 'केवल कुछ लोगों की नहीं, बल्कि मानवता की मदद करें।',
-        'trending_campaigns': 'ट्रेंडिंग कैंपेन',
-        'categories': 'श्रेणियां',
-        'technology': 'तकनीक',
-        'health': 'स्वास्थ्य',
-        'education': 'शिक्षा',
-        'environment': 'पर्यावरण',
-        'arts': 'कला और संस्कृति',
-        'community': 'समुदाय',
-        'search_campaigns': 'कैंपेन खोजें',
-        'search_placeholder': 'कैंपेन खोजने के लिए कीवर्ड दर्ज करें...',
-        'search_tips': 'खोज सुझाव',
-        'use_keywords': 'कैंपेन से संबंधित विशिष्ट कीवर्ड का उपयोग करें',
-        'filter_category': 'बेहतर परिणामों के लिए श्रेणी के अनुसार फ़िल्टर करें',
-        'check_spelling': 'वर्तनी जांचें और विभिन्न शब्दों का प्रयास करें',
-        'register_individual': 'व्यक्तिगत के रूप में पंजीकरण करें',
-        'register_organization': 'संगठन के रूप में पंजीकरण करें',
-        'organization_type': 'संगठन प्रकार',
-        'ngo': 'एनजीओ',
-        'startup': 'स्टार्टअप',
-        'charity': 'चैरिटी',
-        'description': 'संक्षिप्त विवरण (अधिकतम 100 अक्षर)',
-        'complete_profile_title': 'अपनी प्रोफ़ाइल पूरी करें',
-        'provide_details': 'अपनी प्रोफ़ाइल पूरी करने के लिए कृपया अतिरिक्त विवरण प्रदान करें।',
-        'update_profile': 'प्रोफ़ाइल अपडेट करें',
-        'contact_person_details': 'संपर्क व्यक्ति विवरण',
-        'organization_details': 'संगठन विवरण',
-        'create_campaign': 'अभियान बनाएं',
-        'campaign_name': 'अभियान का नाम',
-        'campaign_description_full': 'अभियान विवरण',
-        'goal_amount': 'लक्ष्य राशि',
-        'campaign_category': 'अभियान श्रेणी',
-        'upload_image': 'अभियान छवि अपलोड करें',
-        'submit_campaign': 'अभियान जमा करें',
-        'campaign_creation_success': 'अभियान सफलतापूर्वक बनाया गया!',
-        'campaign_creation_failed': 'अभियान निर्माण विफल रहा:',
-        'only_org_can_create_campaign': 'केवल संगठन खाते ही अभियान बना सकते हैं।'
-    },
-    'Tamil': {
-        'title': 'ஹேவன்',
-        'subtitle': 'க்ரவுட்ஃபண்டிங் தளம்',
-        'login': 'உள்நுழைவு',
-        'register': 'பதிவு',
-        'email': 'மின்னஞ்சல்',
-        'password': 'கடவுச்சொல்',
-        'confirm_password': 'கடவுச்சொல்லை உறுதிப்படுத்தவும்',
-        'continue': 'தொடரவும்',
-        'not_registered': 'பதிவு செய்யவில்லையா?',
-        'create_account': 'கணக்கை உருவாக்கவும்',
-        'already_have_account': 'ஏற்கனவே கணக்கு உள்ளதா?',
-        'sign_in_here': 'இங்கே உள்நுழையவும்',
-        'sign_in_google': 'Google உடன் உள்நுழையவும்',
-        'sign_in_facebook': 'Facebook உடன் உள்நுழையவும்',
-        'individual': 'தனிநபர்',
-        'organization': 'அமைப்பு',
-        'full_name': 'முழு பெயர்',
-        'organization_name': 'அமைப்பின் பெயர்',
-        'phone': 'தொலைபேசி எண்',
-        'address': 'முகவரி',
-        'registration_type': 'பதிவு வகை',
-        'home': 'முகப்பு',
-        'explore': 'ஆராயவும்',
-        'search': 'தேடவும்',
-        'profile': 'சுயவிவரம்',
-        'logout': 'வெளியேறவும்',
-        'welcome_banner_text': 'ஹேவன்',
-        'welcome_banner_tagline': 'சிலருக்கு மட்டுமல்ல, மனிதகுலத்திற்கு உதவுங்கள்.',
-        'trending_campaigns': 'டிரெண்டிங் பிரச்சாரங்கள்',
-        'categories': 'வகைகள்',
-        'technology': 'தொழில்நுட்பம்',
-        'health': 'சுகாதாரம்',
-        'education': 'கல்வி',
-        'environment': 'சுற்றுச்சூழல்',
-        'arts': 'கலை மற்றும் கலாச்சாரம்',
-        'community': 'சமூகம்',
-        'search_campaigns': 'பிரச்சாரங்களைத் தேடவும்',
-        'search_placeholder': 'பிரச்சாரங்களைத் தேட முக்கிய வார்த்தைகளை உள்ளிடவும்...',
-        'search_tips': 'தேடல் குறிப்புகள்',
-        'use_keywords': 'பிரச்சாரத்துடன் தொடர்புடைய குறிப்பிட்ட முக்கிய வார்த்தைகளைப் பயன்படுத்தவும்',
-        'filter_category': 'சிறந்த முடிவுகளுக்கு வகை வாரியாக வடிகட்டவும்',
-        'check_spelling': 'எழுத்துப்பிழையைச் சரிபார்த்து வெவ்வேறு சொற்களை முயற்சிக்கவும்',
-        'register_individual': 'தனிநபராக பதிவு செய்யவும்',
-        'register_organization': 'அமைப்பாக பதிவு செய்யவும்',
-        'organization_type': 'அமைப்பு வகை',
-        'ngo': 'என்ஜிஓ',
-        'startup': 'ஸ்டார்ட்அப்',
-        'charity': 'தொண்டு',
-        'description': 'சுருக்கமான விளக்கம் (அதிகபட்சம் 100 எழுத்துக்கள்)',
-        'complete_profile_title': 'உங்கள் சுயவிவரத்தை பூர்த்தி செய்யவும்',
-        'provide_details': 'உங்கள் பதிவை முடிக்க கூடுதல் விவரங்களை வழங்கவும்.',
-        'update_profile': 'சுயவிவரத்தை புதுப்பிக்கவும்',
-        'contact_person_details': 'தொடர்பு நபர் விவரங்கள்',
-        'organization_details': 'அமைப்பு விவரங்கள்',
-        'create_campaign': 'பிரச்சாரத்தை உருவாக்கு',
-        'campaign_name': 'பிரச்சாரத்தின் பெயர்',
-        'campaign_description_full': 'பிரச்சார விளக்கம்',
-        'goal_amount': 'இலக்கு தொகை',
-        'campaign_category': 'பிரச்சார வகை',
-        'upload_image': 'பிரச்சாரப் படத்தை பதிவேற்று',
-        'submit_campaign': 'பிரச்சாரத்தை சமர்ப்பி',
-        'campaign_creation_success': 'பிரச்சாரம் வெற்றிகரமாக உருவாக்கப்பட்டது!',
-        'campaign_creation_failed': 'பிரச்சார உருவாக்கம் தோல்வியடைந்தது:',
-        'only_org_can_create_campaign': 'அமைப்பு கணக்குகள் மட்டுமே பிரச்சாரங்களை உருவாக்க முடியும்.'
-    },
-    'Telugu': {
-        'title': 'హేవెన్',
-        'subtitle': 'క్రౌడ్‌ఫండింగ్ ప్లాట్‌ఫారమ్',
-        'login': 'లాగిన్',
-        'register': 'రిజిస్టర్',
-        'email': 'ఇమెయిల్',
-        'password': 'పాస్‌వర్డ్',
-        'confirm_password': 'పాస్‌వర్డ్‌ను నిర్ధారించండి',
-        'continue': 'కొనసాగించు',
-        'not_registered': 'రిజిస్టర్ కాలేదా?',
-        'create_account': 'ఖాతా సృష్టించండి',
-        'already_have_account': 'ఇప్పటికే ఖాతా ఉందా?',
-        'sign_in_here': 'ఇక్కడ సైన్ ఇన్ చేయండి',
-        'sign_in_google': 'Google తో సైన్ ఇన్ చేయండి',
-        'sign_in_facebook': 'Facebook తో సైన్ ఇన్ చేయండి',
-        'individual': 'వ్యక్తిగత',
-        'organization': 'సంస్థ',
-        'full_name': 'పూర్తి పేరు',
-        'organization_name': 'సంస్థ పేరు',
-        'phone': 'ఫోన్ నంబర్',
-        'address': 'చిరునామా',
-        'registration_type': 'రిజిస్ట్రేషన్ రకం',
-        'home': 'హోమ్',
-        'explore': 'అన్వేషించు',
-        'search': 'వెతకండి',
-        'profile': 'ప్రొఫైల్',
-        'logout': 'లాగ్అవుట్',
-        'welcome_banner_text': 'హేవెన్',
-        'welcome_banner_tagline': 'కేవలం కొందరికి కాదు, మానవత్వానికి సహాయం చేయండి.',
-        'trending_campaigns': 'ట్రెండింగ్ క్యాంపెయిన్‌లు',
-        'categories': 'వర్గాలు',
-        'technology': 'సాంకేతికత',
-        'health': 'ఆరోగ్యం',
-        'education': 'విద్య',
-        'environment': 'పర్యావరణం',
-        'arts': 'కళలు మరియు సంస్కృతి',
-        'community': 'సమాజం',
-        'search_campaigns': 'క్యాంపెయిన్‌లను వెతకండి',
-        'search_placeholder': 'క్యాంపెయిన్‌లను వెతకడానికి కీవర్డ్‌లను నమోదు చేయండి...',
-        'search_tips': 'వెతుకులాట చిట్కాలు',
-        'use_keywords': 'క్యాంపెయిన్‌కు సంబంధించిన నిర్దిష్ట కీవర్డ్‌లను ఉపయోగించండి',
-        'filter_category': 'బెటర్ ఫలితాల కోసం వర్గం వారీగా ఫిల్టర్ చేయండి',
-        'check_spelling': 'స్పెల్లింగ్ తనిఖీ చేసి వేర్వేరు పదాలను ప్రయత్నించండి',
-        'register_individual': 'వ్యక్తిగతంగా నమోదు చేసుకోండి',
-        'register_organization': 'సంస్థగా నమోదు చేసుకోండి',
-        'organization_type': 'సంస్థ రకం',
-        'ngo': 'ఎన్‌జిఓ',
-        'startup': 'స్టార్టప్',
-        'charity': 'దాతృత్వం',
-        'description': 'సంక్షిప్త వివరణ (గరిష్టంగా 100 అక్షరాలు)',
-        'complete_profile_title': 'మీ ప్రొఫైల్‌ను పూర్తి చేయండి',
-        'provide_details': 'మీ பதிவை முடிக்க கூடுதல் விவரங்களை வழங்கவும்.',
-        'update_profile': 'ప్రొఫైల్‌ను అప్‌డేట్ చేయండి',
-        'contact_person_details': 'సంప్రదింపు వ్యక్తి వివరాలు',
-        'organization_details': 'సంస్థ వివరాలు',
-        'create_campaign': 'అభియాన్ సృష్టించు',
-        'campaign_name': 'అభియాన్ పేరు',
-        'campaign_description_full': 'అభియాన్ వివరణ',
-        'goal_amount': 'లక్ష్యం మొత్తం',
-        'campaign_category': 'అభియాన్ వర్గం',
-        'upload_image': 'అభియాన్ చిత్రాన్ని అప్‌లోడ్ చేయండి',
-        'submit_campaign': 'అభియాన్ సమర్పించు',
-        'campaign_creation_success': 'అభియాన్ విజయవంతంగా సృష్టించబడింది!',
-        'campaign_creation_failed': 'అభియాన్ సృష్టి విఫలమైంది:',
-        'only_org_can_create_campaign': 'సంస్థ ఖాతాలు మాత్రమే అభియాన్‌లను సృష్టించగలవు.'
+# --- Custom CSS for global styling --- #
+custom_css = """
+<style>
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
     }
-}
 
-if 'current_page' not in st.session_state:
-    st.session_state.current_page = 'login'
-if 'language' not in st.session_state:
-    st.session_state.language = 'English'
-if 'user_token' not in st.session_state:
-    st.session_state.user_token = None
-if 'user_info' not in st.session_state:
-    st.session_state.user_info = None
-if 'selected_reg_type_register' not in st.session_state:
-    st.session_state.selected_reg_type_register = TRANSLATIONS['English']['individual']
-if 'selected_reg_type_oauth' not in st.session_state:
-    st.session_state.selected_reg_type_oauth = TRANSLATIONS['English']['individual']
-
-# Firebase configuration (REPLACE WITH YOUR ACTUAL FIREBASE CONFIG)
-FIREBASE_CONFIG = {
-    "apiKey": os.getenv("FIREBASE_API_KEY"),
-    "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN"),
-    "projectId": os.getenv("FIREBASE_PROJECT_ID"),
-    "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET"),
-    "messagingSenderId": os.getenv("FIREBASE_MESSAGING_SENDER_ID"),
-    "appId": os.getenv("FIREBASE_APP_ID"),
-    "measurementId": os.getenv("FIREBASE_MEASUREMENT_ID")
-}
-
-def get_text(key):
-    return TRANSLATIONS[st.session_state.language].get(key, key)
-
-def apply_custom_css():
-    st.markdown("""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
-    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
-    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+    body {
+        display: grid;
+        height: 100vh;
+        width: 100%;
+        place-items: center;
+        background-color: #f0f2e6; /* Light green background */
+        color: #000; /* Darker text for contrast */
+        padding: 10px;
+    }
 
     .stApp {
-        background-color: #f0f2e6 !important;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-
-    .html-container {
-        background: #fff;
-        width: 100%;
-        max-width: 400px;
-        padding: 20px 20px;
-        border-radius: 5px;
-        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.15);
-        margin: 20px auto;
+        background-color: #f0f2e6; /* Apply to Streamlit app background */
         color: #000;
     }
 
-    .html-container-wide {
+    .container {
         background: #fff;
         width: 100%;
         max-width: 900px;
@@ -339,37 +42,20 @@ def apply_custom_css():
         border-radius: 5px;
         box-shadow: 0 10px 10px rgba(0, 0, 0, 0.15);
         margin: 20px auto;
-        color: #000;
     }
 
-    .html-title {
-        font-size: 30px;
-        font-weight: 600;
-        margin: 20px 0 10px 0;
-        position: relative;
-        color: #2d5a2d;
+    h1 {
+        color: #4CAF50; /* Example color for main titles */
     }
 
-    .html-title:before {
-        content: "";
-        position: absolute;
-        height: 4px;
-        width: 33px;
-        left: 0;
-        bottom: 3px;
-        border-radius: 5px;
-        background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%);
-    }
-
-    .html-title-register {
+    .title {
         font-size: 30px;
         font-weight: 600;
         margin-bottom: 30px;
         position: relative;
-        color: #2d5a2d;
     }
 
-    .html-title-register::before {
+    .title::before {
         content: "";
         position: absolute;
         height: 4px;
@@ -377,124 +63,89 @@ def apply_custom_css():
         left: 0;
         bottom: -5px;
         border-radius: 5px;
-        background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%);
+        background: linear-gradient(to right, #ed4599 0%, #ff0080 100%);
     }
 
-    .html-input-box {
+    .form-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .form-box {
+        background: #fafafa;
+        padding: 20px;
+        border-radius: 8px;
+        flex: 1;
+    }
+
+    .form-box h3 {
+        margin-bottom: 10px;
+        font-size: 18px;
+        font-weight: 600;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 5px;
+    }
+
+    .input-box {
         width: 100%;
         height: 45px;
-        margin-top: 20px;
+        margin-top: 15px;
         position: relative;
     }
 
-    .html-input-box input, .html-input-box select {
+    .input-box input,
+    .input-box select {
         width: 100%;
         height: 100%;
         outline: none;
         font-size: 16px;
         border: none;
         background: transparent;
-        color: #333 !important;
+        color: #000;
         border-bottom: 2px solid #ccc;
         padding-left: 5px;
-        font-family: 'Poppins', sans-serif;
     }
 
-    .html-input-box input::placeholder {
-        color: #777;
+    .input-box input::placeholder {
+        color: #aaa;
     }
 
-    .stTextInput > div > div > input,
-    .stSelectbox > div > div > select,
-    .stTextArea > div > div > textarea {
-        background: #f8f8f8 !important;
-        border: 1px solid #ddd !important;
-        border-radius: 5px !important;
-        padding: 10px !important;
-        font-size: 16px !important;
-        color: #333 !important;
-        font-family: 'Poppins', sans-serif !important;
-        height: 45px !important;
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
-    }
-
-    .stTextInput > div > div > input:focus,
-    .stSelectbox > div > div > select:focus,
-    .stTextArea > div > div > textarea:focus {
-        border-color: #4CAF50 !important;
-        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
-    }
-
-    .stTextInput > div > div > input::placeholder {
-        color: #777 !important;
-    }
-
-    .html-button {
+    .button {
         margin-top: 30px;
     }
 
-    .html-submit-button {
-        background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%) !important;
-        font-size: 17px !important;
-        color: #fff !important;
-        border-radius: 5px !important;
+    .button input[type="submit"] {
+        background: linear-gradient(to right, #99004d 0%, #ff0080 100%);
+        font-size: 17px;
+        color: #fff;
+        border-radius: 5px;
         cursor: pointer;
-        padding: 10px 0 !important;
+        padding: 10px 0;
         transition: all 0.3s ease;
-        border: none !important;
-        width: 100% !important;
-        font-family: 'Poppins', sans-serif !important;
-        font-weight: 500 !important;
+        width: 100%;
+        border: none;
     }
 
-    .html-submit-button:hover {
+    .button input[type="submit"]:hover {
         letter-spacing: 1px;
-        background: linear-gradient(to left, #4CAF50 0%, #388E3C 100%) !important;
-        color: #fff !important;
+        background: linear-gradient(to left, #99004d 0%, #ff0080 100%);
     }
 
-    .stButton > button {
-        background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%) !important;
-        font-size: 17px !important;
-        color: #fff !important;
-        border-radius: 5px !important;
-        cursor: pointer;
-        padding: 10px 0 !important;
-        transition: all 0.3s ease;
-        border: none !important;
-        width: 100% !important;
-        font-family: 'Poppins', sans-serif !important;
-        font-weight: 500 !important;
-    }
-
-    .stButton > button:hover {
-        letter-spacing: 1px;
-        background: linear-gradient(to left, #4CAF50 0%, #388E3C 100%) !important;
-        color: #fff !important;
-        transform: none !important;
-        box-shadow: none !important;
-    }
-
-    .html-option {
+    .option {
         font-size: 14px;
         text-align: center;
         margin: 20px 0;
-        color: #333;
     }
 
-    .html-option a {
-        color: #4CAF50 !important;
+    .option a {
+        color: #ed4599;
         text-decoration: none;
         font-weight: 500;
-        cursor: pointer;
     }
 
-    .html-option a:hover {
-        color: #388E3C !important;
-        text-decoration: underline;
-    }
-
-    .html-oauth-google, .html-oauth-facebook {
+    .google a,
+    .facebook a {
         display: block;
         height: 45px;
         width: 100%;
@@ -502,1287 +153,917 @@ def apply_custom_css():
         text-decoration: none;
         padding-left: 20px;
         line-height: 45px;
-        color: #fff !important;
+        color: #fff;
         border-radius: 5px;
         transition: all 0.3s ease;
         margin-bottom: 15px;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 500;
     }
 
-    .html-oauth-google {
+    .google a {
         background: linear-gradient(to right, #db4437 0%, #e57373 100%);
     }
 
-    .html-oauth-google:hover {
+    .google a:hover {
         background: linear-gradient(to left, #db4437 0%, #e57373 100%);
-        color: #fff !important;
-        text-decoration: none;
     }
 
-    .html-oauth-facebook {
+    .facebook a {
         background: linear-gradient(to right, #3b5998 0%, #476bb8 100%);
     }
 
-    .html-oauth-facebook:hover {
-        background: linear-gradient(to left, #3b5998 0%, #476bb8 100%);
-        color: #fff !important;
-        text-decoration: none;
+    .facebook a:hover {
+        background: linear_gradient(to left, #3b5998 0%, #476bb8 100%);
     }
 
-    .html-oauth-google i, .html-oauth-facebook i {
+    .google i,
+    .facebook i {
         padding-right: 12px;
         font-size: 20px;
     }
 
-    .html-form-wrapper {
-        display: flex;
-        flex-direction: column;
-        gap: 30px;
-    }
-
-    .html-form-box {
-        background: #fafafa;
-        padding: 20px;
-        border-radius: 8px;
-        flex: 1;
-    }
-
-    .html-form-box h3 {
-        margin-bottom: 10px;
-        font-size: 18px;
-        font-weight: 600;
-        border-bottom: 1px solid #ddd;
-        padding-bottom: 5px;
-        color: #2d5a2d;
-    }
-
-    .html-input-box-register {
-        width: 100%;
-        height: 45px;
-        margin-top: 15px;
-        position: relative;
-    }
-
+    /* Side-by-side only on larger screens */
     @media (min-width: 768px) {
-        .html-form-wrapper {
+        .form-wrapper {
             flex-direction: row;
         }
 
-        .html-form-box {
+        .form-box {
             width: 48%;
         }
     }
 
+    /* Improve spacing on very small phones */
     @media (max-width: 480px) {
-        .html-container {
+        .container {
             padding: 20px 15px;
         }
 
-        .html-container-wide {
-            padding: 20px 15px;
-        }
-
-        .html-title, .html-title-register {
+        .title {
             font-size: 24px;
         }
 
-        .html-input-box, .html-input-box-register {
+        .input-box {
             height: 40px;
         }
 
-        .html-input-box input, .html-input-box select,
-        .html-input-box-register input, .html-input-box-register select {
+        .input-box input,
+        .input-box select {
             font-size: 14px;
         }
 
-        .html-submit-button {
-            font-size: 15px !important;
-            padding: 8px 0 !important;
+        .button input[type="submit"] {
+            font-size: 15px;
+            padding: 8px 0;
         }
     }
 
-    .sidebar-section {
-        background: white;
-        padding: 1rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        margin: 1rem 0;
-    }
-
-    .sidebar-title {
-        color: #2d5a2d;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        font-size: 1.1rem;
-    }
-
-    .sidebar-link {
-        display: block;
-        color: #333;
-        text-decoration: none;
-        padding: 0.5rem 0;
-        border-bottom: 1px solid #f0f0f0;
-        transition: color 0.3s ease;
-        cursor: pointer;
-    }
-
-    .sidebar-link:hover {
-        color: #4CAF50;
-        text-decoration: none;
-    }
-
-    .sidebar-link:last-child {
-        border-bottom: none;
-    }
-
-    .status-connected {
-        color: #28a745;
-        font-weight: 600;
-    }
-
-    .status-disconnected {
-        color: #dc3545;
-        font-weight: 600;
-    }
-
-    .user-profile {
-        background: white;
-        padding: 1rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        margin: 1rem 0;
-    }
-
-    .user-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-        font-size: 1.2rem;
-        margin: 0 auto 0.5rem;
-    }
-
-    .user-name {
-        text-align: center;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 0.5rem;
-    }
-
-    .user-email {
-        text-align: center;
-        color: #666;
-        font-size: 0.9rem;
-    }
-
-    .stTextInput label, .stSelectbox label, .stTextArea label {
-        display: none !important;
-    }
-
-    .stMarkdown p, .stMarkdown div, .stMarkdown span {
-        color: #333 !important;
-    }
-
-    .app-title {
-        background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-size: 3rem;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 0.5rem;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .app-subtitle {
-        color: #333;
-        text-align: center;
-        font-size: 1.2rem;
-        margin-bottom: 2rem;
-        font-weight: 400;
-        font-family: 'Great Vibes', cursive;
-        font-size: 1.8rem;
+    /* Styles for Explore and Search pages */
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
     }
 
     .category-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        padding: 20px;
         text-align: center;
-        transition: all 0.3s ease;
-        margin: 1rem 0;
-        border: 2px solid transparent;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+        transition: transform 0.2s;
     }
 
     .category-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        border-color: #4CAF50;
     }
 
-    .category-icon {
-        font-size: 2.5rem;
+    .category-card i {
+        font-size: 40px;
+        margin-bottom: 10px;
         color: #4CAF50;
-        margin-bottom: 1rem;
-    }
-
-    .category-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 0.5rem;
     }
 
     .campaign-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        overflow: hidden;
-        transition: all 0.3s ease;
-        margin: 1rem 0;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     }
 
-    .campaign-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-
-    .campaign-image {
+    .campaign-card img {
         width: 100%;
         height: 200px;
-        background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.5rem;
-        font-weight: 600;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-bottom: 15px;
     }
 
-    .campaign-content {
-        padding: 1.5rem;
-    }
-
-    .campaign-title {
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 0.5rem;
-    }
-
-    .campaign-description {
-        color: #666;
-        margin-bottom: 1rem;
-        line-height: 1.5;
-    }
-
-    .campaign-progress {
-        background: #f0f2e6;
-        border-radius: 10px;
-        height: 8px;
-        margin: 1rem 0;
-        overflow: hidden;
-    }
-
-    .campaign-progress-bar {
-        background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
-        height: 100%;
-        border-radius: 10px;
-        transition: width 0.3s ease;
-    }
-
-    .search-container {
-        background: white;
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        margin: 1rem 0;
-    }
-
-    .search-tips {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 10px;
-        margin-top: 1rem;
-        border-left: 4px solid #4CAF50;
-    }
-
-    .search-tips h4 {
-        color: #4CAF50;
-        margin-bottom: 1rem;
-        font-weight: 600;
-    }
-
-    .search-tips ul {
-        color: #666;
-        margin: 0;
-        padding-left: 1.5rem;
-    }
-
-    .search-tips li {
-        margin-bottom: 0.5rem;
-        line-height: 1.5;
-    }
-
-    .welcome-banner-main-title {
-        background-color: #e6ffe6;
-        padding: 15px 20px 5px 20px;
-        border-radius: 8px 8px 0 0;
-        text-align: center;
-        font-size: 30px;
-        font-weight: 700;
-        color: #2d5a2d;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        margin-bottom: 0;
-    }
-
-    .welcome-banner-tagline {
-        background-color: #e6ffe6;
-        padding: 0 20px 15px 20px;
-        border-radius: 0 0 8px 8px;
-        text-align: center;
-        font-family: 'Great Vibes', cursive;
-        font-size: 1.8rem;
-        color: #333;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    .campaign-card h3 {
         margin-top: 0;
+        color: #333;
     }
 
-    .create-campaign-button {
+    .campaign-card p {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .search-bar {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .search-bar input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .search-bar button {
+        background-color: #4CAF50;
         color: white;
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        font-size: 2.5rem;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        cursor: pointer;
-        transition: all 0.2s ease-in-out;
-        margin: 20px auto;
         border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
     }
+</style>
+"""
+st.markdown(custom_css, unsafe_allow_html=True)
 
-    .create-campaign-button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        color: white;
+# --- Backend Connection Configuration --- #
+BACKEND_SERVICE_NAME = os.environ.get("BACKEND_SERVICE_NAME", "haven-fastapi-backend") 
+BACKEND_PORT = os.environ.get("BACKEND_PORT", "8000")
+BACKEND_URL = f"http://{BACKEND_SERVICE_NAME}:{BACKEND_PORT}"
+
+# --- API Key Environment Variables --- #
+FIREBASE_SERVICE_ACCOUNT_KEY_JSON_BASE64 = os.environ.get("FIREBASE_SERVICE_ACCOUNT_KEY_JSON_BASE64")
+ALGOLIA_API_KEY = os.environ.get("ALGOLIA_API_KEY")
+ALGOLIA_APP_ID = os.environ.get("ALGOLIA_APP_ID")
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY")
+INSTAMOJO_API_KEY = os.environ.get("INSTAMOJO_API_KEY")
+INSTAMOJO_AUTH_TOKEN = os.environ.get("INSTAMOJO_AUTH_TOKEN")
+
+# --- Language Selection and Term Simplification --- #
+
+translations = {
+    "en": {
+        "welcome_title": "Welcome to HAVEN Crowdfunding!",
+        "app_loading": "Your application is loading...",
+        "contact_support": "If you see this message for a long time, please contact support.",
+        "select_language": "Select Language:",
+        "simplify_terms": "Simplify Terms",
+        "campaigns_title": "Our Campaigns",
+        "campaign_detail": "Details for Campaign ",
+        "back_to_campaigns": "Back to Campaigns",
+        "login_title": "Login",
+        "register_title": "Register",
+        "full_name": "Full Name",
+        "email_id": "Email ID",
+        "phone_number": "Phone Number",
+        "enter_otp": "Enter OTP",
+        "continue_btn": "Continue",
+        "not_registered": "Not registered?",
+        "create_account": "Create an account",
+        "sign_in_google": "Sign in With Google",
+        "sign_in_facebook": "Sign in With Facebook",
+        "register_individual": "Register as an Individual",
+        "register_organization": "Register as an Organization",
+        "organization_name": "Organization Name",
+        "organization_phone": "Organization Phone Number",
+        "select_org_type": "Select Organization Type",
+        "brief_description": "Brief Description (max 100 chars)",
+        "register_btn": "Register",
+        "campaign_1_title": "Sustainable Farming Initiative",
+        "campaign_1_desc": "Support local farmers in adopting sustainable practices.",
+        "campaign_3_title": "Education for All",
+        "campaign_3_desc": "Fund educational resources for underprivileged children.",
+        "campaign_2_title": "Clean Water Project",
+        "campaign_2_desc": "Provide access to clean and safe drinking water.",
+        "explore_categories": "Explore Categories",
+        "discover_campaigns": "Discover campaigns by interest.",
+        "art_design": "Art & Design",
+        "technology": "Technology",
+        "community": "Community",
+        "film_video": "Film & Video",
+        "music": "Music",
+        "publishing": "Publishing",
+        "search_campaigns": "Search Campaigns",
+        "search_placeholder": "Search by keyword, category.",
+        "enter_term_search": "Enter a term above to search for campaigns.",
+        "search_tip": "You can search by title, description, or category.",
+        "trending_campaigns": "Trending Campaigns",
+        "support_popular_projects": "Support the most popular projects on HAVEN.",
+        "home_button": "Home",
+        "explore_button": "Explore",
+        "search_button": "Search",
+        "welcome_haven": "Welcome to HAVEN"
+    },
+    "hi": {
+        "welcome_title": "हैवन क्राउडफंडिंग में आपका स्वागत है!",
+        "app_loading": "आपका एप्लिकेशन लोड हो रहा है...",
+        "contact_support": "यदि आप इस संदेश को लंबे समय तक देखते हैं, तो कृपया सहायता से संपर्क करें।",
+        "select_language": "भाषा चुनें:",
+        "simplify_terms": "शब्दों को सरल बनाएं",
+        "campaigns_title": "हमारे अभियान",
+        "campaign_detail": "अभियान के विवरण ",
+        "back_to_campaigns": "अभियानों पर वापस जाएं",
+        "login_title": "लॉगिन",
+        "register_title": "पंजीकरण",
+        "full_name": "पूरा नाम",
+        "email_id": "ईमेल आईडी",
+        "phone_number": "फोन नंबर",
+        "enter_otp": "ओटीपी दर्ज करें",
+        "continue_btn": "जारी रखें",
+        "not_registered": "पंजीकृत नहीं हैं?",
+        "create_account": "खाता बनाएं",
+        "sign_in_google": "गूगल से साइन इन करें",
+        "sign_in_facebook": "फेसबुक से साइन इन करें",
+        "register_individual": "व्यक्तिगत के रूप में पंजीकरण करें",
+        "register_organization": "संगठन के रूप में पंजीकरण करें",
+        "organization_name": "संगठन का नाम",
+        "organization_phone": "संगठन का फोन नंबर",
+        "select_org_type": "संगठन का प्रकार चुनें",
+        "brief_description": "संक्षिप्त विवरण (अधिकतम 100 अक्षर)",
+        "register_btn": "पंजीकरण करें",
+        "campaign_1_title": "टिकाऊ कृषि पहल",
+        "campaign_1_desc": "स्थानीय किसानों को टिकाऊ प्रथाओं को अपनाने में सहायता करें।",
+        "campaign_3_title": "सभी के लिए शिक्षा",
+        "campaign_3_desc": "वंचित बच्चों के लिए शैक्षिक संसाधनों को फंड करें।",
+        "campaign_2_title": "स्वच्छ पानी परियोजना",
+        "campaign_2_desc": "स्वच्छ और सुरक्षित पेयजल तक पहुंच प्रदान करें।",
+        "explore_categories": "श्रेणियों का अन्वेषण करें",
+        "discover_campaigns": "रुचि के अनुसार अभियान खोजें।",
+        "art_design": "कला और डिज़ाइन",
+        "technology": "प्रौद्योगिकी",
+        "community": "समुदाय",
+        "film_video": "फिल्म और वीडियो",
+        "music": "संगीत",
+        "publishing": "प्रकाशन",
+        "search_campaigns": "अभियान खोजें",
+        "search_placeholder": "कीवर्ड, श्रेणी से खोजें।",
+        "enter_term_search": "अभियान खोजने के लिए ऊपर एक शब्द दर्ज करें।",
+        "search_tip": "आप शीर्षक, विवरण, या श्रेणी से खोज सकते हैं।",
+        "trending_campaigns": "ट्रेंडिंग अभियान",
+        "support_popular_projects": "हैवन पर सबसे लोकप्रिय परियोजनाओं का समर्थन करें।",
+        "home_button": "होम",
+        "explore_button": "अन्वेषण करें",
+        "search_button": "खोजें",
+        "welcome_haven": "हैवन में आपका स्वागत है"
+    },
+    "ta": {
+        "welcome_title": "ஹேவன் க்ரவுட்ஃபண்டிங்கிற்கு வரவேற்கிறோம்!",
+        "app_loading": "உங்கள் பயன்பாடு ஏற்றப்படுகிறது...",
+        "contact_support": "இந்த செய்தியை நீண்ட நேரம் பார்த்தால், தயவுசெய்து ஆதரவைத் தொடர்பு கொள்ளுங்கள்।",
+        "select_language": "மொழியைத் தேர்ந்தெடுக்கவும்:",
+        "simplify_terms": "சொற்களை எளிதாக்கவும்",
+        "campaigns_title": "எங்கள் பிரச்சாரங்கள்",
+        "campaign_detail": "பிரச்சாரத்தின் விவரங்கள் ",
+        "back_to_campaigns": "பிரச்சாரங்களுக்குத் திரும்பு",
+        "login_title": "உள்நுழைவு",
+        "register_title": "பதிவு",
+        "full_name": "முழு பெயர்",
+        "email_id": "மின்னஞ்சல் ஐடி",
+        "phone_number": "தொலைபேசி எண்",
+        "enter_otp": "ஓடிபி உள்ளிடவும்",
+        "continue_btn": "தொடரவும்",
+        "not_registered": "பதிவு செய்யப்படவில்லையா?",
+        "create_account": "கணக்கை உருவாக்கவும்",
+        "sign_in_google": "கூகிள் மூலம் உள்நுழையவும்",
+        "sign_in_facebook": "பேஸ்புக் மூலம் உள்நுழையவும்",
+        "register_individual": "தனிநபராக பதிவு செய்யவும்",
+        "register_organization": "அமைப்பாக பதிவு செய்யவும்",
+        "organization_name": "அமைப்பின் பெயர்",
+        "organization_phone": "அமைப்பின் தொலைபேசி எண்",
+        "select_org_type": "அமைப்பின் வகையைத் தேர்ந்தெடுக்கவும்",
+        "brief_description": "சுருக்க விளக்கம் (அதிகபட்சம் 100 எழுத்துக்கள்)",
+        "register_btn": "பதிவு செய்யவும்",
+        "campaign_1_title": "நிலையான விவசாய முன்முயற்சி",
+        "campaign_1_desc": "உள்ளூர் விவசாயிகளை நிலையான நடைமுறைகளை ஏற்க ஆதரிக்கவும்।",
+        "campaign_3_title": "அனைவருக்கும் கல்வி",
+        "campaign_3_desc": "பின்தங்கிய குழந்தைகளுக்கு கல்வி வளங்களுக்கு நிதி வழங்கவும்।",
+        "campaign_2_title": "சுத்தமான நீர் திட்டம்",
+        "campaign_2_desc": "சுத்தமான மற்றும் பாதுகாப்பான குடிநீருக்கான அணுகலை வழங்கவும்।",
+        "explore_categories": "வகைகளை ஆராயவும்",
+        "discover_campaigns": "ஆர்வத்தின் அடிப்படையில் பிரச்சாரங்களைக் கண்டறியவும்।",
+        "art_design": "கலை மற்றும் வடிவமைப்பு",
+        "technology": "தொழில்நுட்பம்",
+        "community": "சமூகம்",
+        "film_video": "திரைப்படம் மற்றும் வீடியோ",
+        "music": "இசை",
+        "publishing": "வெளியீடு",
+        "search_campaigns": "பிரச்சாரங்களைத் தேடவும்",
+        "search_placeholder": "முக்கிய சொல், வகை மூலம் தேடவும்।",
+        "enter_term_search": "பிரச்சாரங்களைத் தேட மேலே ஒரு சொல்லை உள்ளிடவும்।",
+        "search_tip": "நீங்கள் தலைப்பு, விளக்கம் அல்லது வகை மூலம் தேடலாம்।",
+        "trending_campaigns": "டிரெண்டிங் பிரச்சாரங்கள்",
+        "support_popular_projects": "ஹேவனில் மிகவும் பிரபலமான திட்டங்களை ஆதரிக்கவும்।",
+        "home_button": "முகப்பு",
+        "explore_button": "ஆராயவும்",
+        "search_button": "தேடவும்",
+        "welcome_haven": "ஹேவனுக்கு வரவேற்கிறோம்"
+    },
+    "te": {
+        "welcome_title": "హేవన్ క్రౌడ్‌ఫండింగ్‌కు స్వాగతం!",
+        "app_loading": "మీ అప్లికేషన్ లోడ్ అవుతోంది...",
+        "contact_support": "మీరు ఈ సందేశాన్ని చాలా కాలం పాటు చూస్తుంటే, దయచేసి మద్దతును సంప్రదించండి।",
+        "select_language": "భాషను ఎంచుకోండి:",
+        "simplify_terms": "పదాలను సరళీకరించండి",
+        "campaigns_title": "మా ప్రచారాలు",
+        "campaign_detail": "ప్రచారం వివరాలు ",
+        "back_to_campaigns": "ప్రచారాలకు తిరిగి వెళ్ళండి",
+        "login_title": "లాగిన్",
+        "register_title": "నమోదు",
+        "full_name": "పూర్తి పేరు",
+        "email_id": "ఇమెయిల్ ఐడి",
+        "phone_number": "ఫోన్ నంబర్",
+        "enter_otp": "ఓటిపిని నమోదు చేయండి",
+        "continue_btn": "కొనసాగించండి",
+        "not_registered": "నమోదు కాలేదా?",
+        "create_account": "ఖాతాను సృష్టించండి",
+        "sign_in_google": "గూగుల్‌తో సైన్ ఇన్ చేయండి",
+        "sign_in_facebook": "ఫేస్‌బుక్‌తో సైన్ ఇన్ చేయండి",
+        "register_individual": "వ్యక్తిగతంగా నమోదు చేసుకోండి",
+        "register_organization": "సంస్థగా నమోదు చేసుకోండి",
+        "organization_name": "సంస్థ పేరు",
+        "organization_phone": "సంస్థ ఫోన్ నంబర్",
+        "select_org_type": "సంస్థ రకాన్ని ఎంచుకోండి",
+        "brief_description": "సంక్షిప్త వివరణ (గరిష్టంగా 100 అక్షరాలు)",
+        "register_btn": "నమోదు చేయండి",
+        "campaign_1_title": "స్థిరమైన వ్యవసాయ చొరవ",
+        "campaign_1_desc": "స్థానిక రైతులను స్థిరమైన పద్ధతులను అనుసరించడంలో మద్దతు ఇవ్వండి।",
+        "campaign_3_title": "అందరికీ విద్య",
+        "campaign_3_desc": "నిరుపేద పిల్లలకు విద్యా వనరులకు నిధులు అందించండి।",
+        "campaign_2_title": "స్వచ్ఛమైన నీటి ప్రాజెక్ట్",
+        "campaign_2_desc": "స్వచ్ఛమైన మరియు సురక్షితమైన తాగునీటికి అందుబాటును అందించండి।",
+        "explore_categories": "వర్గాలను అన్వేషించండి",
+        "discover_campaigns": "ఆసక్తి ఆధారంగా ప్రచారాలను కనుగొనండి।",
+        "art_design": "కళ మరియు డిజైన్",
+        "technology": "సాంకేతికత",
+        "community": "సమాజం",
+        "film_video": "చలనచిత్రం మరియు వీడియో",
+        "music": "సంగీతం",
+        "publishing": "ప్రచురణ",
+        "search_campaigns": "ప్రచారాలను వెతకండి",
+        "search_placeholder": "కీవర్డ్, వర్గం ద్వారా వెతకండి।",
+        "enter_term_search": "ప్రచారాలను వెతకడానికి పైన ఒక పదాన్ని నమోదు చేయండి।",
+        "search_tip": "మీరు శీర్షిక, వివరణ లేదా వర్గం ద్వారా వెతకవచ్చు।",
+        "trending_campaigns": "ట్రెండింగ్ ప్రచారాలు",
+        "support_popular_projects": "హేవన్‌లో అత్యంత ప్రజాదరణ పొందిన ప్రాజెక్టులకు మద్దతు ఇవ్వండి।",
+        "home_button": "హోమ్",
+        "explore_button": "అన్వేషించండి",
+        "search_button": "వెతకండి",
+        "welcome_haven": "హేవన్‌కు స్వాగతం"
     }
+}
 
-    .create-campaign-button:active {
-        transform: scale(0.95);
-    }
-    </style>
-    """, unsafe_allow_html=True)
-st.markdown(f"""
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-<script>
-    const firebaseConfig = {json.dumps(FIREBASE_CONFIG)};
-    if (!firebase.apps.length) {{
-        firebase.initializeApp(firebaseConfig);
-    }}
-    const auth = firebase.auth();
+# Get current language from session state or set default
+if 'lang' not in st.session_state:
+    st.session_state.lang = 'en'
 
-    window.signInWithEmailPassword = async (email, password) => {{
-        try {{
-            const userCredential = await auth.signInWithEmailAndPassword(email, password);
-            const idToken = await userCredential.user.getIdToken();
-            const data = encodeURIComponent(JSON.stringify({
-                type: 'SET_PAGE_STATE',
-                payload: {
-                    id_token: idToken,
-                    action: 'login'
-                }
-            }));
-            window.parent.location.search = `?data=${data}`;
-        }} catch (error) {{
-            const data = encodeURIComponent(JSON.stringify({
-                type: 'SET_PAGE_STATE',
-                payload: {
-                    error: error.message,
-                    action: 'login_error'
-                }
-            }));
-            window.parent.location.search = `?data=${data}`;
-        }}
-    }};
+# Function to get translated text
+def t(key):
+    english_text = translations["en"].get(key, key) # Always get English text first
+    if st.session_state.lang == "en":
+        return english_text
 
-    window.createUserWithEmailPassword = async (email, password) => {{
-        try {{
-            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-            const idToken = await userCredential.user.getIdToken();
-            const data = encodeURIComponent(JSON.stringify({
-                type: 'SET_PAGE_STATE',
-                payload: {
-                    id_token: idToken,
-                    action: 'register'
-                }
-            }));
-            window.parent.location.search = `?data=${data}`;
-        }} catch (error) {{
-            const data = encodeURIComponent(JSON.stringify({
-                type: 'SET_PAGE_STATE',
-                payload: {
-                    error: error.message,
-                    action: 'register_error'
-                }
-            }));
-            window.parent.location.search = `?data=${data}`;
-        }}
-    }};
-
-    window.signOutFirebase = async () => {{
-        try {{
-            await auth.signOut();
-            const data = encodeURIComponent(JSON.stringify({
-                type: 'SET_PAGE_STATE',
-                payload: {
-                    action: 'logout_success'
-                }
-            }));
-            window.parent.location.search = `?data=${data}`;
-        }} catch (error) {{
-            const data = encodeURIComponent(JSON.stringify({
-                type: 'SET_PAGE_STATE',
-                payload: {
-                    error: error.message,
-                    action: 'logout_error'
-                }
-            }));
-            window.parent.location.search = `?data=${data}`;
-        }}
-    }};
-</script>
-""", unsafe_allow_html=True)
-def check_backend_connection():
-    try:
-        endpoints = ['/health', '/docs', '/']
-
-        for endpoint in endpoints:
-            try:
-                response = requests.get(f"{BACKEND_URL}{endpoint}", timeout=10)
-                if response.status_code in [200, 404]:
-                    return True, "Connected"
-            except:
-                continue
-
-        return False, "All endpoints failed"
-
-    except Exception as e:
-        return False, f"Connection error: {str(e)}"
-
-def safe_json_parse(response):
-    try:
-        return response.json()
-    except:
-        return {"detail": f"Server error (Status: {response.status_code})"}
-
-def handle_oauth_callback():
-    try:
-        query_params = st.query_params
-
-        access_token = query_params.get('access_token')
-        user_info_str = query_params.get('user_info')
-
-        if access_token and user_info_str:
-            st.session_state.user_token = access_token
-            try:
-                user_info = json.loads(user_info_str)
-                st.session_state.user_info = user_info
-            except json.JSONDecodeError:
-                st.session_state.user_info = {"name": "OAuth User", "email": "user@oauth.com", "user_type": "individual"}
-
-            if st.session_state.user_info.get('user_type') == 'individual' and \
-               not st.session_state.user_info.get('phone') and \
-               not st.session_state.user_info.get('address'):
-                st.session_state.current_page = 'complete_oauth_profile'
-                st.success("Please complete your profile details.")
-            elif st.session_state.user_info.get('user_type') == 'organization' and \
-                 not st.session_state.user_info.get('organization_name'):
-                st.session_state.current_page = 'complete_oauth_profile'
-                st.success("Please complete your organization profile details.")
+    # Check if a direct translation exists for the key in the target language
+    if key in translations[st.session_state.lang]:
+        return translations[st.session_state.lang][key]
+    else:
+        # If no direct translation for the key, try to translate word by word via backend
+        # This part assumes the backend can handle word-by-word translation or returns original if no translation
+        translated_words = []
+        words = re.findall(r'\b\w+\b|\W+', english_text) # Split by words and non-words
+        for word in words:
+            if word.strip() and word.strip().isalpha(): # Only try to translate actual words
+                translated_word = translate_text_backend(word, target_lang=st.session_state.lang)
+                translated_words.append(translated_word)
             else:
-                st.session_state.current_page = 'home'
-                st.success("Successfully logged in with OAuth!")
-            st.rerun()
+                translated_words.append(word) # Keep non-words as is
+        return "".join(translated_words)
 
-        error = query_params.get('error')
-        if error:
-            st.error(f"OAuth login failed: {error}")
-
-    except Exception as e:
-        st.error(f"Error handling OAuth callback: {str(e)}")
-
-def render_oauth_buttons(is_register_page=False):
+# --- Term Simplification and Translation (Automatic) --- #
+def translate_text_backend(text, target_lang=None):
+    """Sends text to backend for translation."""
     try:
-        response = requests.get(f"{BACKEND_URL}/auth/status", timeout=10)
-        if response.status_code == 200:
-            status = safe_json_parse(response)
-            google_available = status.get('google_available', False)
-            facebook_available = status.get('facebook_available', False)
-        else:
-            google_available = False
-            facebook_available = False
-    except:
-        google_available = False
-        facebook_available = False
-
-    google_params = {"register_oauth": "true"} if is_register_page else {}
-    facebook_params = {"register_oauth": "true"} if is_register_page else {}
-
-    google_url = f"{BACKEND_URL}/auth/google?{urlencode(google_params)}"
-    facebook_url = f"{BACKEND_URL}/auth/facebook?{urlencode(facebook_params)}"
-
-    if google_available:
-        st.markdown(f"""
-        <a href="{google_url}" class="html-oauth-google">
-            <i class="fab fa-google"></i>{get_text('sign_in_google')}
-        </a>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown(f"""
-        <div class="html-oauth-google" style="background: #ccc; color: #666; cursor: not-allowed;">
-            <i class="fab fa-google"></i>{get_text('sign_in_google')}
-        </div>
-        """, unsafe_allow_html=True)
-
-    if facebook_available:
-        st.markdown(f"""
-        <a href="{facebook_url}" class="html-oauth-facebook">
-            <i class="fab fa-facebook-f"></i>{get_text('sign_in_facebook')}
-        </a>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown(f"""
-        <div class="html-oauth-facebook" style="background: #ccc; color: #666; cursor: not-allowed;">
-            <i class="fab fa-facebook-f"></i>{get_text('sign_in_facebook')}
-        </div>
-        """, unsafe_allow_html=True)
-
-def login_user_backend(id_token):
-    try:
-        response = requests.post(
-            f"{BACKEND_URL}/login",
-            json={"id_token": id_token},
-            timeout=15
-        )
-
-        if response.status_code == 200:
-            data = safe_json_parse(response)
-            st.session_state.user_token = data.get('access_token')
-            st.session_state.user_info = data.get('user_info', {})
-            st.session_state.current_page = 'home'
-            st.success("Login successful!")
-            st.rerun()
-        else:
-            error_data = safe_json_parse(response)
-            st.error(f"Login failed: {error_data.get('detail', 'Unknown error')}")
-
+        payload = {"text": text, "source_language": "en", "target_language": target_lang}
+        
+        response = requests.post(f"{BACKEND_URL}/translate-text", json=payload)
+        response.raise_for_status()
+        return response.json().get("translated_text", text)
     except requests.exceptions.RequestException as e:
-        st.error(f"Connection error: {str(e)}")
-    except Exception as e:
-        st.error(f"Login error: {str(e)}")
+        # st.warning(f"Could not translate text via backend: {e}. Using local translation.")
+        return text # Return original text if backend call fails
 
-def register_user_backend(id_token, user_type, individual_data=None, organization_data=None):
+def simplify_text_backend(text, target_lang=None):
+    """Sends text to backend for simplification/translation."""
     try:
-        payload = {
-            "id_token": id_token,
-            "user_type": user_type
+        payload = {"text": text}
+        if target_lang:
+            payload["target_language"] = target_lang
+
+        response = requests.post(f"{BACKEND_URL}/simplify-text", json=payload)
+        response.raise_for_status()
+        return response.json().get("simplified_text", text)
+    except requests.exceptions.RequestException as e:
+        st.warning(f"Could not simplify text via backend: {e}. Using local simplification.")
+        return simplify_text_local(text)
+
+def simplify_text_local(text):
+    replacements = {
+        "sustainable practices": "eco-friendly ways",
+        "underprivileged children": "children who need help",
+        "holistic development": "all-round growth",
+        "socio-economic background": "family's money situation",
+        "permaculture": "natural farming methods",
+        "resilient food system": "strong food supply",
+        "widespread health issues": "many health problems",
+        "fundamental human right": "basic right for everyone"
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    return text
+
+# --- Page Navigation State --- #
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+if 'current_page' not in st.session_state:
+    st.session_state.current_page = 'login' # Start with login page
+if 'registration_type' not in st.session_state:
+    st.session_state.registration_type = None
+
+# --- API Interaction Functions ---
+def get_auth_headers():
+    """Returns headers with JWT token if available."""
+    if st.session_state.get("auth_token"):
+        return {"Authorization": f"Bearer {st.session_state.auth_token}"}
+    return {}
+
+@st.cache_data(ttl=300) # Cache data for 5 minutes
+def fetch_all_campaigns():
+    """Fetches all campaigns from the backend."""
+    if not st.session_state.logged_in:
+        return [] # Don't fetch if not logged in
+
+    try:
+        response = requests.get(f"{BACKEND_URL}/campaigns", headers=get_auth_headers())
+        response.raise_for_status() # Raise an exception for HTTP errors
+        all_campaigns = response.json()
+        return [c for c in all_campaigns if c.get('verification_status') != 'Rejected']
+    except requests.exceptions.ConnectionError:
+        st.error(f"Could not connect to backend at {BACKEND_URL}. Please ensure the backend is running.")
+        return []
+    except requests.exceptions.HTTPError as e:
+        st.error(f"HTTP error fetching campaigns: {e.response.status_code} - {e.response.text}")
+        return []
+    except Exception as e:
+        st.error(f"An unexpected error occurred: {e}")
+        return []
+
+def search_campaigns_backend(query):
+    """Searches campaigns via the backend."""
+    try:
+        response = requests.post(f"{BACKEND_URL}/search", json={"query": query}, headers=get_auth_headers())
+        response.raise_for_status()
+        search_results = response.json()
+        return [c for c in search_results if c.get('verification_status') != 'Rejected']
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error searching campaigns: {e}")
+        return []
+
+def create_campaign_backend(campaign_data):
+    """Sends request to create a new campaign."""
+    try:
+        response = requests.post(f"{BACKEND_URL}/create-campaign", json=campaign_data, headers=get_auth_headers())
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        st.error(f"Error creating campaign: {e.response.json().get('detail', 'Unknown error')}")
+        return None
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error creating campaign: {e}")
+        return None
+
+def login_user(email, password):
+    """Authenticates user with the backend."""
+    try:
+        response = requests.post(f"{BACKEND_URL}/login", json={"email": email, "password": password})
+        response.raise_for_status()
+        token_data = response.json()
+        st.session_state.auth_token = token_data.get("access_token")
+        st.session_state.user_role = token_data.get("role", "user")
+        st.session_state.logged_in = True
+        st.session_state.username = email # Or fetch username from token_data
+        st.session_state.current_page = "home"
+        st.success(f"Welcome, {email}!")
+        st.rerun()
+    except requests.exceptions.HTTPError as e:
+        st.error(f"Login failed: {e.response.json().get('detail', 'Incorrect email or password')}")
+    except requests.exceptions.RequestException as e:
+        st.error(f"Login failed: Could not connect to backend. Is it running? {e}")
+
+def register_user_backend(user_data):
+    """Registers a new user with the backend."""
+    try:
+        response = requests.post(f"{BACKEND_URL}/register", json=user_data)
+        response.raise_for_status()
+        st.success("Registration successful! Please log in.")
+        st.session_state.current_page = "login"
+        st.rerun()
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        st.error(f"Registration failed: {e.response.json().get('detail', 'Unknown error')}")
+        return None
+    except requests.exceptions.RequestException as e:
+        st.error(f"Registration failed: Could not connect to backend. Is it running? {e}")
+        return None
+
+def logout_user():
+    """Logs out the user."""
+    st.session_state.logged_in = False
+    st.session_state.auth_token = None
+    st.session_state.username = None
+    st.session_state.user_role = "user"
+    st.session_state.current_page = "login"
+    st.success("Logged out successfully.")
+    st.rerun()
+
+# --- Term Definitions for Simplification ---
+TERM_DEFINITIONS = {
+    "legal": {
+        "Intellectual Property Rights": "Legal rights to creations of the mind, like inventions or designs.",
+        "Terms of Service": "The rules and conditions users must agree to when using a service.",
+        "Accredited Investor": "An investor recognized by financial regulators as sophisticated enough to invest in certain complex securities.",
+        "SEC regulations": "Rules set by the U.S. Securities and Exchange Commission to protect investors.",
+        "KYC (Know Your Customer)": "A process to verify the identity of clients to prevent fraud and illegal activities.",
+        "AML (Anti-Money Laundering)": "Laws and procedures to prevent criminals from disguising illegally obtained funds as legitimate income.",
+        "Equity Crowdfunding": "Raising capital by offering shares of a company to a large number of small investors.",
+        "Convertible Note": "A type of short-term debt that converts into equity at a later stage, usually during a future funding round.",
+        "Arbitration": "A legal technique for resolving disputes outside the courts, where a neutral third party makes a decision.",
+        "Jurisdiction": "The official power to make legal decisions and judgments."
+    },
+    "financial": {
+        "Return on Investment (ROI)": "A measure of the profitability of an investment, calculated as profit divided by cost.",
+        "Valuation": "The process of determining the current worth of a company or asset.",
+        "Seed Funding": "The earliest stage of fundraising for a startup, used to get the business off the ground.",
+        "Venture Capital": "Funding provided by investors to startup companies and small businesses with perceived long-term growth potential.",
+        "Dilution": "The reduction in the ownership percentage of a company's existing shareholders when new shares are issued.",
+        "Capital": "Wealth in the form of money or other assets owned by a person or organization.",
+        "Liquidity": "The ease with which an asset or security can be converted into ready cash without affecting its market price.",
+        "Escrow Account": "A temporary pass-through account held by a third party during the process of a transaction.",
+        "Payment Gateway Fees": "Charges imposed by payment processing services for handling online transactions.",
+        "Funding Threshold": "The minimum amount of money a crowdfunding campaign must raise to be successful.",
+        "All-or-Nothing Model": "A crowdfunding model where funds are only collected if the campaign reaches its full funding goal.",
+        "Tax Implications": "The consequences that a financial transaction or investment has on an individual's or company's tax liability."
+    },
+    "tech": {
+        "Minimum Viable Product (MVP)": "A version of a new product with just enough features to satisfy early customers and provide feedback for future product development.",
+        "Proof of Concept (POC)": "A realization of a certain method or idea to demonstrate its feasibility.",
+        "Scalability": "The ability of a system to handle a growing amount of work by adding resources.",
+        "Blockchain": "A decentralized, distributed ledger technology that records transactions across many computers.",
+        "Artificial Intelligence (AI)": "The simulation of human intelligence processes by machines.",
+        "Machine Learning (ML)": "A subset of AI that allows systems to learn from data without being explicitly programmed.",
+        "API (Application Programming Interface)": "A set of rules and protocols for building and interacting with software applications.",
+        "User Interface (UI)": "The visual part of a computer application or website that a user interacts with.",
+        "User Experience (UX)": "The overall experience of a person using a product, encompassing their feelings and attitudes.",
+        "Open Source": "Software with source code that anyone can inspect, modify, and enhance.",
+        "Proprietary Technology": "Technology owned exclusively by a company, often protected by patents or copyrights."
+    },
+    "social": {
+        "Sustainable Development Goals (SDGs)": "A collection of 17 global goals set by the United Nations for a sustainable future.",
+        "Impact Investing": "Investments made with the intention to generate positive, measurable social and environmental impact alongside a financial return.",
+        "Social Enterprise": "A business that has specific social objectives as its primary purpose.",
+        "Carbon Footprint": "The total amount of greenhouse gases produced to directly and indirectly support human activities.",
+        "Renewable Energy": "Energy from sources that are naturally replenishing but flow-limited, such as solar, wind, geothermal, and hydro.",
+        "Circular Economy": "An economic system aimed at eliminating waste and the continual use of resources.",
+        "Biodiversity": "The variety of life on Earth at all its levels, from genes to ecosystems.",
+        "Community Empowerment": "The process of enabling communities to increase control over their lives.",
+        "Philanthropy": "The desire to promote the welfare of others, expressed especially by the generous donation of money to good causes."
+    },
+    "marketing": {
+        "Market Penetration": "The successful selling of a product or service in a specific market.",
+        "Target Audience": "The specific group of consumers most likely to want your product or service.",
+        "Value Proposition": "A statement that explains what benefit a company provides to customers.",
+        "Unique Selling Proposition (USP)": "The unique benefit a company offers that helps it stand out from competitors.",
+        "SEO (Search Engine Optimization)": "The process of improving the visibility of a website or a web page in a web search engine's unpaid results.",
+        "Content Strategy": "The planning, development, and management of content.",
+        "Customer Acquisition Cost (CAC)": "The cost associated with convincing a consumer to buy a product/service.",
+        "Business Model Canvas": "A strategic management template used for developing new or documenting existing business models."
+    },
+    "general": {
+        "Milestone": "A significant stage or event in the development of something.",
+        "Deliverable": "A tangible or intangible good or service produced as a result of a project that is intended to be delivered to a customer.",
+        "Timeline": "A schedule of events; a chronological record.",
+        "Budget Allocation": "The process of assigning available financial resources for specific purposes.",
+        "Risk Assessment": "The process of identifying potential hazards and analyzing what could happen if a hazard occurs."
+    }
+}
+
+# --- JavaScript for Term Highlighting and Tooltips ---
+def inject_term_simplification_js():
+    js_code = """
+    <script>
+    const termDefinitions = %s; // Will be replaced by Python with JSON data
+
+    function applyTermSimplification() {
+        const campaignDescriptionElement = document.getElementById(\'campaign-description-text\');
+        if (!campaignDescriptionElement) {
+            return;
         }
-        if individual_data:
-            payload["individual_data"] = individual_data
-        if organization_data:
-            payload["organization_data"] = organization_data
 
-        response = requests.post(
-            f"{BACKEND_URL}/register",
-            json=payload,
-            timeout=15
-        )
+        let originalText = campaignDescriptionElement.innerHTML;
+        let newHtml = originalText;
 
-        if response.status_code == 200:
-            data = safe_json_parse(response)
-            st.session_state.user_token = data.get('access_token')
-            st.session_state.user_info = data.get('user_info', {})
-            st.session_state.current_page = 'home'
-            st.success("Registration successful! You are now logged in.")
-            st.rerun()
-        else:
-            error_data = safe_json_parse(response)
-            st.error(f"Registration failed: {error_data.get('detail', 'Unknown error')}")
+        for (const category in termDefinitions) {
+            const terms = termDefinitions[category];
+            const className = `highlight-${category}`; // e.g., highlight-legal
 
-    except requests.exceptions.RequestException as e:
-        st.error(f"Connection error: {str(e)}")
-    except Exception as e:
-        st.error(f"Registration error: {str(e)}")
+            for (const term in terms) {
+                const definition = terms[term];
+                // Create a regex to match the whole word, case-insensitive
+                const regex = new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\\\]/g, '\\$&')}\\b`, 'gi');
+                newHtml = newHtml.replace(regex, (match) => {
+                    // Avoid re-wrapping already wrapped terms
+                    if (match.includes('<span class="highlight-"')) {
+                        return match;
+                    }
+                    return `<span class="${className}" data-definition="${definition}">${match}<span class="tooltip-box">${definition}</span></span>`;
+                });
+            }
+        }
+        campaignDescriptionElement.innerHTML = newHtml;
+    }
 
-def update_user_profile_backend(user_data, token):
-    try:
-        headers = {"Authorization": f"Bearer {token}"}
-        response = requests.post(
-            f"{BACKEND_URL}/update_profile",
-            json=user_data,
-            headers=headers,
-            timeout=15
-        )
+    const observer = new MutationObserver((mutationsList, observer) => {
+        for(const mutation of mutationsList) {
+            if (mutation.type === \'childList\' && mutation.addedNodes.length > 0) {
+                const campaignDetailContainer = document.querySelector(\".campaign-detail-container\");
+                if (campaignDetailContainer && campaignDetailContainer.contains(document.getElementById(\'campaign-description-text\'))) {
+                    applyTermSimplification();
+                    return;
+                }
+            }
+        }
+    });
 
-        if response.status_code == 200:
-            updated_user_info = safe_json_parse(response)
-            st.session_state.user_info = updated_user_info
-            st.success("Profile updated successfully!")
-            st.session_state.current_page = 'home'
-            st.rerun()
-        else:
-            error_data = safe_json_parse(response)
-            st.error(f"Profile update failed: {error_data.get('detail', 'Unknown error')}")
+    observer.observe(document.body, { childList: true, subtree: true });
+    document.addEventListener(\'DOMContentLoaded\', applyTermSimplification);
+    </script>
+    """ % json.dumps(TERM_DEFINITIONS)
+    st.markdown(js_code, unsafe_allow_html=True)
 
-    except requests.exceptions.RequestException as e:
-        st.error(f"Connection error: {str(e)}")
-    except Exception as e:
-        st.error(f"Profile update error: {str(e)}")
 
-def create_campaign_backend(campaign_data, token):
-    try:
-        headers = {"Authorization": f"Bearer {token}"}
-        response = requests.post(
-            f"{BACKEND_URL}/create_campaign",
-            json=campaign_data,
-            headers=headers,
-            timeout=30
-        )
-
-        if response.status_code == 200:
-            st.success(get_text('campaign_creation_success'))
-            st.session_state.current_page = 'home'
-            st.rerun()
-        else:
-            error_data = safe_json_parse(response)
-            st.error(f"{get_text('campaign_creation_failed')} {error_data.get('detail', 'Unknown error')}")
-
-    except requests.exceptions.RequestException as e:
-        st.error(f"Connection error during campaign creation: {str(e)}")
-    except Exception as e:
-        st.error(f"Campaign creation error: {str(e)}")
-
-def render_user_profile():
-    if st.session_state.user_info:
-        user_info = st.session_state.user_info
-        name = user_info.get('name', user_info.get('contact_full_name', 'User'))
-        email = user_info.get('email', 'user@example.com')
-        user_type = user_info.get('user_type', 'individual')
-
-        st.markdown(f"""
-        <div class="user-profile">
-            <div class="user-avatar">{name[0].upper() if name else 'U'}</div>
-            <div class="user-name">{name} ({user_type.capitalize()})</div>
-            <div class="user-email">{email}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        if st.button(get_text('logout'), key="firebase_logout_button"):
-            st.components.v1.html("""
-            <script>
-            window.signOutFirebase();
-            </script>
-            """, height=0, width=0)
+# --- Render Pages based on current_page --- #
 
 def render_login_page():
-    st.markdown('<div class="html-container">', unsafe_allow_html=True)
-
-    st.markdown(f'<div class="html-title">{get_text("login")}</div>', unsafe_allow_html=True)
-
     with st.form(key='login_form'):
-        email = st.text_input("", placeholder="Enter Your Email", key="login_email")
-        password = st.text_input("", type="password", placeholder="Enter Your Password", key="login_password")
+        st.markdown(f"""
+        <div class="container">
+          <div class="title">{t("login_title")}</div>
+        """, unsafe_allow_html=True)
 
-        submit_button = st.form_submit_button(get_text('continue'))
+        email = st.text_input(t("email_id"), key="login_email")
+        password = st.text_input(t("enter_otp"), type="password", key="login_password")
+
+        submit_button = st.form_submit_button(t("continue_btn"))
+
+        st.markdown(f"""
+          <div class="option">
+            {t("not_registered")}
+            <a href="#" id="create_account_link">{t("create_account")}</a>
+          </div>
+
+          <div class="google">
+            <a href="#"><i class="fab fa-google"></i>{t("sign_in_google")}</a>
+          </div>
+
+          <div class="facebook">
+            <a href="#"><i class="fab fa-facebook-f"></i>{t("sign_in_facebook")}</a>
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
 
         if submit_button:
-            if email and password:
-                st.components.v1.html(f"""
-                <script>
-                window.signInWithEmailPassword("{email}", "{password}");
-                </script>
-                """, height=0, width=0)
-            else:
-                st.error("Please fill in all fields")
+            login_user(email, password)
 
-    st.markdown(f"""
-    <div class="html-option">
-        {get_text('not_registered')}
-        <a href="{FRONTEND_BASE_URL}?page=register" target="_blank">{get_text('create_account')}</a>
-    </div>
+    # Handle navigation to register page from login
+    st.markdown("""
+    <script>
+        document.getElementById("create_account_link").onclick = function() {
+            const streamlitButton = document.getElementById("hidden_register_button");
+            if (streamlitButton) {
+                streamlitButton.click();
+            }
+        };
+    </script>
     """, unsafe_allow_html=True)
-
-    render_oauth_buttons(is_register_page=False)
-
-    st.markdown('</div>', unsafe_allow_html=True)
+    if st.button("", key="hidden_register_button", help="Go to registration", disabled=True):
+        st.session_state.current_page = 'register'
+        st.rerun()
 
 def render_register_page():
-    st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="container">
+      <div class="title">{t("register_title")}</div>
+    """, unsafe_allow_html=True)
 
-    st.markdown(f'<div class="html-title-register">{get_text("register")}</div>', unsafe_allow_html=True)
-
-    registration_type_options = [get_text('individual'), get_text('organization')]
-
-    if 'selected_reg_type_register' not in st.session_state:
-        st.session_state.selected_reg_type_register = registration_type_options[0]
-
-    selected_type = st.selectbox(
-        "Select Registration Type",
-        options=registration_type_options,
-        index=registration_type_options.index(st.session_state.selected_reg_type_register),
-        key="reg_type_selector_outside_form_register"
+    reg_type_options = {"Individual": "individual", "Organization": "organization"}
+    selected_reg_type_display = st.selectbox(
+        "Register as a:",
+        list(reg_type_options.keys()),
+        key="reg_type_select"
     )
-    if selected_type != st.session_state.selected_reg_type_register:
-        st.session_state.selected_reg_type_register = selected_type
-        st.rerun()
+    st.session_state.registration_type = reg_type_options[selected_reg_type_display]
 
     with st.form(key='register_form'):
-        email, password, confirm_password = "", "", ""
-        full_name, phone, address = "", "", ""
-        contact_full_name, contact_phone = "", ""
-        org_name, org_type, org_description = "", "", ""
-        ngo_darpan_id, pan, fcra_number = "", "", ""
-
-        user_data_for_backend = {}
-        is_valid_input = False
-
-        if st.session_state.selected_reg_type_register == get_text('individual'):
-            st.markdown(f"""<div class="html-form-box"><h3>{get_text("register_individual")}</h3>""", unsafe_allow_html=True)
-
-            full_name = st.text_input("", placeholder="Full Name", key="reg_full_name_ind")
-            email = st.text_input("", placeholder="Email ID", key="reg_email_ind")
-            phone = st.text_input("", placeholder="Phone Number", key="reg_phone_ind")
-            password = st.text_input("", type="password", placeholder="Password", key="reg_password_ind")
-            confirm_password = st.text_input("", type="password", placeholder="Confirm Password", key="reg_confirm_password_ind")
-            address = st.text_area("", placeholder="Address", key="reg_address_individual_ind")
-
-            st.markdown('</div>', unsafe_allow_html=True)
-
-            individual_data = {
-                "full_name": full_name,
-                "phone": phone,
-                "address": address
-            }
-            user_data_for_backend = {"user_type": "individual", "individual_data": individual_data}
-            is_valid_input = bool(full_name and email and phone and password and confirm_password and address)
-
-        elif st.session_state.selected_reg_type_register == get_text('organization'):
-            st.markdown(f"""<div class="html-form-box"><h3>{get_text("contact_person_details")}</h3>""", unsafe_allow_html=True)
-
-            contact_full_name = st.text_input("", placeholder="Contact Person Full Name", key="reg_contact_full_name_org")
-            email = st.text_input("", placeholder="Contact Person Email ID (for login)", key="reg_email_org_contact_org")
-            contact_phone = st.text_input("", placeholder="Contact Person Phone Number", key="reg_contact_phone_org")
-            password = st.text_input("", type="password", placeholder="Password", key="reg_password_org_contact_org")
-            confirm_password = st.text_input("", type="password", placeholder="Confirm Password", key="reg_confirm_password_org_contact_org")
-
-            st.markdown('</div>', unsafe_allow_html=True)
-
-            st.markdown(f"""<div class="html-form-box"><h3>{get_text("organization_details")}</h3>""", unsafe_allow_html=True)
-
-            org_name = st.text_input("", placeholder="Organization Name", key="reg_org_name_org")
-            org_type = st.selectbox("",
-                                   options=["", get_text('ngo'), get_text('startup'), get_text('charity')],
-                                   key="reg_org_type_select_org")
-            org_description = st.text_input("", placeholder=get_text('description'), key="reg_org_description_org")
-            address = st.text_area("", placeholder="Organization Address", key="reg_address_organization_org")
-            ngo_darpan_id = st.text_input("", placeholder="NGO Darpan ID (Optional)", key="reg_ngo_darpan_id_org")
-            pan = st.text_input("", placeholder="PAN (Optional)", key="reg_pan_org")
-            fcra_number = st.text_input("", placeholder="FCRA Number (Optional)", key="reg_fcra_number_org")
-
-            st.markdown('</div>', unsafe_allow_html=True)
-
-            organization_data = {
-                "contact_full_name": contact_full_name,
-                "contact_phone": contact_phone,
-                "organization_name": org_name,
-                "organization_type": org_type,
-                "description": org_description,
-                "address": address,
-                "ngo_darpan_id": ngo_darpan_id,
-                "pan": pan,
-                "fcra_number": fcra_number
-            }
-            user_data_for_backend = {"user_type": "organization", "organization_data": organization_data}
-            is_valid_input = bool(contact_full_name and email and contact_phone and password and confirm_password and
-                                  org_name and org_type and org_description and address)
-
-        submit_button = st.form_submit_button(get_text('register'))
-
-        if submit_button:
-            if not is_valid_input:
-                st.error("Please fill in all required fields for the selected registration type.")
-            elif password != confirm_password:
-                st.error("Passwords do not match")
-            elif len(password) < 6:
-                st.error("Password must be at least 6 characters long")
-            else:
-                st.components.v1.html(f"""
-                <script>
-                window.createUserWithEmailPassword("{email}", "{password}");
-                </script>
-                """, height=0, width=0)
-                st.session_state.temp_registration_data = user_data_for_backend
-                st.session_state.temp_registration_data['email'] = email
-
-    st.markdown(f"""
-    <div class="html-option">
-        {get_text('already_have_account')}
-        <a href="{FRONTEND_BASE_URL}?page=login" target="_blank">{get_text('sign_in_here')}</a>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class="oauth-divider">
-        <span>or sign up with social account</span>
-    </div>
-    """, unsafe_allow_html=True)
-
-    render_oauth_buttons(is_register_page=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-def render_complete_oauth_profile_page():
-    st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
-    st.markdown(f'<div class="html-title-register">{get_text("complete_profile_title")}</div>', unsafe_allow_html=True)
-    st.markdown(
-        f'<p style="color: #333; text-align: center; margin-bottom: 20px;">{get_text("provide_details")}</p>',
-        unsafe_allow_html=True)
-
-    user_info = st.session_state.get('user_info', {})
-    oauth_email = user_info.get('email', '')
-    oauth_name = user_info.get('name', '')
-
-    if 'selected_reg_type_oauth' not in st.session_state:
-        st.session_state.selected_reg_type_oauth = user_info.get('user_type', TRANSLATIONS['English']['individual'])
-
-    selected_type_oauth = st.selectbox(
-        "Select Your User Type",
-        options=[get_text('individual'), get_text('organization')],
-        index=([get_text('individual'), get_text('organization')].index(st.session_state.selected_reg_type_oauth)),
-        key="complete_reg_type_selector_outside_form_oauth"
-    )
-    if selected_type_oauth != st.session_state.selected_reg_type_oauth:
-        st.session_state.selected_reg_type_oauth = selected_type_oauth
-        st.rerun()
-
-    with st.form(key='complete_profile_form'):
-        st.markdown(f"""<div class="html-form-wrapper">""", unsafe_allow_html=True)
-
-        st.markdown(f"""<div class="html-form-box"><h3>OAuth Details</h3></div>""", unsafe_allow_html=True)
-        st.text_input("Email", value=oauth_email, disabled=True, key="oauth_email_display_cp")
-        st.text_input("Name", value=oauth_name, disabled=True, key="oauth_name_display_cp")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        st.markdown(f"""<div class="html-form-box"><h3>Additional Details</h3></div>""", unsafe_allow_html=True)
-
-        user_data_to_send = {"user_type": selected_type_oauth}
-        is_valid_input = False
-
-        if selected_type_oauth == get_text('individual'):
-            phone = st.text_input("", placeholder="Phone Number", value=user_info.get('phone', ''), key="complete_phone_ind_cp")
-            address = st.text_area("", placeholder="Address", value=user_info.get('address', ''), key="complete_address_ind_cp")
-
-            user_data_to_send.update({
-                "full_name": oauth_name,
-                "phone": phone,
-                "address": address,
-            })
-            is_valid_input = bool(phone and address)
-
-        elif selected_type_oauth == get_text('organization'):
-            st.markdown(f"""<h4>{get_text("contact_person_details")}</h4>""", unsafe_allow_html=True)
-            contact_full_name = st.text_input("Contact Person Full Name", value=user_info.get('contact_full_name', oauth_name), disabled=True,
-                                              key="complete_contact_full_name_org_cp")
-            contact_phone = st.text_input("", placeholder="Contact Person Phone Number", value=user_info.get('contact_phone', ''),
-                                          key="complete_contact_phone_org_cp")
-
-            st.markdown(f"""<h4>{get_text("organization_details")}</h4>""", unsafe_allow_html=True)
-            org_name = st.text_input("", placeholder="Organization Name", value=user_info.get('organization_name', ''), key="complete_org_name_org_cp")
-            org_type = st.selectbox("Organization Type",
-                                   options=["", get_text('ngo'), get_text('startup'), get_text('charity')],
-                                   index=(["", get_text('ngo'), get_text('startup'), get_text('charity')].index(user_info.get('organization_type', '') if user_info.get('organization_type') in ["", get_text('ngo'), get_text('startup'), get_text('charity')] else "")),
-                                   key="complete_org_type_select_org_cp")
-            org_description = st.text_input("", placeholder=get_text('description'), value=user_info.get('description', ''),
-                                            key="complete_org_description_org_cp")
-            address = st.text_area("", placeholder="Organization Address", value=user_info.get('address', ''), key="complete_address_org_org_cp")
-            ngo_darpan_id = st.text_input("", placeholder="NGO Darpan ID (Optional)", value=user_info.get('ngo_darpan_id', ''), key="complete_ngo_darpan_id_org_cp")
-            pan = st.text_input("", placeholder="PAN (Optional)", value=user_info.get('pan', ''), key="complete_pan_org_cp")
-            fcra_number = st.text_input("", placeholder="FCRA Number (Optional)", value=user_info.get('fcra_number', ''), key="complete_fcra_number_org_cp")
-
-            user_data_to_send.update({
-                "contact_full_name": contact_full_name,
-                "contact_phone": contact_phone,
-                "organization_name": org_name,
-                "organization_type": org_type,
-                "description": org_description,
-                "address": address,
-                "ngo_darpan_id": ngo_darpan_id,
-                "pan": pan,
-                "fcra_number": fcra_number
-            })
-            is_valid_input = bool(contact_full_name and contact_phone and org_name and org_type and org_description and address)
-
-        st.markdown('</div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        submit_button = st.form_submit_button(get_text('update_profile'))
-
-        if submit_button:
-            if not is_valid_input:
-                st.error("Please fill in all required fields for your selected user type.")
-            elif st.session_state.user_token:
-                update_user_profile_backend(user_data_to_send, st.session_state.user_token)
-            else:
-                st.error("Authentication token missing. Please try logging in again.")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-def render_create_campaign_button():
-    if st.session_state.user_token and st.session_state.user_info and \
-            st.session_state.user_info.get('user_type') == 'organization':
         st.markdown(f"""
-        <div style="text-align: center; margin-top: 20px;">
-            <button class="create-campaign-button" onclick="window.parent.postMessage({{streamlit: {{type: 'SET_PAGE_STATE', payload: 'create_campaign'}}}}, '*');">
-                +
-            </button>
-        </div>
+          <div class="form-wrapper">
         """, unsafe_allow_html=True)
 
-def render_create_campaign_page():
-    st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
-    st.markdown(f'<div class="html-title-register">{get_text("create_campaign")}</div>', unsafe_allow_html=True)
+        if st.session_state.registration_type == 'individual':
+            full_name = st.text_input(t("full_name"), key="reg_full_name")
+            email = st.text_input(t("email_id"), key="reg_email")
+            phone_number = st.text_input(t("phone_number"), key="reg_phone_number")
+            otp = st.text_input(t("enter_otp"), key="reg_otp")
+            user_data = {"full_name": full_name, "email": email, "phone_number": phone_number, "otp": otp, "type": "individual"}
 
-    if not (st.session_state.user_token and st.session_state.user_info and \
-            st.session_state.user_info.get('user_type') == 'organization'):
-        st.warning(get_text('only_org_can_create_campaign'))
-        return
+        elif st.session_state.registration_type == 'organization':
+            org_name = st.text_input(t("organization_name"), key="reg_org_name")
+            org_phone = st.text_input(t("organization_phone"), key="reg_org_phone")
+            org_type = st.selectbox(t("select_org_type"), ["", "NGO", "Startup", "Charity"], key="reg_org_type")
+            brief_description = st.text_area(t("brief_description"), max_chars=100, key="reg_brief_desc")
+            email = st.text_input(t("email_id"), key="reg_email_org")
+            otp = st.text_input(t("enter_otp"), key="reg_otp_org")
+            user_data = {"organization_name": org_name, "organization_phone": org_phone, "organization_type": org_type, "brief_description": brief_description, "email": email, "otp": otp, "type": "organization"}
 
-    with st.form(key='create_campaign_form'):
-        campaign_name = st.text_input("", placeholder=get_text('campaign_name'), key="campaign_name_input")
-        description = st.text_area("", placeholder=get_text('campaign_description_full'),
-                                   key="campaign_description_input")
-        goal_amount = st.number_input("", min_value=100.0, value=1000.0, step=100.0, format="%.2f",
-                                      placeholder=get_text('goal_amount'), key="goal_amount_input")
-        category = st.selectbox("",
-                                options=["", get_text('technology'), get_text('health'), get_text('education'),
-                                         get_text('environment'), get_text('arts'), get_text('community')],
-                                placeholder=get_text('campaign_category'), key="campaign_category_select")
+        st.markdown(f"""
+            </div>
 
-        uploaded_file = st.file_uploader(get_text('upload_image'), type=["png", "jpg", "jpeg"],
-                                         key="campaign_image_uploader")
+            <div class="input-box button">
+              <input type="submit" value="{t("register_btn")}" />
+            </div>
+          </div>
+        """, unsafe_allow_html=True)
 
-        submit_button = st.form_submit_button(get_text('submit_campaign'))
+        submit_button = st.form_submit_button(t("register_btn"))
 
         if submit_button:
-            if not all([campaign_name, description, goal_amount, category]):
-                st.error("Please fill in all campaign details.")
-            elif category == "":
-                st.error("Please select a campaign category.")
-            else:
-                image_base64 = None
-                if uploaded_file is not None:
-                    bytes_data = uploaded_file.getvalue()
-                    image_base64 = base64.b64encode(bytes_data).decode('utf-8')
-
-                campaign_data = {
-                    "campaign_name": campaign_name,
-                    "description": description,
-                    "goal": float(goal_amount),
-                    "category": category,
-                    "image_base64": image_base64
-                }
-                create_campaign_backend(campaign_data, st.session_state.user_token)
-
-    st.markdown('</div>', unsafe_allow_html=True)
+            register_user_backend(user_data)
 
 def render_home_page():
-    st.markdown(f'<h1 class="app-title">{get_text("explore")}</h1>', unsafe_allow_html=True)
-    st.markdown(f"## {get_text('trending_campaigns')}")
-
-    try:
-        response = requests.get(f"{BACKEND_URL}/campaigns", timeout=10)
-        if response.status_code == 200:
-            campaigns = response.json()
-        else:
-            st.error(f"Failed to load campaigns: {response.status_code} - {response.text}")
-            campaigns = []
-    except requests.exceptions.RequestException as e:
-        st.error(f"Connection error fetching campaigns: {str(e)}")
-        campaigns = []
-
-    if not campaigns:
-        st.info("No campaigns found. Create one if you are an organization!")
-
-    for campaign in campaigns:
-        progress_percent = (campaign.get('funded', 0) / campaign.get('goal', 1)) * 100 if campaign.get('goal', 1) > 0 else 0
-        progress_percent = min(100, max(0, progress_percent))
-
-        st.markdown(f"""
-        <div class="campaign-card">
-            <div class="campaign-image">
-                <img src="{campaign.get('image_url', 'https://placehold.co/600x400/4CAF50/ffffff?text=Campaign+Image')}"
-                     alt="{campaign['campaign_name']}"
-                     style="width:100%; height: 200px; object-fit:cover; border-radius: 12px 12px 0 0;">
-            </div>
-            <div class="campaign-content">
-                <div class="campaign-title">{campaign['campaign_name']}</div>
-                <div class="campaign-description">{campaign['description']}</div>
-                <div style="font-size: 0.9em; color: #777; margin-bottom: 0.5rem;">
-                    By: {campaign.get('author', 'N/A')} | Category: {campaign.get('category', 'N/A')}
-                </div>
-                <div class="campaign-progress">
-                    <div class="campaign-progress-bar" style="width: {progress_percent}%"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between; color: #666; font-weight: 500;">
-                    <span>Raised: ${campaign.get('funded', 0):,}</span>
-                    <span>Goal: ${campaign.get('goal', 0):,}</span>
-                </div>
-                <div style="text-align: right; font-size: 0.8em; color: #999; margin-top: 0.5rem;">
-                    Days Left: {round(campaign.get('days_left', 'N/A'))} | Status: {campaign.get('verification_status', 'N/A')}
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-def render_explore_page():
-    st.markdown(f'<h1 class="app-title">{get_text("explore")}</h1>', unsafe_allow_html=True)
-    st.markdown(f"## {get_text('categories')}")
-
-    categories = [
-        {"name": get_text('technology'), "icon": "fas fa-laptop-code"},
-        {"name": get_text('health'), "icon": "fas fa-heartbeat"},
-        {"name": get_text('education'), "icon": "fas fa-graduation-cap"},
-        {"name": get_text('environment'), "icon": "fas fa-leaf"},
-        {"name": get_text('arts'), "icon": "fas fa-palette"},
-        {"name": get_text('community'), "icon": "fas fa-users"}
-    ]
-
-    cols = st.columns(2)
-    for i, category in enumerate(categories):
-        with cols[i % 2]:
-            st.markdown(f"""
-            <div class="category-card">
-                <div class="category-icon">
-                    <i class="{category['icon']}"></i>
-                </div>
-                <div class="category-title">{category['name']}</div>
-            </div>
-            """, unsafe_allow_html=True)
-
-def render_search_page():
-    st.markdown(f'<h1 class="app-title">{get_text("search_campaigns")}</h1>', unsafe_allow_html=True)
-
-    st.markdown('<div class="search-container">', unsafe_allow_html=True)
-
-    search_query = st.text_input(
-        "Search Campaigns",
-        placeholder=get_text('search_placeholder'),
-        key="search_input"
-    )
-
-    if st.button("🔍 Search", key="search_button"):
-        if search_query:
-            st.success(f"Searching for: {search_query}")
-        else:
-            st.warning("Please enter a search term")
-
     st.markdown(f"""
-    <div class="search-tips">
-        <h4><i class="fas fa-lightbulb"></i> {get_text('search_tips')}</h4>
-        <ul>
-            <li>{get_text('use_keywords')}</li>
-            <li>{get_text('filter_category')}</li>
-            <li>{get_text('check_spelling')}</li>
-        </ul>
+    <div class="container">
+        <h1>{t("welcome_haven")}</h1>
+        <p>{t("support_popular_projects")}</p>
+        <div class="campaign-card">
+            <img src="https://via.placeholder.com/600x400" alt="Campaign Image">
+            <h3>ABC</h3>
+            <p>By XYZ</p>
+            <p>CAMPAIGNS DESCRIPTION</p>
+            <p>P1,000 raised 100%</p>
+            <p>30 days left</p>
+        </div>
+        <div class="campaign-card">
+            <img src="https://via.placeholder.com/600x400" alt="Campaign Image">
+            <h3>ABC</h3>
+            <p>By XYZ</p>
+            <p>CAMPAIGNS DESCRIPTION</p>
+            <p>P1,000 raised 100%</p>
+            <p>30 days left</p>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('</div>', unsafe_allow_html=True)
+def render_explore_page():
+    st.markdown(f"""
+    <div class="container">
+        <h1>{t("explore_categories")}</h1>
+        <p>{t("discover_campaigns")}</p>
+        <div class="category-grid">
+            <div class="category-card">
+                <i class="fas fa-paint-brush"></i>
+                <p>{t("art_design")}</p>
+            </div>
+            <div class="category-card">
+                <i class="fas fa-microchip"></i>
+                <p>{t("technology")}</p>
+            </div>
+            <div class="category-card">
+                <i class="fas fa-users"></i>
+                <p>{t("community")}</p>
+            </div>
+            <div class="category-card">
+                <i class="fas fa-film"></i>
+                <p>{t("film_video")}</p>
+            </div>
+            <div class="category-card">
+                <i class="fas fa-music"></i>
+                <p>{t("music")}</p>
+            </div>
+            <div class="category-card">
+                <i class="fas fa-book"></i>
+                <p>{t("publishing")}</p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-def render_sidebar():
-    with st.sidebar:
-        st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
-        st.markdown('<div class="sidebar-title">Select Language:</div>', unsafe_allow_html=True)
-        language = st.selectbox(
-            "Choose Language",
-            options=list(TRANSLATIONS.keys()),
-            index=list(TRANSLATIONS.keys()).index(st.session_state.language),
-            key="language_selector"
-        )
+def render_search_page():
+    st.markdown(f"""
+    <div class="container">
+        <h1>{t("search_campaigns")}</h1>
+        <div class="search-bar">
+            <input type="text" placeholder="{t("search_placeholder")}">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+        <p>{t("enter_term_search")}</p>
+        <p>{t("search_tip")}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-        if language != st.session_state.language:
-            st.session_state.language = language
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+# --- Main App Logic --- #
 
-        st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
-        st.markdown('<div class="sidebar-title">Backend Status:</div>', unsafe_allow_html=True)
+# Language selection dropdown (moved to sidebar for consistency)
+lang_options = [
+    ("en", "English"),
+    ("hi", "हिन्दी"),
+    ("ta", "தமிழ்"),
+    ("te", "తెలుగు")
+]
+lang_codes = [code for code, _ in lang_options]
+lang_names = [name for _, name in lang_options]
 
-        is_connected, status_message = check_backend_connection()
-        if is_connected:
-            st.markdown(f'<div class="status-connected">✅ {status_message}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'<div class="status-disconnected">❌ {status_message}</div>', unsafe_allow_html=True)
+current_index = 0
+if st.session_state.lang in lang_codes:
+    current_index = lang_codes.index(st.session_state.lang)
 
-        st.markdown('</div>', unsafe_allow_html=True)
+selected_lang_index = st.sidebar.selectbox(
+    t("select_language"),
+    range(len(lang_options)),
+    index=current_index,
+    format_func=lambda x: lang_names[x],
+    key="lang_selector"
+)
 
-        if st.session_state.user_token:
-            render_user_profile()
+selected_lang = lang_codes[selected_lang_index]
 
-            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
-            st.markdown('<div class="sidebar-title">Navigation:</div>', unsafe_allow_html=True)
+if selected_lang != st.session_state.lang:
+    st.session_state.lang = selected_lang
+    st.rerun()
 
-            if st.session_state.current_page != 'home':
-                if st.button(get_text("home"), key="nav_home"):
-                    st.session_state.current_page = 'home'
-                    st.rerun()
+# Sidebar navigation (updated buttons)
+st.sidebar.title("Navigation")
+if st.session_state.logged_in:
+    if st.sidebar.button(t("home_button")):
+        st.session_state.current_page = 'home'
+        st.rerun()
+    if st.sidebar.button(t("explore_button")):
+        st.session_state.current_page = 'explore'
+        st.rerun()
+    if st.sidebar.button(t("search_button")):
+        st.session_state.current_page = 'search'
+        st.rerun()
+else:
+    # Only show login/register if not logged in
+    if st.session_state.current_page != 'login' and st.session_state.current_page != 'register':
+        st.session_state.current_page = 'login' # Force login page if not logged in
 
-            if st.session_state.current_page != 'explore':
-                if st.button(get_text("explore"), key="nav_explore"):
-                    st.session_state.current_page = 'explore'
-                    st.rerun()
-
-            if st.session_state.current_page != 'search':
-                if st.button(get_text("search"), key="nav_search"):
-                    st.session_state.current_page = 'search'
-                    st.rerun()
-
-            st.markdown('</div>', unsafe_allow_html=True)
-
-            render_create_campaign_button()
-
-def handle_js_messages():
-    if "js_message" in st.session_state:
-        message = st.session_state.js_message
-        if message and isinstance(message, dict):
-            action = message.get("action")
-            id_token = message.get("id_token")
-            error = message.get("error")
-
-            if action == "login":
-                if id_token:
-                    login_user_backend(id_token)
-                else:
-                    st.error("Firebase login failed: No ID token received.")
-            elif action == "login_error":
-                st.error(f"Firebase login error: {error}")
-            elif action == "register":
-                if id_token and 'temp_registration_data' in st.session_state:
-                    temp_data = st.session_state.temp_registration_data
-                    register_user_backend(
-                        id_token,
-                        temp_data.get('user_type'),
-                        temp_data.get('individual_data'),
-                        temp_data.get('organization_data')
-                    )
-                    del st.session_state.temp_registration_data
-                else:
-                    st.error("Firebase registration failed: No ID token or temporary data received.")
-            elif action == "register_error":
-                st.error(f"Firebase registration error: {error}")
-            elif action == "logout_success":
-                st.session_state.user_token = None
-                st.session_state.user_info = None
-                st.session_state.current_page = 'login'
-                st.success("Successfully logged out!")
-                st.rerun()
-            elif action == "logout_error":
-                st.error(f"Logout failed: {error}")
-        st.session_state.js_message = None
-
-def main():
-    st.set_page_config(
-        page_title="HAVEN - Crowdfunding Platform",
-        page_icon="🏠",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
-
-    apply_custom_css()
-
-    # This component listens for messages from the embedded JavaScript
-st.components.v1.html("""
-<script>
-window.addEv entLis tener('message', event => {
-if (event.data. streamlit) {
-                          //
-Forward the message to Python
-session state
-window.parent.postMessage(event.data, '*'); } });
-</script>
-""", height=0, width=0, key="js_listener")
-
-# Handle messages from JavaScript
-if "streamlit" in st.query_params:
-    # This is how Streamlit receives messages from custom components/JS
-    # We need to parse it and store it in session_state for handle_js_messages
-    try:
-        message_payload = json.loads(st.query_params["streamlit"])
-        if message_payload.get("type") == "SET_PAGE_STATE":
-            st.session_state.js_message = message_payload.get("payload")
-        # Clear the query param to avoid re-processing on rerun
-        st.query_params.clear()
-        st.rerun() # Rerun to process the message
-    except json.JSONDecodeError:
-        pass # Ignore malformed messages
-
-handle_js_messages() # Process any messages received
-
-# Updated banner rendering with new classes for better control
-st.markdown(f'<div class="welcome-banner-main-title">{get_text("welcome_banner_text")}</div>', unsafe_allow_html=True)
-st.markdown(f'<div class="welcome-banner-tagline">{get_text("welcome_banner_tagline")}</div>', unsafe_allow_html=True)
-
-
-handle_oauth_callback()
-
-query_params = st.query_params
-if 'page' in query_params:
-    requested_page = query_params['page']
-    if requested_page in ['login', 'register', 'home', 'explore', 'search', 'complete_oauth_profile',
-                          'create_campaign']:
-        st.session_state.current_page = requested_page
-        # Clear the page query param after setting state to avoid re-processing on rerun
-        st.query_params.clear()
-        st.rerun() # Rerun to navigate to the correct page
-
-render_sidebar()
-
-try:
-    if st.session_state.current_page == 'login':
-        render_login_page()
-    elif st.session_state.current_page == 'register':
-        render_register_page()
-    elif st.session_state.current_page == 'complete_oauth_profile':
-        render_complete_oauth_profile_page()
-    elif st.session_state.current_page == 'create_campaign':
-        render_create_campaign_page()
-    elif st.session_state.current_page == 'home':
+# Render current page
+if st.session_state.current_page == 'login':
+    render_login_page()
+elif st.session_state.current_page == 'register':
+    render_register_page()
+elif st.session_state.logged_in:
+    if st.session_state.current_page == 'home':
         render_home_page()
     elif st.session_state.current_page == 'explore':
         render_explore_page()
     elif st.session_state.current_page == 'search':
         render_search_page()
+    # Add more pages here as needed
+
+# Placeholder for automatic term simplification
+# This would ideally be integrated into the content rendering functions
+# For example, when displaying campaign details, run them through simplify_text()
+
+# Example usage of simplify_text (for demonstration)
+# st.write(simplify_text("This campaign aims to provide resources and training to local farmers to transition to organic and sustainable farming methods."))
+
+# You can add a button to test backend connectivity (for debugging)
+if st.sidebar.button("Test Backend Connection"):
+    response_data = requests.get(f"{BACKEND_URL}/health")
+    if response_data.status_code == 200:
+        st.success(f"Backend response: {response_data.json()}")
     else:
-        st.session_state.current_page = 'login'
-        render_login_page()
-except Exception as e:
-    st.error(f"An unexpected error occurred in the main application flow: {e}")
-    st.exception(e)
+        st.error(f"Failed to get response from backend. Status: {response_data.status_code}")
 
+# Add Font Awesome for icons
+st.markdown("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css\">", unsafe_allow_html=True)
 
-if __name__ == "__main__":
-    main()
 
