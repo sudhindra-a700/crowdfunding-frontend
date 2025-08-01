@@ -137,7 +137,7 @@ TRANSLATIONS = {
         'campaign_name': 'अभियान का नाम',
         'campaign_description_full': 'अभियान विवरण',
         'goal_amount': 'लक्ष्य राशि',
-        'campaign_category': 'अभियान श्रेणी',
+        'campaign_category': 'अभियान वर्గం',
         'upload_image': 'अभियान छवि अपलोड करें',
         'submit_campaign': 'अभियान जमा करें',
         'campaign_creation_success': 'अभियान सफलतापूर्वक बनाया गया!',
@@ -261,7 +261,7 @@ TRANSLATIONS = {
         'charity': 'దాతృత్వం',
         'description': 'సంక్షిప్త వివరణ (గరిష్టంగా 100 అక్షరాలు)',
         'complete_profile_title': 'మీ ప్రొఫైల్‌ను పూర్తి చేయండి',
-        'provide_details': 'మీ பதிவை முடிக்க கூடுதல் விவரங்களை வழங்கவும்।',
+        'provide_details': 'మీ பதிவை முடிக்க கூடுதல் விவரాలను வழங்கவும்।',
         'update_profile': 'ప్రొఫైల్‌ను అప్‌డేట్ చేయండి',
         'contact_person_details': 'సంప్రదింపు వ్యక్తి వివరాలు',
         'organization_details': 'సంస్థ వివరాలు',
@@ -501,48 +501,32 @@ def apply_custom_css():
             align-items: center;
         }
 
-        .welcome-banner {
-            background: url("https://images.unsplash.com/photo-1549880338-65ddcdfd017b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D") no-repeat center center;
-            background-size: cover;
-            color: white;
-            padding: 4rem 2rem;
+        /* New banner styles */
+        .welcome-banner-new {
+            background-color: #f0f8f0;
+            border: 1px solid #e0e8e0;
+            border-radius: 10px;
+            padding: 2rem 1rem;
             text-align: center;
-            border-radius: 15px;
             margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
-        .welcome-banner::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1;
-        }
-
-        .welcome-banner-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .welcome-banner-title {
-            font-family: 'Poppins', sans-serif;
+        .welcome-banner-title-new {
+            font-family: 'Great Vibes', cursive;
             font-size: 3rem;
             font-weight: 700;
             line-height: 1.2;
             margin-bottom: 0.5rem;
+            color: #4CAF50;
         }
 
-        .welcome-banner-tagline {
+        .welcome-banner-tagline-new {
             font-size: 1.2rem;
             font-weight: 400;
             max-width: 600px;
             margin: 0 auto;
+            color: #333;
         }
 
         .html-flex-container {
@@ -830,11 +814,9 @@ def render_complete_oauth_profile_page():
 def render_home_page():
     # Home page UI
     st.markdown(f"""
-    <div class="welcome-banner">
-        <div class="welcome-banner-content">
-            <div class="welcome-banner-title">{get_text("welcome_banner_text")}</div>
-            <div class="welcome-banner-tagline">{get_text("welcome_banner_tagline")}</div>
-        </div>
+    <div class="welcome-banner-new">
+        <h1 class="welcome-banner-title-new">{get_text("welcome_banner_text")}</h1>
+        <p class="welcome-banner-tagline-new">{get_text("welcome_banner_tagline")}</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -906,12 +888,12 @@ def render_main_page():
     # main page where we handle the routing
     apply_custom_css()
     
-    st.markdown("""<div class="welcome-banner">
-                    <div class="welcome-banner-content">
-                        <div class="welcome-banner-title">{get_text("welcome_banner_text")}</div>
-                        <div class="welcome-banner-tagline">{get_text("welcome_banner_tagline")}</div>
-                    </div>
-                </div>""", unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="welcome-banner-new">
+        <h1 class="welcome-banner-title-new">{get_text("welcome_banner_text")}</h1>
+        <p class="welcome-banner-tagline-new">{get_text("welcome_banner_tagline")}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     handle_oauth_callback()
 
