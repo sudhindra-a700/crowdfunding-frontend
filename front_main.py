@@ -1404,7 +1404,6 @@ st.session_state.temp_registration_data['email'] = email # Store email for refer
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-
 def render_complete_oauth_profile_page():
     st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
     st.markdown(f'<div class="html-title-register">{get_text("complete_profile_title")}</div>',
