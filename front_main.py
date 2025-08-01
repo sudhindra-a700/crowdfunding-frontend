@@ -969,7 +969,7 @@ st.markdown(f"""
                 }
             }, '*');
         }}
-    };
+    }};
 </script>
 """, unsafe_allow_html=True)
 def check_backend_connection():
