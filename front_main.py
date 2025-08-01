@@ -1394,7 +1394,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-    st.markdown("""
+st.markdown("""
 <div class="oauth-divider">
 <span>or sign up with social account</span>
 </div>
