@@ -60,7 +60,7 @@ TRANSLATIONS = {
         'organization_type': 'Organization Type',
         'ngo': 'NGO',
         'startup': 'Startup',
-        'charity': 'Charity',
+        'charity': 'Chariy',
         'description': 'Brief Description (max 100 chars)',
         'complete_profile_title': 'Complete Your Profile',
         'provide_details': 'Please provide the additional details to complete your registration.',
@@ -85,7 +85,6 @@ TRANSLATIONS = {
         'register': 'रजिस्टर',
         'email': 'ईमेल',
         'password': 'पासवर्ड की पुष्टि करें',
-        'confirm_password': 'पासवर्ड की पुष्टि करें',
         'continue': 'जारी रखें',
         'not_registered': 'पंजीकृत नहीं हैं?',
         'create_account': 'खाता बनाएं',
@@ -137,7 +136,7 @@ TRANSLATIONS = {
         'campaign_name': 'अभियान का नाम',
         'campaign_description_full': 'अभियान विवरण',
         'goal_amount': 'लक्ष्य राशि',
-        'campaign_category': 'अभियान वर्గం',
+        'campaign_category': 'अभियान श्रेणी',
         'upload_image': 'अभियान छवि अपलोड करें',
         'submit_campaign': 'अभियान जमा करें',
         'campaign_creation_success': 'अभियान सफलतापूर्वक बनाया गया!',
@@ -238,7 +237,7 @@ TRANSLATIONS = {
         'profile': 'ప్రొఫైల్',
         'logout': 'లాగ్అవుట్',
         'welcome_banner_text': 'హేవెన్',  # New key for the main banner title
-        'welcome_banner_tagline': 'కేవలం కొందరికి కాదు, మానవత్వానికి సహాయం చేయండి।',  # New key for the banner tagline
+        'welcome_banner_tagline': 'కేవలం కొందరికి కాదు, మానవత్వానికి సహాయం చేయండి.',  # New key for the banner tagline
         'trending_campaigns': 'ట్రెండింగ్ క్యాంపెయిన్‌లు',
         'categories': 'వర్గాలు',
         'technology': 'సాంకేతికత',
@@ -261,7 +260,7 @@ TRANSLATIONS = {
         'charity': 'దాతృత్వం',
         'description': 'సంక్షిప్త వివరణ (గరిష్టంగా 100 అక్షరాలు)',
         'complete_profile_title': 'మీ ప్రొఫైల్‌ను పూర్తి చేయండి',
-        'provide_details': 'మీ பதிவை முடிக்க கூடுதல் விவரాలను வழங்கவும்।',
+        'provide_details': 'మీ పతిவను పూర్తి చేయడానికి దయచేసి అదనపు వివరాలను అందించండి.',
         'update_profile': 'ప్రొఫైల్‌ను అప్‌డేట్ చేయండి',
         'contact_person_details': 'సంప్రదింపు వ్యక్తి వివరాలు',
         'organization_details': 'సంస్థ వివరాలు',
@@ -313,590 +312,1367 @@ def get_text(key):
 def apply_custom_css():
     st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
-        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
-        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); /* Added Great Vibes font */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); /* Added Great Vibes font */
 
-        .stApp {
-            background-color: #f0f2e6 !important;
-            font-family: 'Poppins', sans-serif;
-        }
+    .stApp {
+        background-color: #f0f2e6 !important;
+        font-family: 'Poppins', sans-serif;
+    }
 
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        header {visibility: hidden;}
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
 
+    .html-container {
+        background: #fff;
+        width: 100%;
+        max-width: 400px;
+        padding: 20px 20px;
+        border-radius: 5px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.15);
+        margin: 20px auto;
+        color: #000;
+    }
+
+    .html-container-wide {
+        background: #fff;
+        width: 100%;
+        max-width: 900px;
+        padding: 25px 30px;
+        border-radius: 5px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.15);
+        margin: 20px auto;
+        color: #000;
+    }
+
+    .html-title {
+        font-size: 30px;
+        font-weight: 600;
+        margin: 20px 0 10px 0;
+        position: relative;
+        color: #2d5a2d; /* Darker green for titles for contrast */
+    }
+
+    .html-title:before {
+        content: "";
+        position: absolute;
+        height: 4px;
+        width: 33px;
+        left: 0;
+        bottom: 3px;
+        border-radius: 5px;
+        background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%);
+    }
+
+    .html-title-register {
+        font-size: 30px;
+        font-weight: 600;
+        margin-bottom: 30px;
+        position: relative;
+        color: #2d5a2d; /* Darker green for titles for contrast */
+    }
+
+    .html-title-register::before {
+        content: "";
+        position: absolute;
+        height: 4px;
+        width: 33px;
+        left: 0;
+        bottom: -5px;
+        border-radius: 5px;
+        background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%);
+    }
+
+    .html-input-box {
+        width: 100%;
+        height: 45px;
+        margin-top: 20px;
+        position: relative;
+    }
+
+    .html-input-box input, .html-input-box select {
+        width: 100%;
+        height: 100%;
+        outline: none;
+        font-size: 16px;
+        border: none;
+        padding: 0 15px;
+        border-radius: 5px;
+        border-bottom: 2px solid #ccc;
+        background: #f9f9f9;
+        transition: all 0.3s ease;
+    }
+
+    .html-input-box input:focus, .html-input-box select:focus {
+        border-bottom-color: #4CAF50;
+        background: #fff;
+    }
+
+    .html-input-box label {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        color: #999;
+        font-weight: 400;
+        font-size: 16px;
+        pointer-events: none;
+        transform: translateY(-50%);
+        transition: all 0.3s ease;
+    }
+
+    .html-input-box input:focus ~ label,
+    .html-input-box input:valid ~ label,
+    .html-input-box select:focus ~ label,
+    .html-input-box select:valid ~ label {
+        top: 0px;
+        left: 15px;
+        color: #4CAF50;
+        font-size: 12px;
+        font-weight: 500;
+        background: #fff;
+        padding: 0 5px;
+    }
+
+    .html-button {
+        width: 100%;
+        height: 45px;
+        background: linear-gradient(135deg, #4CAF50, #388E3C);
+        border: none;
+        outline: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        color: #fff;
+        font-weight: 500;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+    }
+
+    .html-button:hover {
+        background: linear-gradient(135deg, #388E3C, #2E7D32);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    }
+
+    .html-link {
+        color: #4CAF50;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .html-link:hover {
+        color: #388E3C;
+        text-decoration: underline;
+    }
+
+    .html-text {
+        text-align: center;
+        margin: 20px 0 10px 0;
+        color: #666;
+    }
+
+    .html-or {
+        text-align: center;
+        margin: 20px 0;
+        position: relative;
+        color: #999;
+    }
+
+    .html-or:before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #ddd;
+    }
+
+    .html-or span {
+        background: #fff;
+        padding: 0 15px;
+        position: relative;
+    }
+
+    .social-button {
+        width: 100%;
+        height: 45px;
+        border: 2px solid #ddd;
+        background: #fff;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        color: #333;
+        font-weight: 500;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .social-button:hover {
+        border-color: #4CAF50;
+        background: #f8f8f8;
+    }
+
+    .google-button:hover {
+        border-color: #db4437;
+        color: #db4437;
+    }
+
+    .facebook-button:hover {
+        border-color: #3b5998;
+        color: #3b5998;
+    }
+
+    .registration-type-selector {
+        display: flex;
+        gap: 10px;
+        margin: 20px 0;
+    }
+
+    .registration-type-option {
+        flex: 1;
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+
+    .registration-type-option:hover {
+        border-color: #4CAF50;
+        background: #f8f8f8;
+    }
+
+    .registration-type-option.selected {
+        border-color: #4CAF50;
+        background: #e8f5e8;
+        color: #2d5a2d;
+        font-weight: 600;
+    }
+
+    .welcome-banner-main-title {
+        font-family: 'Great Vibes', cursive;
+        font-size: 4rem;
+        font-weight: 400;
+        text-align: center;
+        color: #2d5a2d;
+        margin: 20px 0 10px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .welcome-banner-tagline {
+        font-family: 'Poppins', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 300;
+        text-align: center;
+        color: #555;
+        margin: 0 0 30px 0;
+        font-style: italic;
+    }
+
+    .sidebar-section {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .sidebar-title {
+        font-weight: 600;
+        color: #2d5a2d;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    .status-connected {
+        color: #4CAF50;
+        font-weight: 500;
+    }
+
+    .status-disconnected {
+        color: #f44336;
+        font-weight: 500;
+    }
+
+    .user-profile {
+        padding: 15px;
+        background: linear-gradient(135deg, #4CAF50, #388E3C);
+        border-radius: 5px;
+        color: white;
+        margin-bottom: 20px;
+    }
+
+    .user-profile h3 {
+        margin: 0 0 5px 0;
+        font-size: 18px;
+    }
+
+    .user-profile p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 14px;
+    }
+
+    .campaign-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 15px 0;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .campaign-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .campaign-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #2d5a2d;
+        margin-bottom: 10px;
+    }
+
+    .campaign-description {
+        color: #666;
+        margin-bottom: 15px;
+        line-height: 1.5;
+    }
+
+    .campaign-progress {
+        background: #f0f0f0;
+        border-radius: 10px;
+        height: 8px;
+        margin: 10px 0;
+        overflow: hidden;
+    }
+
+    .campaign-progress-bar {
+        background: linear-gradient(90deg, #4CAF50, #388E3C);
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+
+    .campaign-stats {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        font-size: 14px;
+    }
+
+    .campaign-stat {
+        text-align: center;
+    }
+
+    .campaign-stat-value {
+        font-weight: 600;
+        color: #2d5a2d;
+        display: block;
+    }
+
+    .campaign-stat-label {
+        color: #666;
+        font-size: 12px;
+    }
+
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+    }
+
+    .category-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+
+    .category-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        border-color: #4CAF50;
+    }
+
+    .category-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: #4CAF50;
+    }
+
+    .category-name {
+        font-weight: 600;
+        color: #2d5a2d;
+    }
+
+    .search-container {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #4CAF50;
+    }
+
+    .search-tips {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 5px;
+        border-left: 4px solid #4CAF50;
+    }
+
+    .search-tips h4 {
+        margin: 0 0 10px 0;
+        color: #2d5a2d;
+        font-size: 16px;
+    }
+
+    .search-tips ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .search-tips li {
+        margin: 5px 0;
+        color: #666;
+    }
+
+    .create-campaign-button {
+        width: 100%;
+        background: linear-gradient(135deg, #FF6B35, #F7931E);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .create-campaign-button:hover {
+        background: linear-gradient(135deg, #F7931E, #FF6B35);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+    }
+
+    .file-upload-area {
+        border: 2px dashed #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        text-align: center;
+        margin: 20px 0;
+        transition: border-color 0.3s ease;
+        cursor: pointer;
+    }
+
+    .file-upload-area:hover {
+        border-color: #4CAF50;
+        background: #f8f9fa;
+    }
+
+    .file-upload-area.dragover {
+        border-color: #4CAF50;
+        background: #e8f5e8;
+    }
+
+    .error-message {
+        background: #ffebee;
+        color: #c62828;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+        border-left: 4px solid #c62828;
+    }
+
+    .success-message {
+        background: #e8f5e8;
+        color: #2e7d32;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+        border-left: 4px solid #4CAF50;
+    }
+
+    .info-message {
+        background: #e3f2fd;
+        color: #1565c0;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+        border-left: 4px solid #2196f3;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
         .html-container {
-            background: #fff;
-            width: 100%;
-            max-width: 400px;
-            padding: 20px 20px;
-            border-radius: 5px;
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.15);
-            margin: 20px auto;
-            color: #000;
+            margin: 10px;
+            padding: 15px;
         }
 
         .html-container-wide {
-            background: #fff;
-            width: 100%;
-            max-width: 900px;
-            padding: 25px 30px;
-            border-radius: 5px;
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.15);
-            margin: 20px auto;
-            color: #000;
-        }
-
-        .html-title {
-            font-size: 30px;
-            font-weight: 600;
-            margin: 20px 0 10px 0;
-            position: relative;
-            color: #2d5a2d; /* Darker green for titles for contrast */
-        }
-
-        .html-title:before {
-            content: "";
-            position: absolute;
-            height: 4px;
-            width: 33px;
-            left: 0;
-            bottom: 3px;
-            border-radius: 5px;
-            background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%);
-        }
-
-        .html-title-register {
-            font-size: 30px;
-            font-weight: 600;
-            margin-bottom: 30px;
-            position: relative;
-            color: #2d5a2d; /* Darker green for titles for contrast */
-        }
-
-        .html-title-register::before {
-            content: "";
-            position: absolute;
-            height: 4px;
-            width: 33px;
-            left: 0;
-            bottom: -5px;
-            border-radius: 5px;
-            background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%);
-        }
-
-        .html-input-box {
-            width: 100%;
-            height: 45px;
-            margin-top: 20px;
-            position: relative;
-        }
-
-        .html-input-box input, .html-input-box select {
-            width: 100%;
-            height: 100%;
-            outline: none;
-            font-size: 16px;
-            border: none;
-            background: transparent;
-            color: #333 !important; /* Slightly darker input text for contrast */
-            border-bottom: 2px solid #ccc;
-            padding-left: 5px;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .html-input-box input::placeholder {
-            color: #777; /* Darker placeholder for contrast */
-        }
-
-        .stTextInput > div > div > input, .stSelectbox > div > div > select, .stTextArea > div > div > textarea {
-            background: #f8f8f8 !important; /* Added light background color */
-            border: 1px solid #ddd !important; /* Added full border */
-            border-radius: 5px !important; /* Rounded corners for input fields */
-            padding: 10px !important; /* Increased padding */
-            font-size: 16px !important;
-            color: #333 !important;
-            font-family: 'Poppins', sans-serif !important;
-            height: 45px !important;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.06); /* Subtle inner shadow */
-        }
-
-        .stTextInput > div > div > input:focus, .stSelectbox > div > div > select:focus, .stTextArea > div > div > textarea:focus {
-            border-color: #4CAF50 !important; /* Highlight border on focus */
-            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important; /* Subtle focus ring */
-        }
-
-        .stTextInput > div > div > input::placeholder {
-            color: #777 !important; /* Darker placeholder for contrast */
-        }
-
-        .html-button {
-            margin-top: 30px;
-        }
-
-        .html-submit-button {
-            background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%) !important;
-            font-size: 17px !important;
-            color: #fff !important;
-            border-radius: 5px !important;
-            cursor: pointer;
-            padding: 10px 0 !important;
-            transition: all 0.3s ease;
-            border: none !important;
-            width: 100% !important;
-            font-family: 'Poppins', sans-serif !important;
-            font-weight: 500 !important;
-        }
-
-        .html-submit-button:hover {
-            letter-spacing: 1px;
-            background: linear-gradient(to left, #4CAF50 0%, #388E3C 100%) !important;
-            color: #fff !important;
-        }
-
-        .stButton > button {
-            background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%) !important;
-            font-size: 17px !important;
-            color: #fff !important;
-            border-radius: 5px !important;
-            cursor: pointer;
-            padding: 10px 0 !important;
-            transition: all 0.3s ease;
-            border: none !important;
-            width: 100% !important;
-            font-family: 'Poppins', sans-serif !important;
-            font-weight: 500 !important;
-        }
-
-        .stButton > button:hover {
-            letter-spacing: 1px;
-            background: linear-gradient(to left, #4CAF50 0%, #388E3C 100%) !important;
-            color: #fff !important;
-            transform: none !important;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .stSelectbox > label, .stTextInput > label, .stTextArea > label {
-            font-weight: 500 !important;
-            color: #333 !important;
-            margin-bottom: 5px !important;
-        }
-
-        .st-emotion-cache-16txte5 {
-            padding: 2rem 1rem !important;
-        }
-
-        .st-emotion-cache-p5m64f {
-            font-family: 'Great Vibes', cursive;
-            font-weight: 700;
-            font-size: 4rem;
-            color: #4CAF50;
-            text-align: center;
-        }
-
-        .st-emotion-cache-1wq0s7a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* New banner styles */
-        .welcome-banner-new {
-            background-color: #f0f8f0;
-            border: 1px solid #e0e8e0;
-            border-radius: 10px;
-            padding: 2rem 1rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .welcome-banner-title-new {
-            font-family: 'Great Vibes', cursive;
-            font-size: 3rem;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 0.5rem;
-            color: #4CAF50;
-        }
-
-        .welcome-banner-tagline-new {
-            font-size: 1.2rem;
-            font-weight: 400;
-            max-width: 600px;
-            margin: 0 auto;
-            color: #333;
-        }
-
-        .html-flex-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 20px;
-        }
-
-        .html-flex-item {
-            flex: 1;
-        }
-
-        .custom-card {
-            background-color: #ffffff;
-            border-radius: 12px;
+            margin: 10px;
             padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            transition: all 0.3s ease-in-out;
         }
 
-        .custom-card:hover {
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-            transform: translateY(-5px);
+        .welcome-banner-main-title {
+            font-size: 2.5rem;
         }
 
-        .card-header {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #2d5a2d;
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        .card-header::after {
-            content: "";
-            position: absolute;
-            height: 3px;
-            width: 50px;
-            left: 0;
-            bottom: -5px;
-            background-color: #4CAF50;
-            border-radius: 5px;
-        }
-
-        .card-content {
+        .welcome-banner-tagline {
             font-size: 1rem;
-            line-height: 1.6;
-            color: #555;
         }
 
-        .sidebar-logo {
-            font-family: 'Great Vibes', cursive;
-            font-weight: 700;
-            font-size: 2rem;
-            text-align: center;
-            color: #4CAF50;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        .category-grid {
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
         }
 
-        .st-emotion-cache-13sdm9 {
-            padding: 1rem;
+        .registration-type-selector {
+            flex-direction: column;
         }
-
-        .st-emotion-cache-1629p8f {
-            margin-top: 1.5rem !important;
-        }
-
-        .st-emotion-cache-13k656a {
-            font-weight: 600 !important;
-        }
-
-        .st-emotion-cache-g18894 {
-            flex-direction: row-reverse;
-        }
+    }
     </style>
     """, unsafe_allow_html=True)
 
 
-def handle_oauth_callback():
-    query_params = st.query_params
-    if "token" in query_params:
-        try:
-            token_json = json.loads(base64.b64decode(query_params["token"]).decode('utf-8'))
-            st.session_state.user_token = token_json['access_token']
-            st.session_state.user_info = token_json.get('user_info')
+def check_backend_connection():
+    """Check if the backend is accessible"""
+    try:
+        response = requests.get(f"{BACKEND_URL}/health", timeout=5)
+        if response.status_code == 200:
+            return True, "Connected"
+        else:
+            return False, f"Error {response.status_code}"
+    except requests.exceptions.RequestException as e:
+        return False, "Disconnected"
 
-            # Determine the next page based on whether profile is complete
-            if st.session_state.user_info and not st.session_state.user_info.get('profile_complete', False):
-                st.session_state.current_page = 'complete_oauth_profile'
+
+def login_user_backend(id_token):
+    """Login user using Firebase ID token"""
+    try:
+        response = requests.post(
+            f"{BACKEND_URL}/auth/login",
+            json={"id_token": id_token},
+            headers={"Content-Type": "application/json"}
+        )
+
+        if response.status_code == 200:
+            data = response.json()
+            st.session_state.user_token = data.get("access_token")
+            st.session_state.user_info = data.get("user")
+            st.session_state.current_page = 'home'
+            st.success("Login successful!")
+            st.rerun()
+        else:
+            error_data = response.json()
+            st.error(f"Login failed: {error_data.get('detail', 'Unknown error')}")
+    except requests.exceptions.RequestException as e:
+        st.error(f"Network error during login: {str(e)}")
+    except Exception as e:
+        st.error(f"Unexpected error during login: {str(e)}")
+
+
+def register_user_backend(id_token, user_type, individual_data=None, organization_data=None):
+    """Register user using Firebase ID token and additional data"""
+    try:
+        payload = {
+            "id_token": id_token,
+            "user_type": user_type
+        }
+
+        if user_type == "individual" and individual_data:
+            payload["individual_data"] = individual_data
+        elif user_type == "organization" and organization_data:
+            payload["organization_data"] = organization_data
+
+        response = requests.post(
+            f"{BACKEND_URL}/auth/register",
+            json=payload,
+            headers={"Content-Type": "application/json"}
+        )
+
+        if response.status_code == 201:
+            data = response.json()
+            st.session_state.user_token = data.get("access_token")
+            st.session_state.user_info = data.get("user")
+            st.session_state.current_page = 'home'
+            st.success("Registration successful!")
+            st.rerun()
+        else:
+            error_data = response.json()
+            st.error(f"Registration failed: {error_data.get('detail', 'Unknown error')}")
+    except requests.exceptions.RequestException as e:
+        st.error(f"Network error during registration: {str(e)}")
+    except Exception as e:
+        st.error(f"Unexpected error during registration: {str(e)}")
+
+
+def get_firebase_auth_html(action="login"):
+    """Generate Firebase authentication HTML"""
+    config_json = json.dumps(FIREBASE_CONFIG)
+
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    </head>
+    <body>
+        <div id="firebaseui-auth-container"></div>
+        <script>
+            const firebaseConfig = {config_json};
+            firebase.initializeApp(firebaseConfig);
+
+            const auth = firebase.auth();
+            const googleProvider = new firebase.auth.GoogleAuthProvider();
+            const facebookProvider = new firebase.auth.FacebookAuthProvider();
+
+            function sendMessageToStreamlit(message) {{
+                window.parent.postMessage({{
+                    streamlit: true,
+                    type: "SET_PAGE_STATE",
+                    payload: message
+                }}, "*");
+            }}
+
+            function signInWithGoogle() {{
+                auth.signInWithPopup(googleProvider)
+                    .then((result) => {{
+                        return result.user.getIdToken();
+                    }})
+                    .then((idToken) => {{
+                        sendMessageToStreamlit({{
+                            action: "{action}",
+                            id_token: idToken
+                        }});
+                    }})
+                    .catch((error) => {{
+                        console.error("Google sign-in error:", error);
+                        sendMessageToStreamlit({{
+                            action: "{action}_error",
+                            error: error.message
+                        }});
+                    }});
+            }}
+
+            function signInWithFacebook() {{
+                auth.signInWithPopup(facebookProvider)
+                    .then((result) => {{
+                        return result.user.getIdToken();
+                    }})
+                    .then((idToken) => {{
+                        sendMessageToStreamlit({{
+                            action: "{action}",
+                            id_token: idToken
+                        }});
+                    }})
+                    .catch((error) => {{
+                        console.error("Facebook sign-in error:", error);
+                        sendMessageToStreamlit({{
+                            action: "{action}_error",
+                            error: error.message
+                        }});
+                    }});
+            }}
+
+            function signOut() {{
+                auth.signOut()
+                    .then(() => {{
+                        sendMessageToStreamlit({{
+                            action: "logout_success"
+                        }});
+                    }})
+                    .catch((error) => {{
+                        console.error("Sign-out error:", error);
+                        sendMessageToStreamlit({{
+                            action: "logout_error",
+                            error: error.message
+                        }});
+                    }});
+            }}
+
+            // Make functions globally available
+            window.signInWithGoogle = signInWithGoogle;
+            window.signInWithFacebook = signInWithFacebook;
+            window.signOut = signOut;
+        </script>
+    </body>
+    </html>
+    """
+
+
+def render_login_page():
+    st.markdown('<div class="html-container">', unsafe_allow_html=True)
+
+    st.markdown(f'<div class="html-title">{get_text("login")}</div>', unsafe_allow_html=True)
+
+    # Email/Password Login Form
+    with st.form("login_form"):
+        email = st.text_input(get_text("email"), key="login_email")
+        password = st.text_input(get_text("password"), type="password", key="login_password")
+
+        if st.form_submit_button(get_text("continue"), use_container_width=True):
+            if email and password:
+                # Here you would typically validate credentials
+                # For now, we'll show a placeholder message
+                st.info("Email/password login not implemented yet. Please use social login.")
             else:
-                st.session_state.current_page = 'home'
+                st.error("Please fill in all fields.")
 
-        except (json.JSONDecodeError, KeyError):
-            st.error("Invalid token received from OAuth provider.")
-            st.session_state.user_token = None
-            st.session_state.user_info = None
+    st.markdown(f'<div class="html-or"><span>OR</span></div>', unsafe_allow_html=True)
 
-        # Clear the query param to prevent re-processing on rerun
+    # Social Login Buttons
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("🔍 " + get_text("sign_in_google"), key="google_login", use_container_width=True):
+            # Embed Firebase auth component
+            firebase_html = get_firebase_auth_html("login")
+            st.components.v1.html(f"""
+                {firebase_html}
+                <script>
+                    setTimeout(() => {{
+                        signInWithGoogle();
+                    }}, 100);
+                </script>
+            """, height=0, width=0)
+
+    with col2:
+        if st.button("📘 " + get_text("sign_in_facebook"), key="facebook_login", use_container_width=True):
+            # Embed Firebase auth component
+            firebase_html = get_firebase_auth_html("login")
+            st.components.v1.html(f"""
+                {firebase_html}
+                <script>
+                    setTimeout(() => {{
+                        signInWithFacebook();
+                    }}, 100);
+                </script>
+            """, height=0, width=0)
+
+    st.markdown(f'''
+        <div class="html-text">
+            {get_text("not_registered")} 
+            <a href="?page=register" class="html-link">{get_text("create_account")}</a>
+        </div>
+    ''', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+def render_register_page():
+    st.markdown('<div class="html-container">', unsafe_allow_html=True)
+
+    st.markdown(f'<div class="html-title-register">{get_text("register")}</div>', unsafe_allow_html=True)
+
+    # Registration Type Selection
+    st.markdown(f'<div style="margin-bottom: 20px; font-weight: 500;">{get_text("registration_type")}:</div>',
+                unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button(get_text("individual"), key="reg_individual", use_container_width=True):
+            st.session_state.selected_reg_type_register = get_text("individual")
+            st.rerun()
+
+    with col2:
+        if st.button(get_text("organization"), key="reg_organization", use_container_width=True):
+            st.session_state.selected_reg_type_register = get_text("organization")
+            st.rerun()
+
+    # Show selected type
+    if st.session_state.selected_reg_type_register:
+        st.markdown(f'<div style="text-align: center; margin: 10px 0; color: #4CAF50; font-weight: 500;">Selected: {st.session_state.selected_reg_type_register}</div>',
+                    unsafe_allow_html=True)
+
+    # Registration Form
+    if st.session_state.selected_reg_type_register == get_text("individual"):
+        with st.form("individual_register_form"):
+            st.subheader(get_text("register_individual"))
+            full_name = st.text_input(get_text("full_name"), key="reg_full_name")
+            email = st.text_input(get_text("email"), key="reg_email")
+            password = st.text_input(get_text("password"), type="password", key="reg_password")
+            confirm_password = st.text_input(get_text("confirm_password"), type="password", key="reg_confirm_password")
+            phone = st.text_input(get_text("phone"), key="reg_phone")
+            address = st.text_area(get_text("address"), key="reg_address")
+
+            if st.form_submit_button(get_text("continue"), use_container_width=True):
+                if all([full_name, email, password, confirm_password, phone, address]):
+                    if password == confirm_password:
+                        # Store temporary registration data
+                        st.session_state.temp_registration_data = {
+                            'user_type': 'individual',
+                            'individual_data': {
+                                'full_name': full_name,
+                                'email': email,
+                                'phone': phone,
+                                'address': address
+                            }
+                        }
+                        st.info("Please complete registration using social login below.")
+                    else:
+                        st.error("Passwords do not match.")
+                else:
+                    st.error("Please fill in all fields.")
+
+    elif st.session_state.selected_reg_type_register == get_text("organization"):
+        with st.form("organization_register_form"):
+            st.subheader(get_text("register_organization"))
+            org_name = st.text_input(get_text("organization_name"), key="reg_org_name")
+            org_type = st.selectbox(get_text("organization_type"),
+                                    [get_text("ngo"), get_text("startup"), get_text("charity")], key="reg_org_type")
+            contact_name = st.text_input(get_text("full_name"), key="reg_contact_name")
+            email = st.text_input(get_text("email"), key="reg_org_email")
+            password = st.text_input(get_text("password"), type="password", key="reg_org_password")
+            confirm_password = st.text_input(get_text("confirm_password"), type="password",
+                                             key="reg_org_confirm_password")
+            phone = st.text_input(get_text("phone"), key="reg_org_phone")
+            address = st.text_area(get_text("address"), key="reg_org_address")
+            description = st.text_area(get_text("description"), max_chars=100, key="reg_org_description")
+
+            if st.form_submit_button(get_text("continue"), use_container_width=True):
+                if all([org_name, org_type, contact_name, email, password, confirm_password, phone, address, description]):
+                    if password == confirm_password:
+                        # Store temporary registration data
+                        st.session_state.temp_registration_data = {
+                            'user_type': 'organization',
+                            'organization_data': {
+                                'organization_name': org_name,
+                                'organization_type': org_type,
+                                'contact_person_name': contact_name,
+                                'email': email,
+                                'phone': phone,
+                                'address': address,
+                                'description': description
+                            }
+                        }
+                        st.info("Please complete registration using social login below.")
+                    else:
+                        st.error("Passwords do not match.")
+                else:
+                    st.error("Please fill in all fields.")
+
+    # Social Registration Buttons (only show if registration type is selected and temp data exists)
+    if st.session_state.selected_reg_type_register and 'temp_registration_data' in st.session_state:
+        st.markdown(f'<div class="html-or"><span>Complete with Social Login</span></div>', unsafe_allow_html=True)
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if st.button("🔍 " + get_text("sign_in_google"), key="google_register", use_container_width=True):
+                firebase_html = get_firebase_auth_html("register")
+                st.components.v1.html(f"""
+                    {firebase_html}
+                    <script>
+                        setTimeout(() => {{
+                            signInWithGoogle();
+                        }}, 100);
+                    </script>
+                """, height=0, width=0)
+
+        with col2:
+            if st.button("📘 " + get_text("sign_in_facebook"), key="facebook_register", use_container_width=True):
+                firebase_html = get_firebase_auth_html("register")
+                st.components.v1.html(f"""
+                    {firebase_html}
+                    <script>
+                        setTimeout(() => {{
+                            signInWithFacebook();
+                        }}, 100);
+                    </script>
+                """, height=0, width=0)
+
+    st.markdown(f'''
+        <div class="html-text">
+            {get_text("already_have_account")} 
+            <a href="?page=login" class="html-link">{get_text("sign_in_here")}</a>
+        </div>
+    ''', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+def handle_oauth_callback():
+    """Handle OAuth callback and redirect to profile completion if needed"""
+    query_params = st.query_params
+    if 'oauth_complete' in query_params and query_params['oauth_complete'] == 'true':
+        # User completed OAuth but needs to complete profile
+        st.session_state.current_page = 'complete_oauth_profile'
+        # Clear the query param to avoid re-processing
         st.query_params.clear()
         st.rerun()
 
 
-def render_sidebar():
-    st.sidebar.markdown('<div class="sidebar-logo">HAVEN</div>', unsafe_allow_html=True)
-    if st.session_state.user_token:
-        st.sidebar.page_link("front_main.py", label=get_text('home'), icon="🏠")
-        st.sidebar.page_link("front_main.py", label=get_text('explore'), icon="🔍")
-        st.sidebar.page_link("front_main.py", label=get_text('search'), icon="🔎")
-        st.sidebar.page_link("front_main.py", label=get_text('profile'), icon="👤")
-        st.sidebar.page_link("front_main.py", label=get_text('create_campaign'), icon="🚀")
-        if st.sidebar.button(get_text('logout'), use_container_width=True):
-            st.session_state.user_token = None
-            st.session_state.user_info = None
-            st.session_state.current_page = 'login'
-            st.rerun()
-    else:
-        st.sidebar.page_link("front_main.py", label=get_text('login'), icon="🔒")
-        st.sidebar.page_link("front_main.py", label=get_text('register'), icon="📝")
-
-
-def render_login_page():
-    # Login page UI
-    st.markdown(f"""
-        <div class="html-container">
-            <h1 class="html-title">{get_text('login')}</h1>
-            <p style="text-align: center; color: #555; margin-bottom: 20px;">{get_text('login_page_subtitle')}</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-    with st.form("login_form", clear_on_submit=False):
-        email = st.text_input(get_text('email'), key="login_email")
-        password = st.text_input(get_text('password'), type="password", key="login_password")
-        submitted = st.form_submit_button(get_text('login'))
-
-        if submitted:
-            # Mock API call
-            login_data = {"email": email, "password": password}
-            response = requests.post(f"{BACKEND_URL}/login", json=login_data)
-            if response.status_code == 200:
-                st.success("Login successful!")
-                st.session_state.user_token = response.json().get("access_token")
-                st.session_state.user_info = response.json().get("user")
-                st.session_state.current_page = 'home'
-                time.sleep(1)
-                st.rerun()
-            else:
-                st.error("Login failed: " + response.json().get("detail", "Invalid credentials"))
-
-    st.markdown(f"""
-        <div style="text-align: center; margin-top: 20px;">
-            {get_text('not_registered')} <a href="#" onclick="window.parent.postMessage('navigate-register', '*')">{get_text('create_account')}</a>
-            <div style="margin: 20px 0; font-size: 0.9em; color: #888;">{get_text('oauth_divider')}</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-    col1, col2 = st.columns(2)
-    with col1:
-        st.button(get_text('sign_in_google'), on_click=lambda: st.rerun())
-    with col2:
-        st.button(get_text('sign_in_facebook'), on_click=lambda: st.rerun())
-
-
-def render_register_page():
-    # Registration page UI
-    st.markdown(f"""
-        <div class="html-container-wide">
-            <h1 class="html-title-register">{get_text('register')}</h1>
-        </div>
-    """, unsafe_allow_html=True)
-
-    # Use session state to control the selected registration type
-    reg_type_options = [get_text('individual'), get_text('organization')]
-    selected_reg_type = st.selectbox(
-        get_text('registration_type'),
-        options=reg_type_options,
-        key='selected_reg_type_register',
-        index=reg_type_options.index(st.session_state.selected_reg_type_register) if st.session_state.selected_reg_type_register in reg_type_options else 0
-    )
-
-    with st.form("register_form", clear_on_submit=True):
-        st.session_state.selected_reg_type_register = selected_reg_type
-        if selected_reg_type == get_text('individual'):
-            st.subheader(get_text('register_individual'))
-            full_name = st.text_input(get_text('full_name'), key="reg_ind_full_name")
-            email = st.text_input(get_text('email'), key="reg_ind_email")
-            phone = st.text_input(get_text('phone'), key="reg_ind_phone")
-            password = st.text_input(get_text('password'), type="password", key="reg_ind_password")
-            confirm_password = st.text_input(get_text('confirm_password'), type="password", key="reg_ind_confirm_password")
-            address = st.text_area(get_text('address'), key="reg_ind_address")
-        else:
-            st.subheader(get_text('contact_person_details'))
-            contact_person_name = st.text_input(get_text('full_name'), key="reg_org_contact_name")
-            contact_person_email = st.text_input(get_text('email'), key="reg_org_contact_email")
-            contact_person_phone = st.text_input(get_text('phone'), key="reg_org_contact_phone")
-            password = st.text_input(get_text('password'), type="password", key="reg_org_password")
-            confirm_password = st.text_input(get_text('confirm_password'), type="password", key="reg_org_confirm_password")
-
-            st.subheader(get_text('organization_details'))
-            organization_name = st.text_input(get_text('organization_name'), key="reg_org_name")
-            organization_type = st.selectbox(
-                get_text('organization_type'),
-                options=[get_text('ngo'), get_text('startup'), get_text('charity')],
-                key="reg_org_type"
-            )
-            description = st.text_area(get_text('description'), max_chars=100, key="reg_org_description")
-            address = st.text_area(get_text('address'), key="reg_org_address")
-            ngo_darpan_id = st.text_input("NGO Darpan ID (Optional)", key="reg_org_ngo_darpan")
-            pan = st.text_input("PAN (Optional)", key="reg_org_pan")
-            fcra_number = st.text_input("FCRA Number (Optional)", key="reg_org_fcra")
-
-        submitted = st.form_submit_button(get_text('register'))
-
-        if submitted:
-            # Mock API call
-            st.success("Registration successful! Please check your email for verification.")
-            st.session_state.current_page = 'login'
-            st.rerun()
-
-    st.markdown(f"""
-        <div style="text-align: center; margin-top: 20px;">
-            {get_text('already_have_account')} <a href="#" onclick="window.parent.postMessage('navigate-login', '*')">{get_text('sign_in_here')}</a>
-            <div style="margin: 20px 0; font-size: 0.9em; color: #888;">{get_text('oauth_divider_register')}</div>
-        </div>
-    """, unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        st.button(get_text('sign_in_google'), on_click=lambda: st.rerun(), key='reg_google')
-    with col2:
-        st.button(get_text('sign_in_facebook'), on_click=lambda: st.rerun(), key='reg_facebook')
-
-
 def render_complete_oauth_profile_page():
-    st.markdown(f"""
-        <div class="html-container-wide">
-            <h1 class="html-title-register">{get_text('complete_profile_title')}</h1>
-            <p style="text-align: center; color: #555; margin-bottom: 20px;">{get_text('provide_details')}</p>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    # Use session state to control the selected registration type for OAuth
-    reg_type_options = [get_text('individual'), get_text('organization')]
-    selected_reg_type = st.selectbox(
-        get_text('registration_type'),
-        options=reg_type_options,
-        key='selected_reg_type_oauth',
-        index=reg_type_options.index(st.session_state.selected_reg_type_oauth) if st.session_state.selected_reg_type_oauth in reg_type_options else 0
-    )
+    """Render page for completing profile after OAuth login"""
+    st.markdown('<div class="html-container">', unsafe_allow_html=True)
 
-    with st.form("complete_profile_form", clear_on_submit=False):
-        st.session_state.selected_reg_type_oauth = selected_reg_type
-        if selected_reg_type == get_text('individual'):
-            st.subheader(get_text('contact_person_details'))
-            full_name = st.text_input(get_text('full_name'), value=st.session_state.user_info.get('full_name', ''), key="oauth_ind_full_name")
-            phone = st.text_input(get_text('phone'), key="oauth_ind_phone")
-            address = st.text_area(get_text('address'), key="oauth_ind_address")
-        else:
-            st.subheader(get_text('contact_person_details'))
-            contact_person_name = st.text_input(get_text('full_name'), value=st.session_state.user_info.get('full_name', ''), key="oauth_org_contact_name")
-            contact_person_phone = st.text_input(get_text('phone'), key="oauth_org_contact_phone")
+    st.markdown(f'<div class="html-title">{get_text("complete_profile_title")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<p>{get_text("provide_details")}</p>', unsafe_allow_html=True)
 
-            st.subheader(get_text('organization_details'))
-            organization_name = st.text_input(get_text('organization_name'), key="oauth_org_name")
-            organization_type = st.selectbox(
-                get_text('organization_type'),
-                options=[get_text('ngo'), get_text('startup'), get_text('charity')],
-                key="oauth_org_type"
-            )
-            description = st.text_area(get_text('description'), max_chars=100, key="oauth_org_description")
-            address = st.text_area(get_text('address'), key="oauth_org_address")
-            ngo_darpan_id = st.text_input("NGO Darpan ID (Optional)", key="oauth_org_ngo_darpan")
-            pan = st.text_input("PAN (Optional)", key="oauth_org_pan")
-            fcra_number = st.text_input("FCRA Number (Optional)", key="oauth_org_fcra")
-        
-        submitted = st.form_submit_button(get_text('submit'))
+    # Registration Type Selection for OAuth completion
+    st.markdown(f'<div style="margin-bottom: 20px; font-weight: 500;">{get_text("registration_type")}:</div>',
+                unsafe_allow_html=True)
 
-        if submitted:
-            st.success("Profile updated successfully!")
-            st.session_state.current_page = 'home'
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button(get_text("individual"), key="oauth_individual", use_container_width=True):
+            st.session_state.selected_reg_type_oauth = get_text("individual")
             st.rerun()
+
+    with col2:
+        if st.button(get_text("organization"), key="oauth_organization", use_container_width=True):
+            st.session_state.selected_reg_type_oauth = get_text("organization")
+            st.rerun()
+
+    # Show selected type
+    if st.session_state.selected_reg_type_oauth:
+        st.markdown(f'<div style="text-align: center; margin: 10px 0; color: #4CAF50; font-weight: 500;">Selected: {st.session_state.selected_reg_type_oauth}</div>',
+                    unsafe_allow_html=True)
+
+    # Profile completion forms
+    if st.session_state.selected_reg_type_oauth == get_text("individual"):
+        with st.form("complete_individual_profile"):
+            st.subheader(get_text("contact_person_details"))
+            phone = st.text_input(get_text("phone"), key="complete_phone")
+            address = st.text_area(get_text("address"), key="complete_address")
+
+            if st.form_submit_button(get_text("update_profile"), use_container_width=True):
+                if phone and address:
+                    # Here you would update the user profile via API
+                    st.success("Profile completed successfully!")
+                    st.session_state.current_page = 'home'
+                    st.rerun()
+                else:
+                    st.error("Please fill in all fields.")
+
+    elif st.session_state.selected_reg_type_oauth == get_text("organization"):
+        with st.form("complete_organization_profile"):
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.subheader(get_text("contact_person_details"))
+                contact_phone = st.text_input(get_text("phone"), key="complete_contact_phone")
+                contact_address = st.text_area(get_text("address"), key="complete_contact_address")
+
+            with col2:
+                st.subheader(get_text("organization_details"))
+                org_name = st.text_input(get_text("organization_name"), key="complete_org_name")
+                org_type = st.selectbox(get_text("organization_type"),
+                                        [get_text("ngo"), get_text("startup"), get_text("charity")],
+                                        key="complete_org_type")
+                org_description = st.text_area(get_text("description"), max_chars=100, key="complete_org_description")
+
+            if st.form_submit_button(get_text("update_profile"), use_container_width=True):
+                if all([contact_phone, contact_address, org_name, org_type, org_description]):
+                    # Here you would update the user profile via API
+                    st.success("Profile completed successfully!")
+                    st.session_state.current_page = 'home'
+                    st.rerun()
+                else:
+                    st.error("Please fill in all fields.")
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_home_page():
-    # Home page UI
-    st.markdown(f"""
-    <div class="welcome-banner-new">
-        <h1 class="welcome-banner-title-new">{get_text("welcome_banner_text")}</h1>
-        <p class="welcome-banner-tagline-new">{get_text("welcome_banner_tagline")}</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown(f"<h2 class='card-header'>{get_text('trending_campaigns')}</h2>", unsafe_allow_html=True)
-    # The actual campaign data would be fetched from the backend here
-    # Example:
-    # campaigns_data = requests.get(f"{BACKEND_URL}/campaigns/trending").json()
-    st.info("This is where trending campaigns will be displayed after being fetched from the backend.")
+    """Render the home page with trending campaigns"""
+    st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
 
-    st.markdown(f"<h2 class='card-header'>{get_text('explore_categories')}</h2>", unsafe_allow_html=True)
-    # The categories would be listed here
-    st.info("This is where categories will be displayed.")
+    st.markdown(f'<h2 style="color: #2d5a2d; margin-bottom: 20px;">{get_text("trending_campaigns")}</h2>',
+                unsafe_allow_html=True)
+
+    # Mock campaign data
+    campaigns = [
+        {
+            "title": "Clean Water for Rural Communities",
+            "description": "Providing clean drinking water access to remote villages through sustainable well construction and water purification systems.",
+            "goal": 50000,
+            "raised": 32500,
+            "backers": 245,
+            "days_left": 15,
+            "category": "Environment"
+        },
+        {
+            "title": "Education for Underprivileged Children",
+            "description": "Supporting education initiatives by providing school supplies, books, and learning materials to children in need.",
+            "goal": 25000,
+            "raised": 18750,
+            "backers": 156,
+            "days_left": 22,
+            "category": "Education"
+        },
+        {
+            "title": "Medical Equipment for Local Hospital",
+            "description": "Fundraising for essential medical equipment to improve healthcare services in our community hospital.",
+            "goal": 75000,
+            "raised": 45000,
+            "backers": 189,
+            "days_left": 8,
+            "category": "Health"
+        }
+    ]
+
+    for campaign in campaigns:
+        progress_percentage = (campaign["raised"] / campaign["goal"]) * 100
+
+        st.markdown(f'''
+            <div class="campaign-card">
+                <div class="campaign-title">{campaign["title"]}</div>
+                <div class="campaign-description">{campaign["description"]}</div>
+                <div class="campaign-progress">
+                    <div class="campaign-progress-bar" style="width: {progress_percentage}%"></div>
+                </div>
+                <div class="campaign-stats">
+                    <div class="campaign-stat">
+                        <span class="campaign-stat-value">${campaign["raised"]:,}</span>
+                        <span class="campaign-stat-label">Raised</span>
+                    </div>
+                    <div class="campaign-stat">
+                        <span class="campaign-stat-value">{progress_percentage:.1f}%</span>
+                        <span class="campaign-stat-label">of ${campaign["goal"]:,}</span>
+                    </div>
+                    <div class="campaign-stat">
+                        <span class="campaign-stat-value">{campaign["backers"]}</span>
+                        <span class="campaign-stat-label">Backers</span>
+                    </div>
+                    <div class="campaign-stat">
+                        <span class="campaign-stat-value">{campaign["days_left"]}</span>
+                        <span class="campaign-stat-label">Days Left</span>
+                    </div>
+                </div>
+            </div>
+        ''', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_explore_page():
-    st.markdown(f"<h1 class='html-title-register'>{get_text('explore')}</h1>", unsafe_allow_html=True)
-    st.info("Here you will find a list of all campaigns.")
+    """Render the explore page with categories"""
+    st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
+
+    st.markdown(f'<h2 style="color: #2d5a2d; margin-bottom: 20px;">{get_text("categories")}</h2>',
+                unsafe_allow_html=True)
+
+    # Categories with icons
+    categories = [
+        {"name": get_text("technology"), "icon": "💻"},
+        {"name": get_text("health"), "icon": "🏥"},
+        {"name": get_text("education"), "icon": "📚"},
+        {"name": get_text("environment"), "icon": "🌱"},
+        {"name": get_text("arts"), "icon": "🎨"},
+        {"name": get_text("community"), "icon": "🤝"}
+    ]
+
+    # Create category grid
+    cols = st.columns(3)
+    for i, category in enumerate(categories):
+        with cols[i % 3]:
+            st.markdown(f'''
+                <div class="category-card">
+                    <div class="category-icon">{category["icon"]}</div>
+                    <div class="category-name">{category["name"]}</div>
+                </div>
+            ''', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_search_page():
-    st.markdown(f"<h1 class='html-title-register'>{get_text('search')}</h1>", unsafe_allow_html=True)
-    st.text_input(get_text('search_campaigns'), placeholder=get_text('search_placeholder'))
-    st.markdown(f"**{get_text('search_tips')}**")
-    st.info(f"""
-        - {get_text('use_keywords')}
-        - {get_text('filter_category')}
-        - {get_text('check_spelling')}
-    """)
+    """Render the search page"""
+    st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
+
+    st.markdown(f'<h2 style="color: #2d5a2d; margin-bottom: 20px;">{get_text("search_campaigns")}</h2>',
+                unsafe_allow_html=True)
+
+    # Search input
+    search_query = st.text_input(
+        "",
+        placeholder=get_text("search_placeholder"),
+        key="search_input"
+    )
+
+    if search_query:
+        st.markdown(f'<p>Searching for: <strong>{search_query}</strong></p>', unsafe_allow_html=True)
+        st.info("Search functionality will be implemented with backend integration.")
+
+    # Search tips
+    st.markdown(f'''
+        <div class="search-tips">
+            <h4><i class="fas fa-lightbulb"></i> {get_text("search_tips")}</h4>
+            <ul>
+                <li>{get_text("use_keywords")}</li>
+                <li>{get_text("filter_category")}</li>
+                <li>{get_text("check_spelling")}</li>
+            </ul>
+        </div>
+    ''', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+def render_sidebar():
+    with st.sidebar:
+        st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-title">Select Language:</div>', unsafe_allow_html=True)
+        language = st.selectbox(
+            "Choose Language",
+            options=list(TRANSLATIONS.keys()),
+            index=list(TRANSLATIONS.keys()).index(st.session_state.language),
+            key="language_selector"
+        )
+
+        if language != st.session_state.language:
+            st.session_state.language = language
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-title">Backend Status:</div>', unsafe_allow_html=True)
+
+        is_connected, status_message = check_backend_connection()
+        if is_connected:
+            st.markdown(f'<div class="status-connected">✅ {status_message}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="status-disconnected">❌ {status_message}</div>', unsafe_allow_html=True)
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        if st.session_state.user_token:
+            render_user_profile()
+
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown('<div class="sidebar-title">Navigation:</div>', unsafe_allow_html=True)
+
+            if st.session_state.current_page != 'home':
+                if st.button(get_text("home"), key="nav_home"):
+                    st.session_state.current_page = 'home'
+                    st.rerun()
+
+            if st.session_state.current_page != 'explore':
+                if st.button(get_text("explore"), key="nav_explore"):
+                    st.session_state.current_page = 'explore'
+                    st.rerun()
+
+            if st.session_state.current_page != 'search':
+                if st.button(get_text("search"), key="nav_search"):
+                    st.session_state.current_page = 'search'
+                    st.rerun()
+
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            render_create_campaign_button()
+
+
+def handle_js_messages():
+    """Handles messages posted from JavaScript to Streamlit."""
+    if "js_message" in st.session_state:
+        message = st.session_state.js_message
+        if message and isinstance(message, dict):
+            action = message.get("action")
+            id_token = message.get("id_token")
+            error = message.get("error")
+
+            if action == "login":
+                if id_token:
+                    login_user_backend(id_token)
+                else:
+                    st.error("Firebase login failed: No ID token received.")
+            elif action == "login_error":
+                st.error(f"Firebase login error: {error}")
+            elif action == "register":
+                if id_token and 'temp_registration_data' in st.session_state:
+                    temp_data = st.session_state.temp_registration_data
+                    register_user_backend(
+                        id_token,
+                        temp_data.get('user_type'),
+                        temp_data.get('individual_data'),
+                        temp_data.get('organization_data')
+                    )
+                    del st.session_state.temp_registration_data  # Clear temp data
+                else:
+                    st.error("Firebase registration failed: No ID token or temporary data received.")
+            elif action == "register_error":
+                st.error(f"Firebase registration error: {error}")
+            elif action == "logout_success":
+                st.session_state.user_token = None
+                st.session_state.user_info = None
+                st.session_state.current_page = 'login'
+                st.success("Successfully logged out!")
+                st.rerun()
+            elif action == "logout_error":
+                st.error(f"Logout failed: {error}")
+        # Clear the message after processing
+        st.session_state.js_message = None
+
+
+def render_user_profile():
+    """Render user profile in sidebar"""
+    if st.session_state.user_info:
+        user = st.session_state.user_info
+        st.markdown(f'''
+            <div class="user-profile">
+                <h3>{user.get("name", "User")}</h3>
+                <p>{user.get("email", "")}</p>
+            </div>
+        ''', unsafe_allow_html=True)
+
+        if st.button(get_text("logout"), key="logout_button", use_container_width=True):
+            firebase_html = get_firebase_auth_html("logout")
+            st.components.v1.html(f"""
+                {firebase_html}
+                <script>
+                    setTimeout(() => {{
+                        signOut();
+                    }}, 100);
+                </script>
+            """, height=0, width=0)
+
+
+def render_create_campaign_button():
+    """Render create campaign button in sidebar"""
+    if st.session_state.user_info:
+        user = st.session_state.user_info
+        # Check if user is an organization
+        if user.get("user_type") == "organization":
+            if st.button(get_text("create_campaign"), key="create_campaign_nav", use_container_width=True):
+                st.session_state.current_page = 'create_campaign'
+                st.rerun()
+        else:
+            st.markdown(f'<div style="text-align: center; color: #666; font-size: 12px; margin-top: 10px;">{get_text("only_org_can_create_campaign")}</div>',
+                        unsafe_allow_html=True)
 
 
 def render_create_campaign_page():
-    st.markdown(f"<h1 class='html-title-register'>{get_text('create_campaign')}</h1>", unsafe_allow_html=True)
+    """Render the create campaign page"""
+    st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
 
-    if st.session_state.user_info and st.session_state.user_info.get('account_type') == get_text('organization'):
-        with st.form("create_campaign_form", clear_on_submit=True):
-            campaign_name = st.text_input(get_text('campaign_name'))
-            campaign_description = st.text_area(get_text('campaign_description_full'))
-            goal_amount = st.number_input(get_text('goal_amount'), min_value=1)
-            campaign_category = st.selectbox(get_text('campaign_category'), options=['Health', 'Education', 'Environment', 'Technology', 'Arts & Culture', 'Community'])
-            campaign_image = st.file_uploader(get_text('upload_image'), type=['png', 'jpg', 'jpeg'])
+    st.markdown(f'<h2 style="color: #2d5a2d; margin-bottom: 20px;">{get_text("create_campaign")}</h2>',
+                unsafe_allow_html=True)
 
-            submitted = st.form_submit_button(get_text('submit_campaign'))
+    # Check if user is authorized to create campaigns
+    if not st.session_state.user_info or st.session_state.user_info.get("user_type") != "organization":
+        st.error(get_text("only_org_can_create_campaign"))
+        st.markdown('</div>', unsafe_allow_html=True)
+        return
 
-            if submitted:
-                if not all([campaign_name, campaign_description, goal_amount, campaign_category, campaign_image]):
-                    st.error("Please fill in all the fields.")
-                else:
-                    # Mock API call
-                    st.success(get_text('campaign_creation_success'))
-                    # In a real app, you would send the data to your backend
-    else:
-        st.error(get_text('only_org_can_create_campaign'))
+    with st.form("create_campaign_form"):
+        campaign_name = st.text_input(get_text("campaign_name"), key="campaign_name")
+        campaign_description = st.text_area(get_text("campaign_description_full"), key="campaign_description", height=150)
+        goal_amount = st.number_input(get_text("goal_amount"), min_value=1, step=1, key="goal_amount")
+
+        category = st.selectbox(
+            get_text("campaign_category"),
+            [get_text("technology"), get_text("health"), get_text("education"),
+             get_text("environment"), get_text("arts"), get_text("community")],
+            key="campaign_category"
+        )
+
+        # File upload for campaign image
+        st.markdown(f'<div style="margin: 20px 0; font-weight: 500;">{get_text("upload_image")}:</div>',
+                    unsafe_allow_html=True)
+        uploaded_file = st.file_uploader("", type=['png', 'jpg', 'jpeg'], key="campaign_image")
+
+        if st.form_submit_button(get_text("submit_campaign"), use_container_width=True):
+            if all([campaign_name, campaign_description, goal_amount, category]):
+                # Here you would create the campaign via API
+                try:
+                    # Mock campaign creation
+                    st.success(get_text("campaign_creation_success"))
+                    st.session_state.current_page = 'home'
+                    st.rerun()
+                except Exception as e:
+                    st.error(f'{get_text("campaign_creation_failed")} {str(e)}')
+            else:
+                st.error("Please fill in all required fields.")
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
-def render_profile_page():
-    st.markdown(f"<h1 class='html-title-register'>{get_text('profile')}</h1>", unsafe_allow_html=True)
-    st.info("This is the profile page where user details and created campaigns will be shown.")
+def main():
+    st.set_page_config(
+        page_title="HAVEN - Crowdfunding Platform",
+        page_icon="🏠",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
 
-    if st.session_state.user_info:
-        st.subheader("User Information")
-        st.json(st.session_state.user_info)
-
-        # Example of fetching user-specific campaigns
-        st.subheader("My Campaigns")
-        st.info("This section would show campaigns created by the user.")
-
-
-def render_main_page():
-    # main page where we handle the routing
     apply_custom_css()
-    
-    # This banner was removed from here. It is now only in render_home_page().
-    
+
+    # This component listens for messages from the embedded JavaScript
+    st.components.v1.html("""
+<script>
+window.addEventListener('message', event => {
+    if (event.data.streamlit) {
+        // Forward the message to Python session state
+        window.parent.postMessage(event.data, '*');
+    }
+});
+</script>
+""", height=0, width=0, key="js_listener")
+
+    # Handle messages from JavaScript
+    if "streamlit" in st.query_params:
+        # This is how Streamlit receives messages from custom components/JS
+        # We need to parse it and store it in session_state for handle_js_messages
+        try:
+            message_payload = json.loads(st.query_params["streamlit"])
+            if message_payload.get("type") == "SET_PAGE_STATE":
+                st.session_state.js_message = message_payload.get("payload")
+            # Clear the query param to avoid re-processing on rerun
+            st.query_params.clear()
+            st.rerun()  # Rerun to process the message
+        except json.JSONDecodeError:
+            pass  # Ignore malformed messages
+
+    handle_js_messages()  # Process any messages received
+
+    # Updated banner rendering with new classes for better control
+    st.markdown(f'<div class="welcome-banner-main-title">{get_text("welcome_banner_text")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="welcome-banner-tagline">{get_text("welcome_banner_tagline")}</div>', unsafe_allow_html=True)
+
     handle_oauth_callback()
 
     query_params = st.query_params
     if 'page' in query_params:
         requested_page = query_params['page']
         if requested_page in ['login', 'register', 'home', 'explore', 'search', 'complete_oauth_profile',
-                              'create_campaign', 'profile']:
+                              'create_campaign']:
             st.session_state.current_page = requested_page
             # Clear the page query param after setting state to avoid re-processing on rerun
             st.query_params.clear()
@@ -919,16 +1695,14 @@ def render_main_page():
             render_explore_page()
         elif st.session_state.current_page == 'search':
             render_search_page()
-        elif st.session_state.current_page == 'profile':
-            render_profile_page()
         else:
             st.session_state.current_page = 'login'
             render_login_page()
     except Exception as e:
-        st.error(f"An error occurred: {e}")
-        st.session_state.current_page = 'login'
-        st.rerun()
+        st.error(f"An unexpected error occurred in the main application flow: {e}")
+        st.exception(e)
 
 
 if __name__ == "__main__":
-    render_main_page()
+    main()
+
