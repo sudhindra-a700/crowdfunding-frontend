@@ -39,8 +39,8 @@ TRANSLATIONS = {
         'search': 'Search',
         'profile': 'Profile',
         'logout': 'Logout',
-        'welcome_banner_text': 'HAVEN',  # New key for the main banner title
-        'welcome_banner_tagline': 'Help not just some people, but Help Humanity.',  # New key for the banner tagline
+        'welcome_banner_text': 'HAVEN',
+        'welcome_banner_tagline': 'Help not just some people, but Help Humanity.',
         'trending_campaigns': 'Trending Campaigns',
         'categories': 'Categories',
         'technology': 'Technology',
@@ -60,7 +60,7 @@ TRANSLATIONS = {
         'organization_type': 'Organization Type',
         'ngo': 'NGO',
         'startup': 'Startup',
-        'charity': 'Chariy',
+        'charity': 'Charity',
         'description': 'Brief Description (max 100 chars)',
         'complete_profile_title': 'Complete Your Profile',
         'provide_details': 'Please provide the additional details to complete your registration.',
@@ -104,8 +104,8 @@ TRANSLATIONS = {
         'search': 'खोजें',
         'profile': 'प्रोफाइल',
         'logout': 'लॉगआउट',
-        'welcome_banner_text': 'हेवन',  # New key for the main banner title
-        'welcome_banner_tagline': 'केवल कुछ लोगों की नहीं, बल्कि मानवता की मदद करें।',  # New key for the banner tagline
+        'welcome_banner_text': 'हेवन',
+        'welcome_banner_tagline': 'केवल कुछ लोगों की नहीं, बल्कि मानवता की मदद करें।',
         'trending_campaigns': 'ट्रेंडिंग कैंपेन',
         'categories': 'श्रेणियां',
         'technology': 'तकनीक',
@@ -170,8 +170,8 @@ TRANSLATIONS = {
         'search': 'தேடவும்',
         'profile': 'சுயவிவரம்',
         'logout': 'வெளியேறவும்',
-        'welcome_banner_text': 'ஹேவன்',  # New key for the main banner title
-        'welcome_banner_tagline': 'சிலருக்கு மட்டுமல்ல, மனிதகுலத்திற்கு உதவுங்கள்.',  # New key for the banner tagline
+        'welcome_banner_text': 'ஹேவன்',
+        'welcome_banner_tagline': 'சிலருக்கு மட்டுமல்ல, மனிதகுலத்திற்கு உதவுங்கள்.',
         'trending_campaigns': 'டிரெண்டிங் பிரச்சாரங்கள்',
         'categories': 'வகைகள்',
         'technology': 'தொழில்நுட்பம்',
@@ -207,7 +207,7 @@ TRANSLATIONS = {
         'submit_campaign': 'பிரச்சாரத்தை சமர்ப்பி',
         'campaign_creation_success': 'பிரச்சாரம் வெற்றிகரமாக உருவாக்கப்பட்டது!',
         'campaign_creation_failed': 'பிரச்சார உருவாக்கம் தோல்வியடைந்தது:',
-        'only_org_can_create_campaign': 'அமைப்பு கணக்குகள் மட்டுமே பிரச்சாரங்களை உருவாக்க முடியும்।'
+        'only_org_can_create_campaign': 'அமைப்பு கணக்குகள் மட்டுமே பிரச்சாரங்களை உருவாக்க முடியும்.'
     },
     'Telugu': {
         'title': 'హేవెన్',
@@ -236,8 +236,8 @@ TRANSLATIONS = {
         'search': 'వెతకండి',
         'profile': 'ప్రొఫైల్',
         'logout': 'లాగ్అవుట్',
-        'welcome_banner_text': 'హేవెన్',  # New key for the main banner title
-        'welcome_banner_tagline': 'కేవలం కొందరికి కాదు, మానవత్వానికి సహాయం చేయండి.',  # New key for the banner tagline
+        'welcome_banner_text': 'హేవెన్',
+        'welcome_banner_tagline': 'కేవలం కొందరికి కాదు, మానవత్వానికి సహాయం చేయండి.',
         'trending_campaigns': 'ట్రెండింగ్ క్యాంపెయిన్‌లు',
         'categories': 'వర్గాలు',
         'technology': 'సాంకేతికత',
@@ -273,7 +273,7 @@ TRANSLATIONS = {
         'submit_campaign': 'అభియాన్ సమర్పించు',
         'campaign_creation_success': 'అభియాన్ విజయవంతంగా సృష్టించబడింది!',
         'campaign_creation_failed': 'అభియాన్ సృష్టి విఫలమైంది:',
-        'only_org_can_create_campaign': 'సంస్థ ఖాతాలు మాత్రమే అభియాన్‌లను సృష్టించగలవు।'
+        'only_org_can_create_campaign': 'సంస్థ ఖాతాలు మాత్రమే అభియాన్‌లను సృష్టించగలవు.'
     }
 }
 
@@ -285,15 +285,12 @@ if 'user_token' not in st.session_state:
     st.session_state.user_token = None
 if 'user_info' not in st.session_state:
     st.session_state.user_info = None
-# Initialize selected_reg_type for immediate rendering control
-if 'selected_reg_type_register' not in st.session_state:  # Changed key to be specific to register page
-    st.session_state.selected_reg_type_register = TRANSLATIONS['English'][
-        'individual']  # Default to English 'Individual'
-if 'selected_reg_type_oauth' not in st.session_state:  # Added key for OAuth completion page
-    st.session_state.selected_reg_type_oauth = TRANSLATIONS['English']['individual']  # Default for OAuth completion
+if 'selected_reg_type_register' not in st.session_state:
+    st.session_state.selected_reg_type_register = TRANSLATIONS['English']['individual']
+if 'selected_reg_type_oauth' not in st.session_state:
+    st.session_state.selected_reg_type_oauth = TRANSLATIONS['English']['individual']
 
 # Firebase configuration (REPLACE WITH YOUR ACTUAL FIREBASE CONFIG)
-# This should ideally come from environment variables for production
 FIREBASE_CONFIG = {
     "apiKey": os.getenv("FIREBASE_API_KEY"),
     "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN"),
@@ -304,17 +301,15 @@ FIREBASE_CONFIG = {
     "measurementId": os.getenv("FIREBASE_MEASUREMENT_ID")
 }
 
-
 def get_text(key):
     return TRANSLATIONS[st.session_state.language].get(key, key)
-
 
 def apply_custom_css():
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
     @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
-    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); /* Added Great Vibes font */
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 
     .stApp {
         background-color: #f0f2e6 !important;
@@ -352,7 +347,7 @@ def apply_custom_css():
         font-weight: 600;
         margin: 20px 0 10px 0;
         position: relative;
-        color: #2d5a2d; /* Darker green for titles for contrast */
+        color: #2d5a2d;
     }
 
     .html-title:before {
@@ -371,7 +366,7 @@ def apply_custom_css():
         font-weight: 600;
         margin-bottom: 30px;
         position: relative;
-        color: #2d5a2d; /* Darker green for titles for contrast */
+        color: #2d5a2d;
     }
 
     .html-title-register::before {
@@ -399,39 +394,39 @@ def apply_custom_css():
         font-size: 16px;
         border: none;
         background: transparent;
-        color: #333 !important; /* Slightly darker input text for contrast */
+        color: #333 !important;
         border-bottom: 2px solid #ccc;
         padding-left: 5px;
         font-family: 'Poppins', sans-serif;
     }
 
     .html-input-box input::placeholder {
-        color: #777; /* Darker placeholder for contrast */
+        color: #777;
     }
 
     .stTextInput > div > div > input,
     .stSelectbox > div > div > select,
     .stTextArea > div > div > textarea {
-        background: #f8f8f8 !important; /* Added light background color */
-        border: 1px solid #ddd !important; /* Added full border */
-        border-radius: 5px !important; /* Rounded corners for input fields */
-        padding: 10px !important; /* Increased padding */
+        background: #f8f8f8 !important;
+        border: 1px solid #ddd !important;
+        border-radius: 5px !important;
+        padding: 10px !important;
         font-size: 16px !important;
         color: #333 !important;
         font-family: 'Poppins', sans-serif !important;
         height: 45px !important;
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.06); /* Subtle inner shadow */
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
     }
 
     .stTextInput > div > div > input:focus,
     .stSelectbox > div > div > select:focus,
     .stTextArea > div > div > textarea:focus {
-        border-color: #4CAF50 !important; /* Highlight border on focus */
-        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important; /* Subtle focus ring */
+        border-color: #4CAF50 !important;
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
     }
 
     .stTextInput > div > div > input::placeholder {
-        color: #777 !important; /* Darker placeholder for contrast */
+        color: #777 !important;
     }
 
     .html-button {
@@ -484,7 +479,7 @@ def apply_custom_css():
         font-size: 14px;
         text-align: center;
         margin: 20px 0;
-        color: #333; /* Darker text for contrast */
+        color: #333;
     }
 
     .html-option a {
@@ -496,7 +491,7 @@ def apply_custom_css():
 
     .html-option a:hover {
         color: #388E3C !important;
-        text_decoration: underline;
+        text-decoration: underline;
     }
 
     .html-oauth-google, .html-oauth-facebook {
@@ -508,9 +503,9 @@ def apply_custom_css():
         padding-left: 20px;
         line-height: 45px;
         color: #fff !important;
-        border_radius: 5px;
+        border-radius: 5px;
         transition: all 0.3s ease;
-        margin_bottom: 15px;
+        margin-bottom: 15px;
         font-family: 'Poppins', sans-serif;
         font-weight: 500;
     }
@@ -559,7 +554,7 @@ def apply_custom_css():
         font-weight: 600;
         border-bottom: 1px solid #ddd;
         padding-bottom: 5px;
-        color: #2d5a2d; /* Darker green for section titles */
+        color: #2d5a2d;
     }
 
     .html-input-box-register {
@@ -616,7 +611,7 @@ def apply_custom_css():
     }
 
     .sidebar-title {
-        color: #2d5a2d; /* Darker green for sidebar titles */
+        color: #2d5a2d;
         font-weight: 600;
         margin-bottom: 0.5rem;
         font-size: 1.1rem;
@@ -624,7 +619,7 @@ def apply_custom_css():
 
     .sidebar-link {
         display: block;
-        color: #333; /* Darker text for contrast */
+        color: #333;
         text-decoration: none;
         padding: 0.5rem 0;
         border-bottom: 1px solid #f0f0f0;
@@ -655,7 +650,7 @@ def apply_custom_css():
         background: white;
         padding: 1rem;
         border-radius: 10px;
-        box_shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         margin: 1rem 0;
     }
 
@@ -691,7 +686,7 @@ def apply_custom_css():
     }
 
     .stMarkdown p, .stMarkdown div, .stMarkdown span {
-        color: #333 !important; /* Ensure all markdown text is dark for contrast */
+        color: #333 !important;
     }
 
     .app-title {
@@ -707,13 +702,13 @@ def apply_custom_css():
     }
 
     .app-subtitle {
-        color: #333; /* Darker subtitle for contrast */
+        color: #333;
         text-align: center;
         font-size: 1.2rem;
         margin-bottom: 2rem;
         font-weight: 400;
-        font-family: 'Great Vibes', cursive; /* Applied Great Vibes font */
-        font-size: 1.8rem; /* Increased font size for tagline */
+        font-family: 'Great Vibes', cursive;
+        font-size: 1.8rem;
     }
 
     .category-card {
@@ -742,7 +737,7 @@ def apply_custom_css():
     .category-title {
         font-size: 1.2rem;
         font-weight: 600;
-        color: #333; /* Darker category title for contrast */
+        color: #333;
         margin-bottom: 0.5rem;
     }
 
@@ -779,12 +774,12 @@ def apply_custom_css():
     .campaign-title {
         font-size: 1.3rem;
         font-weight: 600;
-        color: #333; /* Darker campaign title for contrast */
+        color: #333;
         margin-bottom: 0.5rem;
     }
 
     .campaign-description {
-        color: #666; /* Darker campaign description for contrast */
+        color: #666;
         margin-bottom: 1rem;
         line-height: 1.5;
     }
@@ -827,7 +822,7 @@ def apply_custom_css():
     }
 
     .search-tips ul {
-        color: #666; /* Darker search tips list for contrast */
+        color: #666;
         margin: 0;
         padding-left: 1.5rem;
     }
@@ -837,53 +832,51 @@ def apply_custom_css():
         line-height: 1.5;
     }
 
-    .welcome-banner-main-title { /* New class for the main "HAVEN" title */
-        background-color: #e6ffe6; /* Light green background */
-        padding: 15px 20px 5px 20px; /* Adjusted padding */
-        border-radius: 8px 8px 0 0; /* Rounded top corners */
+    .welcome-banner-main-title {
+        background-color: #e6ffe6;
+        padding: 15px 20px 5px 20px;
+        border-radius: 8px 8px 0 0;
         text-align: center;
         font-size: 30px;
         font-weight: 700;
-        color: #2d5a2d; /* Dark green text for contrast */
+        color: #2d5a2d;
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        margin-bottom: 0; /* Remove bottom margin to connect with tagline */
+        margin-bottom: 0;
     }
 
-    .welcome-banner-tagline { /* New class for the tagline */
-        background-color: #e6ffe6; /* Same light green background */
-        padding: 0 20px 15px 20px; /* Adjusted padding */
-        border-radius: 0 0 8px 8px; /* Rounded bottom corners */
+    .welcome-banner-tagline {
+        background-color: #e6ffe6;
+        padding: 0 20px 15px 20px;
+        border-radius: 0 0 8px 8px;
         text-align: center;
         font-family: 'Great Vibes', cursive;
         font-size: 1.8rem;
         color: #333;
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        margin-top: 0; /* Remove top margin to connect with main title */
+        margin-top: 0;
     }
 
-
-    /* Styles for the Create Campaign button (plus sign) */
     .create-campaign-button {
         display: flex;
         justify-content: center;
         align-items: center;
         background: linear-gradient(to right, #4CAF50 0%, #388E3C 100%);
         color: white;
-        border-radius: 50%; /* Makes it circular */
-        width: 60px; /* Size of the button */
-        height: 60px; /* Size of the button */
-        font-size: 2.5rem; /* Size of the plus sign */
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        font-size: 2.5rem;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         cursor: pointer;
         transition: all 0.2s ease-in-out;
-        margin: 20px auto; /* Center it and give some margin */
-        border: none; /* Remove default button border */
+        margin: 20px auto;
+        border: none;
     }
 
     .create-campaign-button:hover {
         transform: scale(1.05);
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        color: white; /* Keep color white on hover */
+        color: white;
     }
 
     .create-campaign-button:active {
@@ -892,256 +885,198 @@ def apply_custom_css():
     </style>
     """, unsafe_allow_html=True)
 
-    # Firebase SDK scripts
     st.markdown(f"""
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script>
-        // Initialize Firebase
         const firebaseConfig = {json.dumps(FIREBASE_CONFIG)};
         if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-    }
+            firebase.initializeApp(firebaseConfig);
+        }
         const auth = firebase.auth();
 
-        // Function to sign in with email/password
         window.signInWithEmailPassword = async (email, password) => {
-    try {
-    const userCredential = await auth.signInWithEmailAndPassword(email, password);
-    const idToken = await userCredential.user.getIdToken();
-    // Send idToken to Streamlit via postMessage
-    window.parent.postMessage({{
-    streamlit: {{
-        type: 'SET_PAGE_STATE',
-        payload: {{
-            id_token: idToken,
-            action: 'login'
-        }}
-    }}
-    }}, '*');
-    } catch (error) {
-        wi
-    dow.parent.postMessage({{
-            streamlit: {{
-                type: 'SET_PAGE_STATE',
-                payload: {{
-                    error: error.message,
-                    action: 'login_error'
-                }}
-            }}
-        }}, '*');
-    }
-    };
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const idToken = await userCredential.user.getIdToken();
+                window.parent.postMessage({
+                    streamlit: {
+                        type: 'SET_PAGE_STATE',
+                        payload: {
+                            id_token: idToken,
+                            action: 'login'
+                        }
+                    }
+                }, '*');
+            } catch (error) {
+                window.parent.postMessage({
+                    streamlit: {
+                        type: 'SET_PAGE_STATE',
+                        payload: {
+                            error: error.message,
+                            action: 'login_error'
+                        }
+                    }
+                }, '*');
+            }
+        };
 
-    // Function to register
-    with email/p
-    ssword window.createUserWithEmailPassword = async (email, password) => {
-    try { const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    const idToken = await userCredential.user.getIdToken();
-    // Send idToken to Streamlit via postMessage
-    window.parent.postMessage({{
-    streamlit: {{
-        type: 'SET_PAGE_STATE',
-        payload: {{
-            id_token: idToken,
-            action: 'register'
-        }}
-    }}
-    }}, '*');
-    } catch (error) {
-        windw.parent
-    .postMessage({{
-            streamlit: {{
-                type: 'SET_PAGE_STATE',
-                payload: {{
-                    error: error.message,
-                    action: 'register_error'
-                }}
-            }}
-        }}, '*');
-    }
-    };
+        window.createUserWithEmailPassword = async (email, password) => {
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const idToken = await userCredential.user.getIdToken();
+                window.parent.postMessage({
+                    streamlit: {
+                        type: 'SET_PAGE_STATE',
+                        payload: {
+                            id_token: idToken,
+                            action: 'register'
+                        }
+                    }
+                }, '*');
+            } catch (error) {
+                window.parent.postMessage({
+                    streamlit: {
+                        type: 'SET_PAGE_STATE',
+                        payload: {
+                            error: error.message,
+                            action: 'register_error'
+                        }
+                    }
+                }, '*');
+            }
+        };
 
-    // Function to sign out
-    window
-    .
-    sign
-    utFirebase = async () => {
-    try {
-    aw ait auth.signOut();
-    window.parent.postMessage({{
-    streamlit: {{
-        type: 'SET_PAGE_STATE',
-        payload: {{
-            action: 'logout_success'
-        }}
-    }}
-    }}, '*');
-    } catch (error) {
-        wndow.pa
-    ent.postMessage({{
-            streamlit: {{
-                type: 'SET_PAGE_STATE',
-                payload: {{
-                    error: error.message,
-                    action: 'logout_error'
-                }}
-            }}
-        }}, '*');
-    }
-    };
+        window.signOutFirebase = async () => {
+            try {
+                await auth.signOut();
+                window.parent.postMessage({
+                    streamlit: {
+                        type: 'SET_PAGE_STATE',
+                        payload: {
+                            action: 'logout_success'
+                        }
+                    }
+                }, '*');
+            } catch (error) {
+                window.parent.postMessage({
+                    streamlit: {
+                        type: 'SET_PAGE_STATE',
+                        payload: {
+                            error: error.message,
+                            action: 'logout_error'
+                        }
+                    }
+                }, '*');
+            }
+        };
     </script>
-      """,  u nsafe_ a
-        ml=True)
-  
-  
-  def check_backend_connection():
-      try:
-          endpoints = ['/health', '/docs', '/']
-  
-          for endpoint in endpoints:
-              try:
-                  response = requests.get(f"{BACKEND_URL}{endpoint}", timeout=10)
-                  if response.status_code in [200, 404]:
-                      return True, "Connected"
-              except:
-                  continue
-  
-          return False, "All endpoints failed"
-  
-      except Exception as e:
-          return False, f"Connection error: {str(e)}")
-  
-  def safe_json_parse(response):
-      try:
-          return response.json()
-      except:
-          return {"detail": f"Server error (Status: {response.status_code})"}
-  
-  def handle_oauth_callback():
-      try:
-          query_params = st.query_params
-  
-          access_token = query_params.get('access_token')
-          user_info_str = query_params.get('user_info')
-  
-          if access_token and user_info_str:
-              st.session_state.user_token = access_token
-              try:
-                  user_info = json.loads(user_info_str)
-                  st.session_state.user_info = user_info
-              except json.JSONDecodeError:
-                  st.session_state.user_info = {"name": "OAuth User", "email": "user@oauth.com", "user_type": "individual"}
-  
-              # Check if it's a new registration needing profile completion
-              if st.session_state.user_info.get('user_type') == 'individual' and \
-                 not st.session_state.user_info.get('phone') and \
-                 not st.session_state.user_info.get('address'):
-                  st.session_state.current_page = 'complete_oauth_profile'
-                  st.success("Please complete your profile details.")
-              elif st.session_state.user_info.get('user_type') == 'organization' and \
-                   not st.session_state.user_info.get('organization_name'):
-                  st.session_state.current_page = 'complete_oauth_profile'
-                  st.success("Please complete your organization profile details.")
-              else:
-                  st.session_state.current_page = 'home'
-                  st.success("Successfully logged in with OAuth!")
-              st.rerun()
-  
-          error = query_params.get('error')
-          if error:
-              st.error(f"OAuth login failed: {error}")
-  
-      except Exception as e:
-          st.error(f"Error handling OAuth callback: {str(e)}")
-  
-  def render_oauth_buttons(is_register_page=False):
-      try:
-          response = requests.get(f"{BACKEND_URL}/auth/status", timeout=10)
-          if response.status_code == 200:
-              status = safe_json_parse(response)
-              google_available = status.get('google_available', False)
-              facebook_available = status.get('facebook_available', False)
-          else:
-              google_available = False
-              facebook_available = False
-      except:
-          google_available = False
-          facebook_available = False
-  
-      google_params = {"register_oauth": "true"} if is_register_page else {}
-      facebook_params = {"register_oauth": "true"} if is_register_page else {}
-  
-      google_url = f"{BACKEND_URL}/auth/google?{urlencode(google_params)}"
-      facebook_url = f"{BACKEND_URL}/auth/facebook?{urlencode(facebook_params)}"
-  
-      if google_available:
-          st.markdown(f"""
-      <a href="{goo \
-        } "
-    clas s ="html-oauth-g
+    """, unsafe_allow_html=True)
 
-    ogle" >
-<i class="fab fa-g o
+def check_backend_connection():
+    try:
+        endpoints = ['/health', '/docs', '/']
 
-g l
+        for endpoint in endpoints:
+            try:
+                response = requests.get(f"{BACKEND_URL}{endpoint}", timeout=10)
+                if response.status_code in [200, 404]:
+                    return True, "Connected"
+            except:
+                continue
 
+        return False, "All endpoints failed"
 
-"></i >{get_text('sign _ i n _ g oogle')}
-</a>
-""", unsafe_al
+    except Exception as e:
+        return False, f"Connection error: {str(e)}"
 
-o w _ html=True)
+def safe_json_parse(response):
+    try:
+        return response.json()
+    except:
+        return {"detail": f"Server error (Status: {response.status_code})"}
+
+def handle_oauth_callback():
+    try:
+        query_params = st.query_params
+
+        access_token = query_params.get('access_token')
+        user_info_str = query_params.get('user_info')
+
+        if access_token and user_info_str:
+            st.session_state.user_token = access_token
+            try:
+                user_info = json.loads(user_info_str)
+                st.session_state.user_info = user_info
+            except json.JSONDecodeError:
+                st.session_state.user_info = {"name": "OAuth User", "email": "user@oauth.com", "user_type": "individual"}
+
+            if st.session_state.user_info.get('user_type') == 'individual' and \
+               not st.session_state.user_info.get('phone') and \
+               not st.session_state.user_info.get('address'):
+                st.session_state.current_page = 'complete_oauth_profile'
+                st.success("Please complete your profile details.")
+            elif st.session_state.user_info.get('user_type') == 'organization' and \
+                 not st.session_state.user_info.get('organization_name'):
+                st.session_state.current_page = 'complete_oauth_profile'
+                st.success("Please complete your organization profile details.")
+            else:
+                st.session_state.current_page = 'home'
+                st.success("Successfully logged in with OAuth!")
+            st.rerun()
+
+        error = query_params.get('error')
+        if error:
+            st.error(f"OAuth login failed: {error}")
+
+    except Exception as e:
+        st.error(f"Error handling OAuth callback: {str(e)}")
+
+def render_oauth_buttons(is_register_page=False):
+    try:
+        response = requests.get(f"{BACKEND_URL}/auth/status", timeout=10)
+        if response.status_code == 200:
+            status = safe_json_parse(response)
+            google_available = status.get('google_available', False)
+            facebook_available = status.get('facebook_available', False)
+        else:
+            google_available = False
+            facebook_available = False
+    except:
+        google_available = False
+        facebook_available = False
+
+    google_params = {"register_oauth": "true"} if is_register_page else {}
+    facebook_params = {"register_oauth": "true"} if is_register_page else {}
+
+    google_url = f"{BACKEND_URL}/auth/google?{urlencode(google_params)}"
+    facebook_url = f"{BACKEND_URL}/auth/facebook?{urlencode(facebook_params)}"
+
+    if google_available:
+        st.markdown(f"""
+        <a href="{google_url}" class="html-oauth-google">
+            <i class="fab fa-google"></i>{get_text('sign_in_google')}
+        </a>
+        """, unsafe_allow_html=True)
     else:
         st.markdown(f"""
-<div class="html-oaut h-g
-
-
-ogle" style="background: #ccc; color: #666; cursor: not-allowed;">
-<i class="fab fa-g o
-
-g l
-
-
-"></i >{get_text('sign _ i n _ g oogle')}
-</div>
-""", unsafe_
-
-l l ow_ html=True)
+        <div class="html-oauth-google" style="background: #ccc; color: #666; cursor: not-allowed;">
+            <i class="fab fa-google"></i>{get_text('sign_in_google')}
+        </div>
+        """, unsafe_allow_html=True)
 
     if facebook_available:
         st.markdown(f"""
-<a href="{facebook_ur l
-" cl a ss="html-oauth-f
-
-
-ceboo k">
-<i class="fab fa-f a
-
-e b
-
-
-ok-f" ></i>{get_text('sign _ i n _ f acebook')}
-</a>
-""", unsafe_al
-
-o w _ html=True)
+        <a href="{facebook_url}" class="html-oauth-facebook">
+            <i class="fab fa-facebook-f"></i>{get_text('sign_in_facebook')}
+        </a>
+        """, unsafe_allow_html=True)
     else:
         st.markdown(f"""
-<div class="html-oaut h-f
-
-
-ceboo k" style="background: #ccc; color: #666; cursor: not-allowed;">
-<i class="fab fa-f a
-
-e b
-
-
-ok-f" ></i>{get_text('sign _ i n _ f acebook')}
-</div>
-""", unsafe_
-
-l l ow_ html=True)
+        <div class="html-oauth-facebook" style="background: #ccc; color: #666; cursor: not-allowed;">
+            <i class="fab fa-facebook-f"></i>{get_text('sign_in_facebook')}
+        </div>
+        """, unsafe_allow_html=True)
 
 def login_user_backend(id_token):
     try:
@@ -1188,7 +1123,7 @@ def register_user_backend(id_token, user_type, individual_data=None, organizatio
             data = safe_json_parse(response)
             st.session_state.user_token = data.get('access_token')
             st.session_state.user_info = data.get('user_info', {})
-            st.session_state.current_page = 'home' # Go to home after registration
+            st.session_state.current_page = 'home'
             st.success("Registration successful! You are now logged in.")
             st.rerun()
         else:
@@ -1212,7 +1147,7 @@ def update_user_profile_backend(user_data, token):
 
         if response.status_code == 200:
             updated_user_info = safe_json_parse(response)
-            st.session_state.user_info = updated_user_info # Update with fresh data from backend
+            st.session_state.user_info = updated_user_info
             st.success("Profile updated successfully!")
             st.session_state.current_page = 'home'
             st.rerun()
@@ -1232,12 +1167,12 @@ def create_campaign_backend(campaign_data, token):
             f"{BACKEND_URL}/create_campaign",
             json=campaign_data,
             headers=headers,
-            timeout=30  # Increased timeout for image upload
+            timeout=30
         )
 
         if response.status_code == 200:
             st.success(get_text('campaign_creation_success'))
-            st.session_state.current_page = 'home'  # Navigate back to home or campaigns list
+            st.session_state.current_page = 'home'
             st.rerun()
         else:
             error_data = safe_json_parse(response)
@@ -1256,80 +1191,47 @@ def render_user_profile():
         user_type = user_info.get('user_type', 'individual')
 
         st.markdown(f"""
-<div class="user-prof ile"
+        <div class="user-profile">
+            <div class="user-avatar">{name[0].upper() if name else 'U'}</div>
+            <div class="user-name">{name} ({user_type.capitalize()})</div>
+            <div class="user-email">{email}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-
->
-<d iv class="user- a
-
-a tar"
-
-
->{na me[0].upper() if name else 'U'}</div>
-<div class=" u s er- n
-
-m e">{
-
-
-name } ({user_typ e .capitalize()})</div>
-<div class= " u ser -
-
-m ail"
-
-
->{em ail}</div>
-</ d iv>
-""" ,   uns a
-
-e _ all ow_html=True)
-
-        # Logout button
         if st.button(get_text('logout'), key="firebase_logout_button"):
-            # Call JavaScript function to sign out from Firebase
             st.components.v1.html("""
-<script>
-window.si gnOutF irebase();
-</script>
-""", hei g ht=0,  width=0)
-# Handle logout success/error via postMessage in handle_js_messages
+            <script>
+            window.signOutFirebase();
+            </script>
+            """, height=0, width=0)
 
 def render_login_page():
-st.markdown('<div class="html-container">', unsafe_allow_html=True)
+    st.markdown('<div class="html-container">', unsafe_allow_html=True)
 
-st.markdown(f'<div class="html-title">{get_text("login")}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="html-title">{get_text("login")}</div>', unsafe_allow_html=True)
 
-with st.form(key='login_form'):
-email = st.text_input("", placeholder="Enter Your Email", key="login_email")
-password = st.text_input("", type="password", placeholder="Enter Your Password", key="login_password")
+    with st.form(key='login_form'):
+        email = st.text_input("", placeholder="Enter Your Email", key="login_email")
+        password = st.text_input("", type="password", placeholder="Enter Your Password", key="login_password")
 
-submit_button = st.form_submit_button(get_text('continue'))
+        submit_button = st.form_submit_button(get_text('continue'))
 
-if submit_button:
-if email and password:
-    # Call JavaScript function to sign in with Firebase
-    st.components.v1.html(f"""
-<script>
-window.si gnInWi thEmailPassword("{email}", "{password}");
-</script>
-""", hei g ht=0,  width=0)
-# The response will be handled by handle_js_messages
-else:
-st.error("Please fill in all fields")
+        if submit_button:
+            if email and password:
+                st.components.v1.html(f"""
+                <script>
+                window.signInWithEmailPassword("{email}", "{password}");
+                </script>
+                """, height=0, width=0)
+            else:
+                st.error("Please fill in all fields")
 
-st.markdown(f"""
-<div class="html-o pti
-
-
-n">
-{ get_text('not_ r
-
-
-gistered')}
-<a href="{FRONTEND _
-ASE_ U RL}?page=register" target="_blank">{
-get_t e xt('crea t e_account')}</a>
-</div>
-""",   u n saf e _al low_html=True)
+    st.markdown(f"""
+    <div class="html-option">
+        {get_text('not_registered')}
+        <a href="{FRONTEND_BASE_URL}?page=register" target="_blank">{get_text('create_account')}</a>
+    </div>
+    """, unsafe_allow_html=True)
 
     render_oauth_buttons(is_register_page=False)
 
@@ -1366,10 +1268,7 @@ def render_register_page():
         is_valid_input = False
 
         if st.session_state.selected_reg_type_register == get_text('individual'):
-            st.markdown(f"""<div class="html - for
-
-
--box" ><h3>{get_text(" r e gi s ter_individual")}</h3>""", unsafe _ a ll o w_html=True)
+            st.markdown(f"""<div class="html-form-box"><h3>{get_text("register_individual")}</h3>""", unsafe_allow_html=True)
 
             full_name = st.text_input("", placeholder="Full Name", key="reg_full_name_ind")
             email = st.text_input("", placeholder="Email ID", key="reg_email_ind")
@@ -1389,7 +1288,7 @@ def render_register_page():
             is_valid_input = bool(full_name and email and phone and password and confirm_password and address)
 
         elif st.session_state.selected_reg_type_register == get_text('organization'):
-            st.markdown(f"""<div class="html - form-box" ><h3>{get_text(" c o nt a ct_person_details")}</h3>""", unsafe _ a ll o w_html=True)
+            st.markdown(f"""<div class="html-form-box"><h3>{get_text("contact_person_details")}</h3>""", unsafe_allow_html=True)
 
             contact_full_name = st.text_input("", placeholder="Contact Person Full Name", key="reg_contact_full_name_org")
             email = st.text_input("", placeholder="Contact Person Email ID (for login)", key="reg_email_org_contact_org")
@@ -1399,7 +1298,7 @@ def render_register_page():
 
             st.markdown('</div>', unsafe_allow_html=True)
 
-            st.markdown(f"""<div class="html - form-box" ><h3>{get_text(" o r ga n ization_details")}</h3>""", unsafe _ a ll o w_html=True)
+            st.markdown(f"""<div class="html-form-box"><h3>{get_text("organization_details")}</h3>""", unsafe_allow_html=True)
 
             org_name = st.text_input("", placeholder="Organization Name", key="reg_org_name_org")
             org_type = st.selectbox("",
@@ -1438,43 +1337,26 @@ def render_register_page():
             elif len(password) < 6:
                 st.error("Password must be at least 6 characters long")
             else:
-                # Call JavaScript function to create user with Firebase
                 st.components.v1.html(f"""
-<script>
-window. createUser WithEmailPassword("{email}", "{password}");
-</script>
-""", heigh t =0, wi dth=0)
-# Store additional data in session state temporarily until Firebase ID token is received
-st.session_state.temp_registration_data = user_data_for_backend
-st.session_state.temp_registration_data['email'] = email # Store email for reference
+                <script>
+                window.createUserWithEmailPassword("{email}", "{password}");
+                </script>
+                """, height=0, width=0)
+                st.session_state.temp_registration_data = user_data_for_backend
+                st.session_state.temp_registration_data['email'] = email
 
-st.markdown(f"""
-<div class="html-opt ion"
-
-
->
-{g et_text('alrea d
-
-
-_have_account')}
-<a href="{FRONTEND_ B
-SE_U R L}?page=login" target="_blank">{
-get_te x t('sign_ i n_here')}</a>
-</div>
-""",  u n s afe _ all ow_html=True)
+    st.markdown(f"""
+    <div class="html-option">
+        {get_text('already_have_account')}
+        <a href="{FRONTEND_BASE_URL}?page=login" target="_blank">{get_text('sign_in_here')}</a>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("""
-<div class="oauth- div
-
-
-der">
-<span>or sign u p
-
-w ith so cial ac
-ou
-t</span>
-</div>
-""" ,   unsa fe_ a llo w_html=True)
+    <div class="oauth-divider">
+        <span>or sign up with social account</span>
+    </div>
+    """, unsafe_allow_html=True)
 
     render_oauth_buttons(is_register_page=True)
 
@@ -1497,8 +1379,7 @@ def render_complete_oauth_profile_page():
     selected_type_oauth = st.selectbox(
         "Select Your User Type",
         options=[get_text('individual'), get_text('organization')],
-        index=(
-            [get_text('individual'), get_text('organization')].index(st.session_state.selected_reg_type_oauth)),
+        index=([get_text('individual'), get_text('organization')].index(st.session_state.selected_reg_type_oauth)),
         key="complete_reg_type_selector_outside_form_oauth"
     )
     if selected_type_oauth != st.session_state.selected_reg_type_oauth:
@@ -1506,17 +1387,14 @@ def render_complete_oauth_profile_page():
         st.rerun()
 
     with st.form(key='complete_profile_form'):
-        st.markdown(f"""<div class="html-f o rm-
+        st.markdown(f"""<div class="html-form-wrapper">""", unsafe_allow_html=True)
 
-
-rappe r">""", unsafe_allow _ html=True)
-
-        st.markdown(f"""<div class="html-f o rm-box">< h3>OAuth Details < / h3 > </div>""", un s a fe _ a l low _ html=True)
+        st.markdown(f"""<div class="html-form-box"><h3>OAuth Details</h3></div>""", unsafe_allow_html=True)
         st.text_input("Email", value=oauth_email, disabled=True, key="oauth_email_display_cp")
         st.text_input("Name", value=oauth_name, disabled=True, key="oauth_name_display_cp")
         st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown(f"""<div class="html-f o rm-box">< h3>Additional De t a il s </h3></div>""", un s a fe _ a l low _ html=True)
+        st.markdown(f"""<div class="html-form-box"><h3>Additional Details</h3></div>""", unsafe_allow_html=True)
 
         user_data_to_send = {"user_type": selected_type_oauth}
         is_valid_input = False
@@ -1533,19 +1411,17 @@ rappe r">""", unsafe_allow _ html=True)
             is_valid_input = bool(phone and address)
 
         elif selected_type_oauth == get_text('organization'):
-            st.markdown(f"""<h4>{get_text("con t ac t _person_details")}</h4>""", unsafe_a l l ow _ html=True)
+            st.markdown(f"""<h4>{get_text("contact_person_details")}</h4>""", unsafe_allow_html=True)
             contact_full_name = st.text_input("Contact Person Full Name", value=user_info.get('contact_full_name', oauth_name), disabled=True,
                                               key="complete_contact_full_name_org_cp")
             contact_phone = st.text_input("", placeholder="Contact Person Phone Number", value=user_info.get('contact_phone', ''),
                                           key="complete_contact_phone_org_cp")
 
-            st.markdown(f"""<h4>{get_text("org a ni z ation_details")}</h4>""", unsafe_a l l ow _ html=True)
+            st.markdown(f"""<h4>{get_text("organization_details")}</h4>""", unsafe_allow_html=True)
             org_name = st.text_input("", placeholder="Organization Name", value=user_info.get('organization_name', ''), key="complete_org_name_org_cp")
             org_type = st.selectbox("Organization Type",
                                    options=["", get_text('ngo'), get_text('startup'), get_text('charity')],
-                                   index=(
-                                       ["", get_text('ngo'), get_text('startup'), get_text('charity')].index(user_info.get('organization_type', '') if user_info.get('organization_type') in ["", get_text('ngo'), get_text('startup'), get_text('charity')] else "")
-                                   ),
+                                   index=(["", get_text('ngo'), get_text('startup'), get_text('charity')].index(user_info.get('organization_type', '') if user_info.get('organization_type') in ["", get_text('ngo'), get_text('startup'), get_text('charity')] else "")),
                                    key="complete_org_type_select_org_cp")
             org_description = st.text_input("", placeholder=get_text('description'), value=user_info.get('description', ''),
                                             key="complete_org_description_org_cp")
@@ -1553,7 +1429,6 @@ rappe r">""", unsafe_allow _ html=True)
             ngo_darpan_id = st.text_input("", placeholder="NGO Darpan ID (Optional)", value=user_info.get('ngo_darpan_id', ''), key="complete_ngo_darpan_id_org_cp")
             pan = st.text_input("", placeholder="PAN (Optional)", value=user_info.get('pan', ''), key="complete_pan_org_cp")
             fcra_number = st.text_input("", placeholder="FCRA Number (Optional)", value=user_info.get('fcra_number', ''), key="complete_fcra_number_org_cp")
-
 
             user_data_to_send.update({
                 "contact_full_name": contact_full_name,
@@ -1584,22 +1459,15 @@ rappe r">""", unsafe_allow _ html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 def render_create_campaign_button():
-    # Only show if user is logged in and is an organization
     if st.session_state.user_token and st.session_state.user_info and \
             st.session_state.user_info.get('user_type') == 'organization':
         st.markdown(f"""
-<div style="text-
-
-l ign
- cent e r; margin-top: 20px;">
-<button class="c rea te-cam
-
-
-aign- button" onclick="window.parent.postMessage({{streamlit: {{type: 'SET_PAGE_STATE', payload: 'create_campaign'}}}}, '*');">
-+
-</button>
-</di v>
-"" " , unsa fe_ a llo w_html=True)
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="create-campaign-button" onclick="window.parent.postMessage({{streamlit: {{type: 'SET_PAGE_STATE', payload: 'create_campaign'}}}}, '*');">
+                +
+            </button>
+        </div>
+        """, unsafe_allow_html=True)
 
 def render_create_campaign_page():
     st.markdown('<div class="html-container-wide">', unsafe_allow_html=True)
@@ -1648,7 +1516,6 @@ def render_create_campaign_page():
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-
 def render_home_page():
     st.markdown(f'<h1 class="app-title">{get_text("explore")}</h1>', unsafe_allow_html=True)
     st.markdown(f"## {get_text('trending_campaigns')}")
@@ -1672,68 +1539,31 @@ def render_home_page():
         progress_percent = min(100, max(0, progress_percent))
 
         st.markdown(f"""
-<div class="campaig n-c
-
-
-rd"> <div class="campa i
-
-n -im
-
-
-ge"> <img src="{campaig n \
-
-g et( \
-ima g e_url', 'https://placehold.co/600x400/4CAF50/ffffff?text=Campaign+Image')}"
-alt="{campaign['campaig n _name']}"
-style="width:100%; height : 200px; object-fit:cover; border-radius: 12px 12px 0 0;">
-</div>
-<div class= "ca m pai gn- con
-
-
-ent">
-<div class="campai g
-
-- tit
-
-
-e">{c ampaign['campaign _ name']}</div>
-<div class="c a m pai g
-
-- des
-
-
-ripti on">{campaign['descript i on']}</div>
-<div style="f o n t-s i
-
-e : 0
-9em;  c olor: #777; margin-bottom: 0.5rem;">
-By: {campaign.get( 'author', 'N/A')} | Category: {campaign.get('category', 'N/A')}
-</div>
-<div class="ca m pai gn- pro
-
-
-ress" >
-<div class="campai g
-
-- pro
-
-
-ress- bar" style="width: {progress_percent}%"></div>
-</div>
-<div st y l e=" d
-
-s p lay : f lex
- just i fy-content: space-between; color: #666; font-weight: 500;">
-<span>Raised: ${cam pai gn.g e t('funded', 0):,}</span>
-<span>Goal: $ { c ampa ign .get ( 'goal', 0):,}</span>
-</div>
-<div s t y le=" tex t -al ign : r
-ght;  f ont-size: 0.8em; color: #999; margin-top: 0.5rem;">
-Days Left: {round(c ampaign
-.get('days_left', 'N/A'))} | Status: {campaign.get('verification_status', 'N/A')}
-</div>
-</div>
-</div> "" ",  uns a fe_ all o w_h tml=True)
+        <div class="campaign-card">
+            <div class="campaign-image">
+                <img src="{campaign.get('image_url', 'https://placehold.co/600x400/4CAF50/ffffff?text=Campaign+Image')}"
+                     alt="{campaign['campaign_name']}"
+                     style="width:100%; height: 200px; object-fit:cover; border-radius: 12px 12px 0 0;">
+            </div>
+            <div class="campaign-content">
+                <div class="campaign-title">{campaign['campaign_name']}</div>
+                <div class="campaign-description">{campaign['description']}</div>
+                <div style="font-size: 0.9em; color: #777; margin-bottom: 0.5rem;">
+                    By: {campaign.get('author', 'N/A')} | Category: {campaign.get('category', 'N/A')}
+                </div>
+                <div class="campaign-progress">
+                    <div class="campaign-progress-bar" style="width: {progress_percent}%"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; color: #666; font-weight: 500;">
+                    <span>Raised: ${campaign.get('funded', 0):,}</span>
+                    <span>Goal: ${campaign.get('goal', 0):,}</span>
+                </div>
+                <div style="text-align: right; font-size: 0.8em; color: #999; margin-top: 0.5rem;">
+                    Days Left: {round(campaign.get('days_left', 'N/A'))} | Status: {campaign.get('verification_status', 'N/A')}
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 def render_explore_page():
     st.markdown(f'<h1 class="app-title">{get_text("explore")}</h1>', unsafe_allow_html=True)
@@ -1752,33 +1582,13 @@ def render_explore_page():
     for i, category in enumerate(categories):
         with cols[i % 2]:
             st.markdown(f"""
-<div class="category-c ard"
-
-
->
-<d iv class="catego r
-
-- ico
-
-
-">
-<i class="{categor y
-
-' i
-
-
-on']} "></i>
-</div>
-<div cl a s s = "
-
-a t ego ry- tit
-
-
-e">{c ategory['name']}< / div>
-</div>
-""", u n s afe _
-
-l l ow_ html=True)
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="{category['icon']}"></i>
+                </div>
+                <div class="category-title">{category['name']}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
 def render_search_page():
     st.markdown(f'<h1 class="app-title">{get_text("search_campaigns")}</h1>', unsafe_allow_html=True)
@@ -1798,21 +1608,15 @@ def render_search_page():
             st.warning("Please enter a search term")
 
     st.markdown(f"""
-<div class="search-ti ps">
-<h4> <i class="fas  f
-
-- li g h t
-
-
-ulb"> </i> {get_text('sea r c h _ tips')}</h4>
-<ul>
-<li>{get_ t e xt (
-
-' us e_k ey w ords')}</li>
-<li>{get_text ( ' fi lte r_ c ategory')}</li>
-<li>{get_text ( ' ch eck _s p elling')}</li>
-</ul>
-</div> "" " ,  uns a fe _al l ow_ html=True)
+    <div class="search-tips">
+        <h4><i class="fas fa-lightbulb"></i> {get_text('search_tips')}</h4>
+        <ul>
+            <li>{get_text('use_keywords')}</li>
+            <li>{get_text('filter_category')}</li>
+            <li>{get_text('check_spelling')}</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1869,14 +1673,7 @@ def render_sidebar():
             render_create_campaign_button()
 
 def handle_js_messages():
-    """Handles messages pos
-ted from JavaScr
-pt to
-Streamlit."""
-    i
-
- "js_messa
-ge" in st.session_state:
+    if "js_message" in st.session_state:
         message = st.session_state.js_message
         if message and isinstance(message, dict):
             action = message.get("action")
@@ -1899,7 +1696,7 @@ ge" in st.session_state:
                         temp_data.get('individual_data'),
                         temp_data.get('organization_data')
                     )
-                    del st.session_state.temp_registration_data # Clear temp data
+                    del st.session_state.temp_registration_data
                 else:
                     st.error("Firebase registration failed: No ID token or temporary data received.")
             elif action == "register_error":
@@ -1912,9 +1709,7 @@ ge" in st.session_state:
                 st.rerun()
             elif action == "logout_error":
                 st.error(f"Logout failed: {error}")
-        # Clear the message after processing
         st.session_state.js_message = None
-
 
 def main():
     st.set_page_config(
@@ -1927,19 +1722,15 @@ def main():
     apply_custom_css()
 
     # This component listens for messages from the embedded JavaScript
-    st.components.v1.html("""
+st.components.v1.html("""
 <script>
 window.addEv entLis tener('message', event => {
 if (event.data. streamlit) {
                           //
-Forw
-rd the
-mes
-age to
-Python
+Forward the message to Python
 session state
 window.parent.postMessage(event.data, '*'); } });
-</s cript>
+</script>
 """, height=0, width=0, key="js_listener")
 
 # Handle messages from JavaScript
