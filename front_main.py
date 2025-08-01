@@ -888,13 +888,8 @@ def render_main_page():
     # main page where we handle the routing
     apply_custom_css()
     
-    st.markdown(f"""
-    <div class="welcome-banner-new">
-        <h1 class="welcome-banner-title-new">{get_text("welcome_banner_text")}</h1>
-        <p class="welcome-banner-tagline-new">{get_text("welcome_banner_tagline")}</p>
-    </div>
-    """, unsafe_allow_html=True)
-
+    # This banner was removed from here. It is now only in render_home_page().
+    
     handle_oauth_callback()
 
     query_params = st.query_params
