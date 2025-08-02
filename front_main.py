@@ -327,9 +327,9 @@ def render_search_page():
 # --- Main App Logic ---
 
 # Check URL parameters for page navigation (for links that open in new tabs)
-query_params = st.experimental_get_query_params()
+query_params = st.query_params
 if "page" in query_params:
-    st.session_state.current_page = query_params["page"][0]
+    st.session_state.current_page = query_params["page"]
 
 # Render current page
 if st.session_state.current_page == 'login':
