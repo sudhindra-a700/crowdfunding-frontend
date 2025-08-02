@@ -70,10 +70,10 @@ class StreamlitOAuthService:
     def handle_oauth_callback(self):
         """Handle OAuth callback from URL parameters"""
         # Get URL parameters
-        query_params = st.experimental_get_query_params()
+        query_params = st.query_params
         
-        access_token = query_params.get('access_token', [None])[0]
-        error = query_params.get('error', [None])[0]
+        access_token = query_params.get('access_token')
+        error = query_params.get('error')
         
         if error:
             st.error(f"OAuth authentication failed: {error}")
@@ -88,7 +88,7 @@ class StreamlitOAuthService:
                     st.success(f"Welcome, {user_profile.get('name', 'User')}!")
                     
                     # Clear URL parameters
-                    st.experimental_set_query_params()
+                    st.query_params.clear()
                     
                     # Navigate to home page
                     st.session_state.current_page = 'home'
@@ -333,7 +333,7 @@ def render_user_profile_widget():
 
 def check_oauth_callback():
     """Check for OAuth callback and handle it"""
-    query_params = st.experimental_get_query_params()
+    query_params = st.query_params
     
     if 'access_token' in query_params or 'error' in query_params:
         return oauth_service.handle_oauth_callback()
