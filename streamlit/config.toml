@@ -1,0 +1,109 @@
+# HAVEN Crowdfunding Platform - Production Streamlit Configuration
+# .streamlit/config.toml - Safe to commit to GitHub
+
+[global]
+# Production mode
+developmentMode = false
+
+# Data directory
+dataDir = "~/.streamlit"
+
+# Sharing settings
+sharingMode = "off"
+showWarningOnDirectExecution = false
+
+[logger]
+# Logging level for production
+level = "info"
+messageFormat = "%(asctime)s %(message)s"
+
+[client]
+# Error handling
+showErrorDetails = false
+showWarningOnDirectExecution = false
+
+# Toolbar configuration
+toolbarMode = "viewer"
+
+# Navigation
+showSidebarNavigation = true
+
+# Performance
+caching = true
+
+[browser]
+# Server configuration for production
+serverAddress = "0.0.0.0"
+serverPort = 8501
+
+# Analytics
+gatherUsageStats = false
+
+[server]
+# Port configuration (will be overridden by Streamlit Cloud)
+port = 8501
+
+# Security settings
+enableCORS = true
+enableXsrfProtection = true
+
+# Upload limits
+maxUploadSize = 200
+maxMessageSize = 200
+
+# Connection settings
+enableWebsocketCompression = true
+allowRunOnSave = false
+runOnSave = false
+
+# File watching
+fileWatcherType = "auto"
+
+# Headless mode for production
+headless = false
+
+# Session settings
+cookieSecret = "will-be-overridden-by-secrets"
+
+[theme]
+# HAVEN Brand Colors - Light Green Theme
+primaryColor = "#4CAF50"           # Main green color for buttons and highlights
+backgroundColor = "#F1F8E9"        # Very light green background
+secondaryBackgroundColor = "#E8F5E8"  # Slightly darker green for sidebars
+textColor = "#1B5E20"             # Dark green for text
+font = "sans serif"               # Clean, readable font
+
+[ui]
+# UI Configuration
+hideTopBar = false
+hideFooterDetails = false
+sidebarState = "expanded"
+
+[deprecation]
+# Deprecation warnings
+showPyplotGlobalUse = false
+showfileUploaderEncoding = false
+showImageFormat = false
+
+[mapbox]
+# Mapbox token (if needed for maps)
+token = ""
+
+[s3]
+# S3 configuration (if using S3 for file storage)
+bucket = ""
+region = ""
+accessKeyId = ""
+secretAccessKey = ""
+
+[runner]
+# Runner configuration
+magicEnabled = true
+installTracer = false
+fixMatplotlib = true
+
+[client]
+# Additional client settings
+toolbarMode = "viewer"
+showErrorDetails = false
+
