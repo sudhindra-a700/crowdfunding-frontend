@@ -18,13 +18,23 @@ st.set_page_config(
 # Backend URL
 BACKEND_URL = "https://haven-fastapi-backend.onrender.com"
 
+# --- Environment variables for OAuth ---
+# Get the environment variables from the linked environment
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "your-google-client-id")
+GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://haven-fastapi-backend.onrender.com/auth/google/callback")
+FACEBOOK_CLIENT_ID = os.getenv("FACEBOOK_CLIENT_ID", "your-facebook-app-id")
+FACEBOOK_REDIRECT_URI = os.getenv("FACEBOOK_REDIRECT_URI", "https://haven-fastapi-backend.onrender.com/auth/facebook/callback")
+FRONTEND_BASE_URI = os.getenv("FRONTEND_BASE_URI", "https://haven-streamlit-frontend.onrender.com")
+
 # Load HAVEN logo
 def load_logo():
     try:
-        with open("/home/ubuntu/upload/haven_logo.png", "rb") as f:
+        # Assuming the logo is available in the deployment environment
+        with open("haven_logo.png", "rb") as f:
             logo_data = f.read()
         return base64.b64encode(logo_data).decode()
-    except:
+    except FileNotFoundError:
+        # Fallback if logo file is not found
         return None
 
 # Custom CSS for exact design match
@@ -348,8 +358,8 @@ def get_oauth_url(provider):
     """Generate OAuth URL for Google or Facebook"""
     if provider == "google":
         params = {
-            "client_id": "your-google-client-id",
-            "redirect_uri": "https://haven-streamlit-frontend.onrender.com/auth/callback",
+            "client_id": GOOGLE_CLIENT_ID,
+            "redirect_uri": GOOGLE_REDIRECT_URI,
             "scope": "openid email profile",
             "response_type": "code",
             "state": "google"
@@ -358,8 +368,8 @@ def get_oauth_url(provider):
     
     elif provider == "facebook":
         params = {
-            "client_id": "your-facebook-app-id",
-            "redirect_uri": "https://haven-streamlit-frontend.onrender.com/auth/callback",
+            "client_id": FACEBOOK_CLIENT_ID,
+            "redirect_uri": FACEBOOK_REDIRECT_URI,
             "scope": "email,public_profile",
             "response_type": "code",
             "state": "facebook"
@@ -439,7 +449,7 @@ def fetch_categories():
 def search_campaigns(query):
     """Search campaigns"""
     try:
-        response = requests.get(f"{BACKEND_URL}/api/campaigns/search", 
+        response = requests.get(f"{BACKEND_URL}/api/search", 
                               params={"q": query}, timeout=10)
         if response.status_code == 200:
             return response.json()
@@ -634,26 +644,20 @@ def trending_page():
     campaigns = fetch_campaigns()
     
     if campaigns:
-        for campaign in campaigns[:5]:  # Show top 5 trending
+        for campaign in campaigns.get('campaigns', [])[:5]:  # Show top 5 trending
             st.markdown('<div class="campaign-card">', unsafe_allow_html=True)
             
             # Campaign image placeholder
-            st.markdown("""
-            <div style="background: #e0e0e0; height: 200px; border-radius: 10px; 
-                        display: flex; align-items: center; justify-content: center; 
-                        margin-bottom: 15px; color: #666;">
-                600 × 400
-            </div>
-            """, unsafe_allow_html=True)
-            
+            st.image(campaign.get('image_url', 'https://picsum.photos/400/300?random=10'), use_column_width=True)
+
             # Campaign details
-            st.markdown(f"### {campaign.get('campaign_name', 'Campaign Title')}")
-            st.markdown(f"By {campaign.get('org_name', 'Organization')}")
+            st.markdown(f"### {campaign.get('title', 'Campaign Title')}")
+            st.markdown(f"By {campaign.get('organization', 'Organization')}")
             st.markdown(f"{campaign.get('description', 'Campaign description')}")
             
             # Progress bar
-            raised = campaign.get('amount_raised', 0)
-            goal = campaign.get('funding_goal', 100000)
+            raised = campaign.get('current_amount', 0)
+            goal = campaign.get('target_amount', 100000)
             progress = min((raised / goal) * 100, 100) if goal > 0 else 0
             
             st.markdown(f"""
@@ -661,7 +665,7 @@ def trending_page():
                 <div class="progress-bar" style="width: {progress}%"></div>
             </div>
             <p>₹{raised:,} raised • {progress:.0f}%</p>
-            <p>⏰ 30 days left</p>
+            <p>⏰ {campaign.get('days_left', 0)} days left</p>
             """, unsafe_allow_html=True)
             
             st.markdown('</div>', unsafe_allow_html=True)
@@ -694,12 +698,12 @@ def search_page():
     # Search results
     if search_query:
         results = search_campaigns(search_query)
-        if results:
-            st.markdown(f"### Found {len(results)} campaigns")
-            for campaign in results:
+        if results and results.get('campaigns'):
+            st.markdown(f"### Found {len(results['campaigns'])} campaigns")
+            for campaign in results['campaigns']:
                 st.markdown('<div class="campaign-card">', unsafe_allow_html=True)
-                st.markdown(f"**{campaign.get('campaign_name', 'Campaign')}**")
-                st.markdown(f"By {campaign.get('org_name', 'Organization')}")
+                st.markdown(f"**{campaign.get('title', 'Campaign')}**")
+                st.markdown(f"By {campaign.get('organization', 'Organization')}")
                 st.markdown(f"{campaign.get('description', 'Description')}")
                 st.markdown('</div>', unsafe_allow_html=True)
         else:
@@ -717,7 +721,8 @@ def explore_page():
     st.markdown("Discover campaigns by interest.")
     
     # Categories grid
-    categories = fetch_categories()
+    categories_data = fetch_categories()
+    categories = categories_data.get('categories', [])
     
     # Display categories in 2-column grid
     for i in range(0, len(categories), 2):
@@ -931,4 +936,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
