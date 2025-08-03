@@ -1,0 +1,48 @@
+# HAVEN Crowdfunding Platform - Streamlit Configuration
+# This file is safe to commit to GitHub
+
+[global]
+developmentMode = false
+dataDir = "~/.streamlit"
+
+[logger]
+level = "info"
+
+[client]
+showErrorDetails = false
+toolbarMode = "viewer"
+showSidebarNavigation = true
+
+[browser]
+serverAddress = "0.0.0.0"
+gatherUsageStats = false
+serverPort = 8501
+
+[server]
+port = 8501
+enableCORS = true
+enableXsrfProtection = true
+maxUploadSize = 200
+maxMessageSize = 200
+enableWebsocketCompression = true
+fileWatcherType = "auto"
+headless = false
+runOnSave = false
+allowRunOnSave = false
+
+[theme]
+# Light green theme for HAVEN
+primaryColor = "#4CAF50"
+backgroundColor = "#F1F8E9"
+secondaryBackgroundColor = "#E8F5E8"
+textColor = "#1B5E20"
+font = "sans serif"
+
+[ui]
+hideTopBar = false
+hideFooterDetails = false
+sidebarState = "expanded"
+
+[deprecation]
+showPyplotGlobalUse = false
+showfileUploaderEncoding = false
