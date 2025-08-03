@@ -4,6 +4,7 @@
 # Core Streamlit only
 streamlit==1.35.0
 streamlit-authenticator==0.3.2
+streamlit-option-menu==0.3.13
 # Essential packages only
 requests==2.31.0
 pandas==2.1.4
