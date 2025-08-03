@@ -17,7 +17,7 @@ st.set_page_config(
 # Environment variables
 BACKEND_URL = os.environ.get("BACKEND_URL", "https://haven-fastapi-backend.onrender.com")
 
-# MaterializeCSS and custom styling with enhanced form support
+# MaterializeCSS and custom styling with OAuth popup support
 def load_materialize_css():
     st.markdown("""
     <head>
@@ -99,79 +99,172 @@ def load_materialize_css():
         color: #4caf50 !important;
     }
     
-    /* Select dropdown styling */
-    .select-wrapper input.select-dropdown:focus {
-        border-bottom: 1px solid #4caf50 !important;
-        box-shadow: 0 1px 0 0 #4caf50 !important;
+    /* OAuth popup styling */
+    .oauth-popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 10000;
+        display: none;
+        justify-content: center;
+        align-items: center;
     }
     
-    .dropdown-content li > a, .dropdown-content li > span {
-        color: #4caf50 !important;
+    .oauth-popup.active {
+        display: flex;
     }
     
-    .dropdown-content li:hover, .dropdown-content li.active {
-        background-color: rgba(76, 175, 80, 0.1) !important;
+    .oauth-popup-content {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
     
-    /* Textarea styling */
-    .materialize-textarea:focus:not([readonly]) {
-        border-bottom: 1px solid #4caf50 !important;
-        box-shadow: 0 1px 0 0 #4caf50 !important;
+    .oauth-popup-close {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
     }
     
-    .materialize-textarea:focus:not([readonly]) + label {
-        color: #4caf50 !important;
+    /* Profile page styling */
+    .profile-header {
+        background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+        color: white;
+        padding: 40px 0;
+        text-align: center;
     }
     
-    /* Checkbox styling */
-    [type="checkbox"]:checked + span:not(.lever):before {
-        border-right: 2px solid #4caf50;
-        border-bottom: 2px solid #4caf50;
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid white;
+        margin: 0 auto 20px;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: #4caf50;
     }
     
-    [type="checkbox"]:checked + span:not(.lever):after {
-        border: 2px solid #4caf50;
-        background-color: #4caf50;
+    .profile-stats {
+        display: flex;
+        justify-content: space-around;
+        margin: 30px 0;
     }
     
-    /* Radio button styling */
-    [type="radio"]:checked + span:after, [type="radio"].with-gap:checked + span:after {
-        background-color: #4caf50;
+    .profile-stat {
+        text-align: center;
     }
     
-    [type="radio"]:checked + span:after, [type="radio"].with-gap:checked + span:before, [type="radio"].with-gap:checked + span:after {
-        border: 2px solid #4caf50;
+    .profile-stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #4caf50;
+        display: block;
     }
     
-    /* Switch styling */
-    .switch label input[type=checkbox]:checked + .lever {
-        background-color: rgba(76, 175, 80, 0.5);
+    .profile-stat-label {
+        font-size: 0.9rem;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
     
-    .switch label input[type=checkbox]:checked + .lever:after {
-        background-color: #4caf50;
+    .verification-badge {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
     
-    /* Range slider styling */
-    input[type=range]::-webkit-slider-thumb {
-        background-color: #4caf50;
-    }
-    
-    input[type=range]::-moz-range-thumb {
+    .verification-verified {
         background: #4caf50;
+        color: white;
     }
     
-    .range-field input[type=range]:focus:not(.active)::-webkit-slider-runnable-track {
-        background: #4caf50;
+    .verification-pending {
+        background: #ff9800;
+        color: white;
     }
     
-    /* File input styling */
-    .file-field .btn {
-        background-color: #4caf50;
+    .verification-rejected {
+        background: #f44336;
+        color: white;
     }
     
-    .file-field .btn:hover {
-        background-color: #45a049;
+    /* Document upload styling */
+    .document-upload-area {
+        border: 2px dashed #4caf50;
+        border-radius: 15px;
+        padding: 40px;
+        text-align: center;
+        background: rgba(76, 175, 80, 0.05);
+        margin: 20px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .document-upload-area:hover {
+        background: rgba(76, 175, 80, 0.1);
+        border-color: #45a049;
+    }
+    
+    .document-upload-icon {
+        font-size: 48px;
+        color: #4caf50;
+        margin-bottom: 15px;
+    }
+    
+    /* Campaign/Donation cards */
+    .activity-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        margin: 15px 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .activity-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    
+    .activity-card-header {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .activity-card-body {
+        padding: 20px;
+    }
+    
+    .activity-amount {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #4caf50;
+    }
+    
+    .activity-date {
+        font-size: 0.9rem;
+        color: #666;
     }
     
     /* Vertical navbar */
@@ -227,61 +320,6 @@ def load_materialize_css():
         box-shadow: 0 12px 40px rgba(255, 87, 34, 0.6) !important;
     }
     
-    /* Card panels */
-    .info-card {
-        border-radius: 15px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        margin: 20px 0;
-    }
-    
-    .info-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 16px 48px rgba(0,0,0,0.2);
-    }
-    
-    .campaign-card {
-        border-radius: 15px;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        margin: 20px 0;
-    }
-    
-    .campaign-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-    }
-    
-    .campaign-image {
-        height: 250px;
-        background-size: cover;
-        background-position: center;
-        position: relative;
-    }
-    
-    .campaign-overlay {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: linear-gradient(transparent, rgba(0,0,0,0.7));
-        color: white;
-        padding: 20px;
-    }
-    
-    /* Progress bars */
-    .progress-custom {
-        background-color: #e0e0e0;
-        border-radius: 10px;
-        height: 8px;
-        margin: 15px 0;
-    }
-    
-    .progress-custom .determinate {
-        background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
-        border-radius: 10px;
-    }
-    
     /* Authentication styling */
     .auth-container {
         max-width: 600px;
@@ -326,46 +364,6 @@ def load_materialize_css():
         background: #3b5998 !important;
     }
     
-    /* Category grid */
-    .category-card {
-        border-radius: 15px;
-        text-align: center;
-        padding: 30px 20px;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        margin: 10px 0;
-    }
-    
-    .category-card:hover {
-        transform: translateY(-5px);
-    }
-    
-    .category-icon {
-        font-size: 3rem;
-        margin-bottom: 15px;
-        display: block;
-    }
-    
-    /* Form validation styling */
-    .input-field .helper-text {
-        color: #f44336;
-        font-size: 12px;
-    }
-    
-    .input-field input.valid {
-        border-bottom: 1px solid #4caf50;
-        box-shadow: 0 1px 0 0 #4caf50;
-    }
-    
-    .input-field input.invalid {
-        border-bottom: 1px solid #f44336;
-        box-shadow: 0 1px 0 0 #f44336;
-    }
-    
-    .input-field label.active {
-        color: #4caf50;
-    }
-    
     /* Mobile responsiveness */
     @media (max-width: 768px) {
         .vertical-navbar {
@@ -401,13 +399,11 @@ def load_materialize_css():
             padding: 20px;
             margin: 10px;
         }
-    }
-    
-    /* Tooltips */
-    .material-tooltip {
-        background: #4caf50;
-        border-radius: 8px;
-        font-size: 12px;
+        
+        .profile-stats {
+            flex-direction: column;
+            gap: 20px;
+        }
     }
     
     /* Custom button styling */
@@ -432,36 +428,58 @@ def init_session_state():
         st.session_state.authenticated = False
     if 'user_data' not in st.session_state:
         st.session_state.user_data = {}
+    if 'access_token' not in st.session_state:
+        st.session_state.access_token = None
     if 'current_page' not in st.session_state:
         st.session_state.current_page = 'login'
     if 'show_register' not in st.session_state:
         st.session_state.show_register = False
 
-# API functions (same as before)
-def get_campaigns():
-    try:
-        response = requests.get(f"{BACKEND_URL}/api/campaigns", timeout=10)
-        if response.status_code == 200:
-            return response.json().get('campaigns', [])
-    except:
-        pass
-    return []
+# API functions with authentication
+def get_headers():
+    if st.session_state.access_token:
+        return {"Authorization": f"Bearer {st.session_state.access_token}"}
+    return {}
 
-def create_campaign(campaign_data):
+def get_oauth_url(provider):
     try:
-        response = requests.post(f"{BACKEND_URL}/api/campaigns", json=campaign_data, timeout=10)
+        response = requests.get(f"{BACKEND_URL}/api/auth/oauth/{provider}/url", timeout=10)
         if response.status_code == 200:
             return response.json()
     except:
         pass
     return None
 
-def search_campaigns(query, category=None):
+def get_user_profile(user_id):
     try:
-        data = {"query": query, "limit": 20}
-        if category:
-            data["category"] = category
-        response = requests.post(f"{BACKEND_URL}/api/search", json=data, timeout=10)
+        response = requests.get(f"{BACKEND_URL}/api/profile/{user_id}", timeout=10)
+        if response.status_code == 200:
+            return response.json().get('profile')
+    except:
+        pass
+    return None
+
+def get_my_profile():
+    try:
+        response = requests.get(f"{BACKEND_URL}/api/profile/me", headers=get_headers(), timeout=10)
+        if response.status_code == 200:
+            return response.json().get('profile')
+    except:
+        pass
+    return None
+
+def get_verification_requirements():
+    try:
+        response = requests.get(f"{BACKEND_URL}/api/verification/requirements", headers=get_headers(), timeout=10)
+        if response.status_code == 200:
+            return response.json()
+    except:
+        pass
+    return None
+
+def get_campaigns():
+    try:
+        response = requests.get(f"{BACKEND_URL}/api/campaigns", timeout=10)
         if response.status_code == 200:
             return response.json().get('campaigns', [])
     except:
@@ -510,21 +528,11 @@ def show_vertical_navbar():
     <script>
     // Initialize MaterializeCSS components
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize tooltips
         var tooltips = document.querySelectorAll('[data-tooltip]');
         M.Tooltip.init(tooltips);
         
-        // Initialize select dropdowns
         var selects = document.querySelectorAll('select');
         M.FormSelect.init(selects);
-        
-        // Initialize datepicker
-        var datepickers = document.querySelectorAll('.datepicker');
-        M.Datepicker.init(datepickers);
-        
-        // Initialize character counter
-        var textareas = document.querySelectorAll('textarea');
-        M.CharacterCounter.init(textareas);
     });
     </script>
     """
@@ -549,7 +557,7 @@ def show_fab():
     
     components.html(fab_html, height=0)
 
-# Enhanced Login Form
+# OAuth Login with Popup
 def show_login():
     show_header()
     
@@ -616,12 +624,12 @@ def show_login():
                     
                     <div class="row">
                         <div class="col s6">
-                            <button class="btn waves-effect waves-light google-btn oauth-btn pulse" style="width: 100%;" onclick="googleLogin()">
+                            <button class="btn waves-effect waves-light google-btn oauth-btn pulse" style="width: 100%;" onclick="openOAuthPopup('google')">
                                 <i class="material-icons left">search</i>Google
                             </button>
                         </div>
                         <div class="col s6">
-                            <button class="btn waves-effect waves-light facebook-btn oauth-btn pulse" style="width: 100%;" onclick="facebookLogin()">
+                            <button class="btn waves-effect waves-light facebook-btn oauth-btn pulse" style="width: 100%;" onclick="openOAuthPopup('facebook')">
                                 <i class="material-icons left">facebook</i>Facebook
                             </button>
                         </div>
@@ -631,547 +639,562 @@ def show_login():
         </div>
     </div>
     
+    <!-- OAuth Popup -->
+    <div id="oauthPopup" class="oauth-popup">
+        <div class="oauth-popup-content">
+            <button class="oauth-popup-close" onclick="closeOAuthPopup()">&times;</button>
+            <div id="oauthContent">
+                <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="gap-patch">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
+                </div>
+                <p style="margin-top: 20px;">Opening authentication window...</p>
+            </div>
+        </div>
+    </div>
+    
     <script>
+    let oauthWindow = null;
+    
+    function openOAuthPopup(provider) {
+        const popup = document.getElementById('oauthPopup');
+        popup.classList.add('active');
+        
+        // Get OAuth URL from backend
+        fetch(`""" + BACKEND_URL + """/api/auth/oauth/${provider}/url`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.oauth_url) {
+                    // Open popup window
+                    oauthWindow = window.open(
+                        data.oauth_url,
+                        'oauth',
+                        'width=500,height=600,scrollbars=yes,resizable=yes'
+                    );
+                    
+                    // Update popup content
+                    document.getElementById('oauthContent').innerHTML = `
+                        <i class="material-icons large" style="color: #4caf50;">security</i>
+                        <h5>Authenticate with ${provider.charAt(0).toUpperCase() + provider.slice(1)}</h5>
+                        <p>Please complete the authentication in the popup window.</p>
+                        <button class="btn waves-effect waves-light grey" onclick="closeOAuthPopup()">Cancel</button>
+                    `;
+                    
+                    // Monitor popup
+                    const checkClosed = setInterval(() => {
+                        if (oauthWindow.closed) {
+                            clearInterval(checkClosed);
+                            closeOAuthPopup();
+                        }
+                    }, 1000);
+                    
+                    // Listen for OAuth completion
+                    window.addEventListener('message', function(event) {
+                        if (event.data.type === 'oauth_success') {
+                            clearInterval(checkClosed);
+                            oauthWindow.close();
+                            closeOAuthPopup();
+                            
+                            // Handle successful authentication
+                            M.toast({html: 'Authentication successful!', classes: 'green'});
+                            // Redirect or update UI
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('OAuth error:', error);
+                M.toast({html: 'Authentication failed. Please try again.', classes: 'red'});
+                closeOAuthPopup();
+            });
+    }
+    
+    function closeOAuthPopup() {
+        const popup = document.getElementById('oauthPopup');
+        popup.classList.remove('active');
+        if (oauthWindow) {
+            oauthWindow.close();
+            oauthWindow = null;
+        }
+    }
+    
     function showRegister() {
         console.log('Show register form');
     }
     
-    function googleLogin() {
-        console.log('Google login');
-    }
-    
-    function facebookLogin() {
-        console.log('Facebook login');
-    }
-    
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        console.log('Login form submitted');
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        fetch('""" + BACKEND_URL + """/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.access_token) {
+                M.toast({html: 'Login successful!', classes: 'green'});
+                // Store token and redirect
+                localStorage.setItem('access_token', data.access_token);
+                localStorage.setItem('user_data', JSON.stringify(data.user));
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                M.toast({html: 'Login failed. Please check your credentials.', classes: 'red'});
+            }
+        })
+        .catch(error => {
+            console.error('Login error:', error);
+            M.toast({html: 'Login failed. Please try again.', classes: 'red'});
+        });
     });
     </script>
     """, unsafe_allow_html=True)
 
-# Enhanced Registration Form
-def show_register():
-    show_header()
-    
-    st.markdown("""
-    <div class="container">
-        <div class="auth-container">
-            <div class="card auth-card">
-                <div class="auth-header">
-                    <h4 style="margin: 0; font-weight: 300;">Join HAVEN</h4>
-                    <p style="margin: 10px 0 0 0; opacity: 0.9;">Create your account to start making a difference</p>
-                </div>
-                <div class="auth-body">
-                    <form id="registerForm">
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">account_circle</i>
-                                <select id="accountType" required>
-                                    <option value="" disabled selected>Choose account type</option>
-                                    <option value="individual">Individual</option>
-                                    <option value="organization">Organization</option>
-                                    <option value="ngo">NGO/Charity</option>
-                                </select>
-                                <label>Account Type</label>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s6">
-                                <i class="material-icons prefix">person</i>
-                                <input id="firstName" type="text" class="validate" required>
-                                <label for="firstName">First Name</label>
-                                <span class="helper-text" data-error="First name is required"></span>
-                            </div>
-                            <div class="input-field col s6">
-                                <input id="lastName" type="text" class="validate" required>
-                                <label for="lastName">Last Name</label>
-                                <span class="helper-text" data-error="Last name is required"></span>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">email</i>
-                                <input id="regEmail" type="email" class="validate" required>
-                                <label for="regEmail">Email Address</label>
-                                <span class="helper-text" data-error="Please enter a valid email"></span>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">phone</i>
-                                <input id="phone" type="tel" class="validate" required>
-                                <label for="phone">Phone Number</label>
-                                <span class="helper-text" data-error="Phone number is required"></span>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s6">
-                                <i class="material-icons prefix">lock</i>
-                                <input id="regPassword" type="password" class="validate" required minlength="8">
-                                <label for="regPassword">Password</label>
-                                <span class="helper-text" data-error="Password must be at least 8 characters"></span>
-                            </div>
-                            <div class="input-field col s6">
-                                <i class="material-icons prefix">lock_outline</i>
-                                <input id="confirmPassword" type="password" class="validate" required>
-                                <label for="confirmPassword">Confirm Password</label>
-                                <span class="helper-text" data-error="Passwords must match"></span>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">location_on</i>
-                                <textarea id="address" class="materialize-textarea" data-length="200" required></textarea>
-                                <label for="address">Address</label>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col s12">
-                                <label>
-                                    <input type="checkbox" id="terms" required />
-                                    <span>I agree to the <a href="#" style="color: #4caf50;">Terms of Service</a> and <a href="#" style="color: #4caf50;">Privacy Policy</a></span>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col s12">
-                                <label>
-                                    <input type="checkbox" id="newsletter" />
-                                    <span>Subscribe to our newsletter for updates</span>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col s6">
-                                <button class="btn waves-effect waves-light btn-haven" type="submit" style="width: 100%;">
-                                    Create Account
-                                    <i class="material-icons right">person_add</i>
-                                </button>
-                            </div>
-                            <div class="col s6">
-                                <button class="btn waves-effect waves-light grey" type="button" onclick="showLogin()" style="width: 100%;">
-                                    Back to Login
-                                    <i class="material-icons right">arrow_back</i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-    function showLogin() {
-        console.log('Show login form');
-    }
-    
-    document.getElementById('registerForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const password = document.getElementById('regPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        
-        if (password !== confirmPassword) {
-            M.toast({html: 'Passwords do not match!', classes: 'red'});
-            return;
-        }
-        
-        M.toast({html: 'Registration successful!', classes: 'green'});
-        console.log('Registration form submitted');
-    });
-    </script>
-    """, unsafe_allow_html=True)
-
-# Enhanced Campaign Creation Form
-def show_create_campaign():
+# User Profile Page
+def show_profile():
     show_header()
     show_vertical_navbar()
     show_fab()
     
-    st.markdown("""
-    <div class="container" style="margin-top: 40px;">
-        <div class="row">
-            <div class="col s12">
-                <h4 class="center-align" style="color: #4caf50; font-weight: 300;">➕ Create New Campaign</h4>
+    # Get current user's profile
+    profile = get_my_profile()
+    if not profile:
+        st.error("Unable to load profile")
+        return
+    
+    # Profile header
+    verification_class = f"verification-{profile.get('verification_status', 'pending')}"
+    verification_text = profile.get('verification_status', 'pending').title()
+    
+    st.markdown(f"""
+    <div class="profile-header">
+        <div class="container">
+            <div class="profile-avatar">
+                <i class="material-icons">person</i>
             </div>
+            <h3 style="margin: 0; font-weight: 300;">{profile.get('first_name', '')} {profile.get('last_name', '')}</h3>
+            <p style="margin: 10px 0; opacity: 0.9;">{profile.get('email', '')}</p>
+            <span class="verification-badge {verification_class}">{verification_text}</span>
+            {f'<p style="margin: 15px 0; opacity: 0.9;">{profile.get("organization_name", "")}</p>' if profile.get('organization_name') else ''}
         </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Profile stats
+    if profile.get('user_type') == 'individual':
+        total_donated = profile.get('total_donations', 0)
+        donation_count = len(profile.get('donations', []))
         
-        <div class="row">
-            <div class="col s12 m10 offset-m1">
-                <div class="form-container">
-                    <form id="campaignForm">
-                        <div class="row">
-                            <div class="input-field col s12 m6">
-                                <i class="material-icons prefix">category</i>
-                                <select id="purpose" required>
-                                    <option value="" disabled selected>Select campaign purpose</option>
-                                    <option value="medical">Medical Treatment</option>
-                                    <option value="education">Education</option>
-                                    <option value="disaster">Disaster Relief</option>
-                                    <option value="community">Community Development</option>
-                                    <option value="environment">Environmental</option>
-                                    <option value="animal">Animal Welfare</option>
-                                    <option value="sports">Sports</option>
-                                    <option value="arts">Arts & Culture</option>
-                                    <option value="technology">Technology</option>
-                                    <option value="other">Other</option>
-                                </select>
-                                <label>Campaign Purpose</label>
-                            </div>
-                            <div class="input-field col s12 m6">
-                                <i class="material-icons prefix">location_on</i>
-                                <select id="location" required>
-                                    <option value="" disabled selected>Select location</option>
-                                    <option value="mumbai">Mumbai</option>
-                                    <option value="delhi">Delhi</option>
-                                    <option value="bangalore">Bangalore</option>
-                                    <option value="chennai">Chennai</option>
-                                    <option value="kolkata">Kolkata</option>
-                                    <option value="hyderabad">Hyderabad</option>
-                                    <option value="pune">Pune</option>
-                                    <option value="other">Other</option>
-                                </select>
-                                <label>Location</label>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">title</i>
-                                <input id="campaignTitle" type="text" class="validate" required maxlength="100">
-                                <label for="campaignTitle">Campaign Title</label>
-                                <span class="helper-text" data-error="Title is required (max 100 characters)"></span>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">description</i>
-                                <textarea id="campaignDescription" class="materialize-textarea" data-length="1000" required></textarea>
-                                <label for="campaignDescription">Campaign Description</label>
-                                <span class="helper-text">Describe your campaign in detail. What is the cause? How will the funds be used?</span>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s12 m6">
-                                <i class="material-icons prefix">attach_money</i>
-                                <input id="fundingGoal" type="number" class="validate" required min="1000" max="10000000">
-                                <label for="fundingGoal">Funding Goal (₹)</label>
-                                <span class="helper-text" data-error="Goal must be between ₹1,000 and ₹1,00,00,000"></span>
-                            </div>
-                            <div class="input-field col s12 m6">
-                                <i class="material-icons prefix">schedule</i>
-                                <input id="duration" type="number" class="validate" required min="1" max="365">
-                                <label for="duration">Campaign Duration (days)</label>
-                                <span class="helper-text" data-error="Duration must be between 1 and 365 days"></span>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s12 m6">
-                                <i class="material-icons prefix">person</i>
-                                <input id="creatorName" type="text" class="validate" required>
-                                <label for="creatorName">Creator/Organization Name</label>
-                                <span class="helper-text" data-error="Creator name is required"></span>
-                            </div>
-                            <div class="input-field col s12 m6">
-                                <i class="material-icons prefix">email</i>
-                                <input id="contactEmail" type="email" class="validate" required>
-                                <label for="contactEmail">Contact Email</label>
-                                <span class="helper-text" data-error="Valid email is required"></span>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s12 m6">
-                                <i class="material-icons prefix">phone</i>
-                                <input id="contactPhone" type="tel" class="validate" required>
-                                <label for="contactPhone">Contact Phone</label>
-                                <span class="helper-text" data-error="Phone number is required"></span>
-                            </div>
-                            <div class="input-field col s12 m6">
-                                <i class="material-icons prefix">language</i>
-                                <input id="website" type="url" class="validate">
-                                <label for="website">Website (Optional)</label>
-                                <span class="helper-text" data-error="Please enter a valid URL"></span>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="file-field input-field col s12">
-                                <div class="btn haven-primary">
-                                    <span><i class="material-icons left">cloud_upload</i>Campaign Images</span>
-                                    <input type="file" multiple accept="image/*">
-                                </div>
-                                <div class="file-path-wrapper">
-                                    <input class="file-path validate" type="text" placeholder="Upload campaign images (max 5)">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col s12">
-                                <h6 style="color: #4caf50; margin-bottom: 20px;">Campaign Settings</h6>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col s12 m6">
-                                <div class="switch">
-                                    <label>
-                                        Private Campaign
-                                        <input type="checkbox" id="isPrivate">
-                                        <span class="lever"></span>
-                                        Public Campaign
-                                    </label>
-                                </div>
-                                <p style="font-size: 12px; color: #666; margin-top: 10px;">
-                                    Private campaigns are only visible to people with the link
-                                </p>
-                            </div>
-                            <div class="col s12 m6">
-                                <div class="switch">
-                                    <label>
-                                        Manual Approval
-                                        <input type="checkbox" id="autoApprove" checked>
-                                        <span class="lever"></span>
-                                        Auto Approve
-                                    </label>
-                                </div>
-                                <p style="font-size: 12px; color: #666; margin-top: 10px;">
-                                    Auto approve donations or require manual approval
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col s12">
-                                <label>
-                                    <input type="checkbox" id="agreeTerms" required />
-                                    <span>I agree to the <a href="#" style="color: #4caf50;">Campaign Terms</a> and confirm that all information provided is accurate</span>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="row" style="margin-top: 30px;">
-                            <div class="col s12 m6">
-                                <button class="btn waves-effect waves-light btn-haven" type="submit" style="width: 100%;">
-                                    Create Campaign
-                                    <i class="material-icons right">send</i>
-                                </button>
-                            </div>
-                            <div class="col s12 m6">
-                                <button class="btn waves-effect waves-light grey" type="button" onclick="saveDraft()" style="width: 100%;">
-                                    Save as Draft
-                                    <i class="material-icons right">save</i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+        st.markdown(f"""
+        <div class="container">
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <span class="profile-stat-number">₹{total_donated:,.0f}</span>
+                    <span class="profile-stat-label">Total Donated</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-number">{donation_count}</span>
+                    <span class="profile-stat-label">Donations Made</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-number">{len(profile.get('documents', []))}</span>
+                    <span class="profile-stat-label">Documents</span>
                 </div>
             </div>
         </div>
-    </div>
+        """, unsafe_allow_html=True)
+    else:
+        total_raised = profile.get('total_raised', 0)
+        campaign_count = profile.get('total_campaigns', 0)
+        
+        st.markdown(f"""
+        <div class="container">
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <span class="profile-stat-number">₹{total_raised:,.0f}</span>
+                    <span class="profile-stat-label">Total Raised</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-number">{campaign_count}</span>
+                    <span class="profile-stat-label">Campaigns</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-number">{len(profile.get('documents', []))}</span>
+                    <span class="profile-stat-label">Documents</span>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
     
-    <script>
-    function saveDraft() {
-        M.toast({html: 'Campaign saved as draft!', classes: 'blue'});
-        console.log('Save as draft');
-    }
+    # Main content area
+    st.markdown('<div class="container" style="margin-top: 40px;">', unsafe_allow_html=True)
     
-    document.getElementById('campaignForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        M.toast({html: 'Campaign created successfully!', classes: 'green'});
-        console.log('Campaign form submitted');
-    });
-    </script>
-    """, unsafe_allow_html=True)
+    # Tabs for different sections
+    tab1, tab2, tab3 = st.tabs(["📋 Activity", "📄 Verification", "⚙️ Settings"])
+    
+    with tab1:
+        if profile.get('user_type') == 'individual':
+            st.subheader("💝 Your Donations")
+            donations = profile.get('donations', [])
+            
+            if donations:
+                for donation in donations:
+                    st.markdown(f"""
+                    <div class="activity-card">
+                        <div class="activity-card-header">
+                            <strong>{donation.get('campaign_title', 'Unknown Campaign')}</strong>
+                            <span class="activity-date" style="float: right;">{donation.get('created_at', '')[:10]}</span>
+                        </div>
+                        <div class="activity-card-body">
+                            <div class="activity-amount">₹{donation.get('amount', 0):,.0f}</div>
+                            {f'<p style="margin-top: 10px; color: #666;">"{donation.get("message", "")}"</p>' if donation.get('message') else ''}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("You haven't made any donations yet. Start supporting campaigns to make a difference!")
+        
+        else:
+            st.subheader("🎯 Your Campaigns")
+            campaigns = profile.get('campaigns', [])
+            
+            if campaigns:
+                for campaign in campaigns:
+                    progress = (campaign.get('raised', 0) / campaign.get('goal', 1)) * 100
+                    
+                    st.markdown(f"""
+                    <div class="activity-card">
+                        <div class="activity-card-header">
+                            <strong>{campaign.get('title', 'Unknown Campaign')}</strong>
+                            <span class="activity-date" style="float: right;">{campaign.get('created_at', '')[:10]}</span>
+                        </div>
+                        <div class="activity-card-body">
+                            <div class="activity-amount">₹{campaign.get('raised', 0):,.0f} / ₹{campaign.get('goal', 0):,.0f}</div>
+                            <div class="progress" style="margin: 15px 0;">
+                                <div class="determinate" style="width: {min(progress, 100)}%; background: #4caf50;"></div>
+                            </div>
+                            <p style="color: #666;">{campaign.get('description', '')[:100]}...</p>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("You haven't created any campaigns yet. Click the + button to create your first campaign!")
+    
+    with tab2:
+        st.subheader("🔒 Account Verification")
+        
+        # Get verification requirements
+        requirements = get_verification_requirements()
+        if requirements:
+            st.markdown(f"""
+            <div class="card">
+                <div class="card-content">
+                    <h6 style="color: #4caf50; margin-bottom: 15px;">Verification Requirements</h6>
+                    <p>{requirements.get('instructions', '')}</p>
+                    <p><strong>Required documents:</strong> {requirements.get('required_documents', 1)}</p>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Document upload form
+            st.markdown("""
+            <div class="form-container">
+                <h6 style="color: #4caf50; margin-bottom: 20px;">Upload Verification Document</h6>
+                <form id="documentForm" enctype="multipart/form-data">
+                    <div class="input-field">
+                        <select id="documentType" required>
+                            <option value="" disabled selected>Choose document type</option>
+            """, unsafe_allow_html=True)
+            
+            for doc_type in requirements.get('document_types', []):
+                st.markdown(f'<option value="{doc_type["type"]}">{doc_type["name"]}</option>', unsafe_allow_html=True)
+            
+            st.markdown("""
+                        </select>
+                        <label>Document Type</label>
+                    </div>
+                    
+                    <div class="input-field">
+                        <input id="documentNumber" type="text">
+                        <label for="documentNumber">Document Number (Optional)</label>
+                    </div>
+                    
+                    <div class="document-upload-area" onclick="document.getElementById('documentFile').click()">
+                        <div class="document-upload-icon">📄</div>
+                        <h6>Click to upload document</h6>
+                        <p>Supported formats: PDF, JPG, PNG (Max 5MB)</p>
+                        <input type="file" id="documentFile" style="display: none;" accept=".pdf,.jpg,.jpeg,.png" required>
+                    </div>
+                    
+                    <button class="btn waves-effect waves-light btn-haven" type="submit" style="width: 100%; margin-top: 20px;">
+                        Upload Document
+                        <i class="material-icons right">cloud_upload</i>
+                    </button>
+                </form>
+            </div>
+            
+            <script>
+            document.getElementById('documentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData();
+                formData.append('document_type', document.getElementById('documentType').value);
+                formData.append('document_number', document.getElementById('documentNumber').value);
+                formData.append('document_file', document.getElementById('documentFile').files[0]);
+                
+                fetch('""" + BACKEND_URL + """/api/verification/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        M.toast({html: 'Document uploaded successfully!', classes: 'green'});
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        M.toast({html: 'Upload failed. Please try again.', classes: 'red'});
+                    }
+                })
+                .catch(error => {
+                    console.error('Upload error:', error);
+                    M.toast({html: 'Upload failed. Please try again.', classes: 'red'});
+                });
+            });
+            </script>
+            """, unsafe_allow_html=True)
+        
+        # Show uploaded documents
+        documents = profile.get('documents', [])
+        if documents:
+            st.subheader("📋 Uploaded Documents")
+            for doc in documents:
+                status_class = f"verification-{doc.get('verification_status', 'pending')}"
+                status_text = doc.get('verification_status', 'pending').title()
+                
+                st.markdown(f"""
+                <div class="activity-card">
+                    <div class="activity-card-header">
+                        <strong>{doc.get('document_type', '').replace('_', ' ').title()}</strong>
+                        <span class="verification-badge {status_class}" style="float: right;">{status_text}</span>
+                    </div>
+                    <div class="activity-card-body">
+                        <p><strong>File:</strong> {doc.get('file_name', 'Unknown')}</p>
+                        <p><strong>Uploaded:</strong> {doc.get('uploaded_at', '')[:10]}</p>
+                        {f'<p><strong>Number:</strong> {doc.get("document_number", "")}</p>' if doc.get('document_number') else ''}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+    
+    with tab3:
+        st.subheader("⚙️ Profile Settings")
+        
+        # Profile update form
+        st.markdown("""
+        <div class="form-container">
+            <h6 style="color: #4caf50; margin-bottom: 20px;">Update Profile Information</h6>
+            <form id="profileForm">
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="firstName" type="text" class="validate" required>
+                        <label for="firstName">First Name</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="lastName" type="text" class="validate" required>
+                        <label for="lastName">Last Name</label>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="phone" type="tel" class="validate">
+                        <label for="phone">Phone Number</label>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea id="bio" class="materialize-textarea" data-length="500"></textarea>
+                        <label for="bio">Bio</label>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="website" type="url" class="validate">
+                        <label for="website">Website</label>
+                    </div>
+                </div>
+                
+                <button class="btn waves-effect waves-light btn-haven" type="submit" style="width: 100%;">
+                    Update Profile
+                    <i class="material-icons right">save</i>
+                </button>
+            </form>
+        </div>
+        
+        <script>
+        // Pre-fill form with current data
+        document.addEventListener('DOMContentLoaded', function() {
+            const profile = """ + json.dumps(profile) + """;
+            
+            if (profile.first_name) document.getElementById('firstName').value = profile.first_name;
+            if (profile.last_name) document.getElementById('lastName').value = profile.last_name;
+            if (profile.phone) document.getElementById('phone').value = profile.phone;
+            if (profile.bio) document.getElementById('bio').value = profile.bio;
+            if (profile.website) document.getElementById('website').value = profile.website;
+            
+            // Update labels
+            M.updateTextFields();
+            M.textareaAutoResize(document.getElementById('bio'));
+        });
+        
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('first_name', document.getElementById('firstName').value);
+            formData.append('last_name', document.getElementById('lastName').value);
+            formData.append('phone', document.getElementById('phone').value);
+            formData.append('bio', document.getElementById('bio').value);
+            formData.append('website', document.getElementById('website').value);
+            
+            fetch('""" + BACKEND_URL + """/api/profile/me', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    M.toast({html: 'Profile updated successfully!', classes: 'green'});
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    M.toast({html: 'Update failed. Please try again.', classes: 'red'});
+                }
+            })
+            .catch(error => {
+                console.error('Update error:', error);
+                M.toast({html: 'Update failed. Please try again.', classes: 'red'});
+            });
+        });
+        </script>
+        """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# Enhanced Search Form
-def show_search():
+# Public Profile View
+def show_public_profile(user_id):
     show_header()
     show_vertical_navbar()
     show_fab()
     
-    st.markdown("""
-    <div class="container" style="margin-top: 40px;">
-        <div class="row">
-            <div class="col s12">
-                <h4 class="center-align" style="color: #4caf50; font-weight: 300;">🔎 Search Campaigns</h4>
+    # Get user's public profile
+    profile = get_user_profile(user_id)
+    if not profile:
+        st.error("User not found")
+        return
+    
+    # Profile header (similar to private profile but with limited info)
+    verification_class = f"verification-{profile.get('verification_status', 'pending')}"
+    verification_text = profile.get('verification_status', 'pending').title()
+    
+    st.markdown(f"""
+    <div class="profile-header">
+        <div class="container">
+            <div class="profile-avatar">
+                <i class="material-icons">person</i>
             </div>
-        </div>
-        
-        <div class="row">
-            <div class="col s12 m8 offset-m2">
-                <div class="form-container">
-                    <form id="searchForm">
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">search</i>
-                                <input id="searchQuery" type="text" class="validate" placeholder="Search for campaigns...">
-                                <label for="searchQuery">Search Keywords</label>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s12 m6">
-                                <i class="material-icons prefix">category</i>
-                                <select id="searchCategory">
-                                    <option value="" selected>All Categories</option>
-                                    <option value="medical">Medical</option>
-                                    <option value="education">Education</option>
-                                    <option value="disaster">Disaster Relief</option>
-                                    <option value="community">Community</option>
-                                    <option value="environment">Environment</option>
-                                    <option value="animal">Animal Welfare</option>
-                                    <option value="sports">Sports</option>
-                                    <option value="arts">Arts & Culture</option>
-                                    <option value="technology">Technology</option>
-                                </select>
-                                <label>Category</label>
-                            </div>
-                            <div class="input-field col s12 m6">
-                                <i class="material-icons prefix">location_on</i>
-                                <select id="searchLocation">
-                                    <option value="" selected>All Locations</option>
-                                    <option value="mumbai">Mumbai</option>
-                                    <option value="delhi">Delhi</option>
-                                    <option value="bangalore">Bangalore</option>
-                                    <option value="chennai">Chennai</option>
-                                    <option value="kolkata">Kolkata</option>
-                                    <option value="hyderabad">Hyderabad</option>
-                                    <option value="pune">Pune</option>
-                                </select>
-                                <label>Location</label>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col s12">
-                                <h6 style="color: #4caf50; margin-bottom: 20px;">Funding Goal Range</h6>
-                                <p class="range-field">
-                                    <input type="range" id="fundingRange" min="1000" max="1000000" value="500000" />
-                                </p>
-                                <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666;">
-                                    <span>₹1,000</span>
-                                    <span id="rangeValue">₹5,00,000</span>
-                                    <span>₹10,00,000</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col s12">
-                                <h6 style="color: #4caf50; margin-bottom: 20px;">Campaign Status</h6>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col s12 m4">
-                                <label>
-                                    <input name="status" type="radio" value="active" checked />
-                                    <span>Active Campaigns</span>
-                                </label>
-                            </div>
-                            <div class="col s12 m4">
-                                <label>
-                                    <input name="status" type="radio" value="completed" />
-                                    <span>Completed Campaigns</span>
-                                </label>
-                            </div>
-                            <div class="col s12 m4">
-                                <label>
-                                    <input name="status" type="radio" value="all" />
-                                    <span>All Campaigns</span>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col s12">
-                                <h6 style="color: #4caf50; margin-bottom: 20px;">Sort By</h6>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s12 m6">
-                                <select id="sortBy">
-                                    <option value="recent" selected>Most Recent</option>
-                                    <option value="popular">Most Popular</option>
-                                    <option value="funded">Most Funded</option>
-                                    <option value="ending">Ending Soon</option>
-                                    <option value="goal">Funding Goal</option>
-                                </select>
-                                <label>Sort Order</label>
-                            </div>
-                            <div class="input-field col s12 m6">
-                                <select id="resultsPerPage">
-                                    <option value="10" selected>10 Results</option>
-                                    <option value="20">20 Results</option>
-                                    <option value="50">50 Results</option>
-                                    <option value="100">100 Results</option>
-                                </select>
-                                <label>Results Per Page</label>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col s12 m6">
-                                <button class="btn waves-effect waves-light btn-haven" type="submit" style="width: 100%;">
-                                    <i class="material-icons left">search</i>Search Campaigns
-                                </button>
-                            </div>
-                            <div class="col s12 m6">
-                                <button class="btn waves-effect waves-light grey" type="button" onclick="clearSearch()" style="width: 100%;">
-                                    <i class="material-icons left">clear</i>Clear Filters
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <h3 style="margin: 0; font-weight: 300;">{profile.get('first_name', '')} {profile.get('last_name', '')}</h3>
+            <span class="verification-badge {verification_class}">{verification_text}</span>
+            {f'<p style="margin: 15px 0; opacity: 0.9;">{profile.get("organization_name", "")}</p>' if profile.get('organization_name') else ''}
+            {f'<p style="margin: 10px 0; opacity: 0.8;">{profile.get("bio", "")}</p>' if profile.get('bio') else ''}
         </div>
     </div>
-    
-    <script>
-    // Update range value display
-    document.getElementById('fundingRange').addEventListener('input', function() {
-        const value = parseInt(this.value);
-        const formatted = new Intl.NumberFormat('en-IN', {
-            style: 'currency',
-            currency: 'INR',
-            maximumFractionDigits: 0
-        }).format(value);
-        document.getElementById('rangeValue').textContent = formatted;
-    });
-    
-    function clearSearch() {
-        document.getElementById('searchForm').reset();
-        document.getElementById('rangeValue').textContent = '₹5,00,000';
-        M.FormSelect.init(document.querySelectorAll('select'));
-        M.toast({html: 'Search filters cleared!', classes: 'blue'});
-    }
-    
-    document.getElementById('searchForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        M.toast({html: 'Searching campaigns...', classes: 'green'});
-        console.log('Search form submitted');
-    });
-    </script>
     """, unsafe_allow_html=True)
+    
+    # Show public activity based on user type
+    st.markdown('<div class="container" style="margin-top: 40px;">', unsafe_allow_html=True)
+    
+    if profile.get('user_type') == 'individual':
+        st.subheader("💝 Public Donations")
+        donations = profile.get('donations', [])
+        
+        if donations:
+            for donation in donations:
+                st.markdown(f"""
+                <div class="activity-card">
+                    <div class="activity-card-header">
+                        <strong>{donation.get('campaign_title', 'Unknown Campaign')}</strong>
+                        <span class="activity-date" style="float: right;">{donation.get('created_at', '')[:10]}</span>
+                    </div>
+                    <div class="activity-card-body">
+                        <div class="activity-amount">₹{donation.get('amount', 0):,.0f}</div>
+                        {f'<p style="margin-top: 10px; color: #666;">"{donation.get("message", "")}"</p>' if donation.get('message') else ''}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("No public donations to display.")
+    
+    else:
+        st.subheader("🎯 Campaigns")
+        campaigns = profile.get('campaigns', [])
+        
+        if campaigns:
+            for campaign in campaigns:
+                progress = (campaign.get('raised', 0) / campaign.get('goal', 1)) * 100
+                
+                st.markdown(f"""
+                <div class="activity-card">
+                    <div class="activity-card-header">
+                        <strong>{campaign.get('title', 'Unknown Campaign')}</strong>
+                        <span class="activity-date" style="float: right;">{campaign.get('created_at', '')[:10]}</span>
+                    </div>
+                    <div class="activity-card-body">
+                        <div class="activity-amount">₹{campaign.get('raised', 0):,.0f} / ₹{campaign.get('goal', 0):,.0f}</div>
+                        <div class="progress" style="margin: 15px 0;">
+                            <div class="determinate" style="width: {min(progress, 100)}%; background: #4caf50;"></div>
+                        </div>
+                        <p style="color: #666;">{campaign.get('description', '')[:100]}...</p>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("No campaigns to display.")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# Home page (same as before but with form integration)
+# Home page (simplified for space)
 def show_home():
     show_header()
     show_vertical_navbar()
@@ -1187,77 +1210,54 @@ def show_home():
     </div>
     """, unsafe_allow_html=True)
     
-    # Sample campaigns (same as before)
-    campaigns = [
-        {
-            "title": "Clean Water for Rural Villages",
-            "description": "Providing clean drinking water access to 500 families in rural Maharashtra through sustainable well construction and water purification systems.",
-            "goal": 500000,
-            "raised": 325000,
-            "percentage": 65,
-            "days_left": 15,
-            "creator": "Water for All NGO",
-            "image": "https://images.unsplash.com/photo-1541919329513-35f7af297129?w=600&h=400&fit=crop"
-        },
-        {
-            "title": "Education for Underprivileged Children",
-            "description": "Building a school and providing education materials for 200 children in urban slums, including books, uniforms, and digital learning tools.",
-            "goal": 750000,
-            "raised": 450000,
-            "percentage": 60,
-            "days_left": 25,
-            "creator": "Bright Future Foundation",
-            "image": "https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=600&h=400&fit=crop"
-        }
-    ]
+    # Get and display campaigns
+    campaigns = get_campaigns()
     
-    for i, campaign in enumerate(campaigns):
-        if i % 2 == 0:
-            st.markdown('<div class="container"><div class="row">', unsafe_allow_html=True)
-        
-        col_class = "s12 m6"
-        
-        st.markdown(f"""
-        <div class="col {col_class}">
-            <div class="card campaign-card">
-                <div class="campaign-image" style="background-image: url('{campaign['image']}');">
-                    <div class="campaign-overlay">
-                        <span class="card-title" style="font-weight: 500;">{campaign['title']}</span>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <p style="color: #666; line-height: 1.6; margin-bottom: 15px;">{campaign['description'][:120]}...</p>
-                    <p style="color: #4caf50; font-weight: 500; margin-bottom: 10px;">by {campaign['creator']}</p>
-                    
-                    <div class="progress-custom">
-                        <div class="determinate" style="width: {campaign['percentage']}%;"></div>
-                    </div>
-                    
-                    <div class="row" style="margin: 15px 0 0 0;">
-                        <div class="col s4">
-                            <span style="color: #4caf50; font-weight: 500;">₹{campaign['raised']:,}</span>
-                            <br><small style="color: #999;">raised</small>
+    if campaigns:
+        for i, campaign in enumerate(campaigns[:4]):  # Show first 4 campaigns
+            if i % 2 == 0:
+                st.markdown('<div class="container"><div class="row">', unsafe_allow_html=True)
+            
+            progress = (campaign.get('raised', 0) / campaign.get('goal', 1)) * 100
+            days_left = (datetime.fromisoformat(campaign.get('end_date', '').replace('Z', '+00:00')) - datetime.now()).days
+            
+            st.markdown(f"""
+            <div class="col s12 m6">
+                <div class="card campaign-card">
+                    <div class="card-content">
+                        <span class="card-title" style="font-weight: 500;">{campaign.get('title', '')}</span>
+                        <p style="color: #666; line-height: 1.6; margin-bottom: 15px;">{campaign.get('description', '')[:120]}...</p>
+                        <p style="color: #4caf50; font-weight: 500; margin-bottom: 10px;">by {campaign.get('creator_name', '')}</p>
+                        
+                        <div class="progress" style="margin: 15px 0;">
+                            <div class="determinate" style="width: {min(progress, 100)}%; background: #4caf50;"></div>
                         </div>
-                        <div class="col s4 center-align">
-                            <span style="color: #4caf50; font-weight: 500;">{campaign['percentage']}%</span>
-                            <br><small style="color: #999;">funded</small>
-                        </div>
-                        <div class="col s4 right-align">
-                            <span style="color: #4caf50; font-weight: 500;">{campaign['days_left']}</span>
-                            <br><small style="color: #999;">days left</small>
+                        
+                        <div class="row" style="margin: 15px 0 0 0;">
+                            <div class="col s4">
+                                <span style="color: #4caf50; font-weight: 500;">₹{campaign.get('raised', 0):,.0f}</span>
+                                <br><small style="color: #999;">raised</small>
+                            </div>
+                            <div class="col s4 center-align">
+                                <span style="color: #4caf50; font-weight: 500;">{progress:.0f}%</span>
+                                <br><small style="color: #999;">funded</small>
+                            </div>
+                            <div class="col s4 right-align">
+                                <span style="color: #4caf50; font-weight: 500;">{max(days_left, 0)}</span>
+                                <br><small style="color: #999;">days left</small>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-action">
-                    <a href="#" class="waves-effect waves-light btn haven-primary" style="border-radius: 20px;">View Campaign</a>
-                    <a href="#" class="waves-effect waves-light btn-flat" style="color: #4caf50;">Share</a>
+                    <div class="card-action">
+                        <a href="#" class="waves-effect waves-light btn haven-primary" style="border-radius: 20px;">View Campaign</a>
+                        <a href="#" class="waves-effect waves-light btn-flat" style="color: #4caf50;">Share</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if i % 2 == 1 or i == len(campaigns) - 1:
-            st.markdown('</div></div>', unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
+            
+            if i % 2 == 1 or i == len(campaigns) - 1:
+                st.markdown('</div></div>', unsafe_allow_html=True)
 
 # Main navigation handler
 def handle_navigation():
@@ -1267,22 +1267,6 @@ def handle_navigation():
         st.session_state.current_page = 'home'
         st.rerun()
     
-    if st.sidebar.button("🔍 Explore"):
-        st.session_state.current_page = 'explore'
-        st.rerun()
-    
-    if st.sidebar.button("🔎 Search"):
-        st.session_state.current_page = 'search'
-        st.rerun()
-    
-    if st.sidebar.button("➕ Create Campaign"):
-        st.session_state.current_page = 'create'
-        st.rerun()
-    
-    if st.sidebar.button("📝 Register"):
-        st.session_state.current_page = 'register'
-        st.rerun()
-    
     if st.sidebar.button("👤 Profile"):
         st.session_state.current_page = 'profile'
         st.rerun()
@@ -1290,98 +1274,41 @@ def handle_navigation():
     if st.sidebar.button("🚪 Logout"):
         st.session_state.authenticated = False
         st.session_state.user_data = {}
+        st.session_state.access_token = None
         st.session_state.current_page = 'login'
         st.rerun()
-
-# Profile page (simplified for space)
-def show_profile():
-    show_header()
-    show_vertical_navbar()
-    show_fab()
-    
-    user_data = st.session_state.user_data
-    
-    st.markdown(f"""
-    <div class="container" style="margin-top: 40px;">
-        <div class="row">
-            <div class="col s12 m8 offset-m2">
-                <div class="card">
-                    <div class="card-content">
-                        <div class="row">
-                            <div class="col s12 center-align">
-                                <i class="material-icons large" style="color: #4caf50;">account_circle</i>
-                                <h4 style="color: #4caf50; font-weight: 300;">{user_data.get('name', 'User')}</h4>
-                                <p style="color: #666;">{user_data.get('email', 'user@example.com')}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-# Explore page (simplified for space)
-def show_explore():
-    show_header()
-    show_vertical_navbar()
-    show_fab()
-    
-    st.markdown("""
-    <div class="container" style="margin-top: 40px;">
-        <div class="row">
-            <div class="col s12">
-                <h4 class="center-align" style="color: #4caf50; font-weight: 300;">🔍 Explore Categories</h4>
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col s12 m4">
-                <div class="card-panel red category-card waves-effect waves-light">
-                    <div class="category-icon">🏥</div>
-                    <h5 style="color: white; font-weight: 400; margin: 10px 0;">Medical</h5>
-                    <p style="color: rgba(255,255,255,0.9); margin: 0;">15 campaigns</p>
-                </div>
-            </div>
-            <div class="col s12 m4">
-                <div class="card-panel blue category-card waves-effect waves-light">
-                    <div class="category-icon">🎓</div>
-                    <h5 style="color: white; font-weight: 400; margin: 10px 0;">Education</h5>
-                    <p style="color: rgba(255,255,255,0.9); margin: 0;">12 campaigns</p>
-                </div>
-            </div>
-            <div class="col s12 m4">
-                <div class="card-panel green category-card waves-effect waves-light">
-                    <div class="category-icon">🌱</div>
-                    <h5 style="color: white; font-weight: 400; margin: 10px 0;">Environment</h5>
-                    <p style="color: rgba(255,255,255,0.9); margin: 0;">8 campaigns</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
 
 # Main application
 def main():
     load_materialize_css()
     init_session_state()
     
+    # Check for stored authentication
     if not st.session_state.authenticated:
-        if st.session_state.current_page == 'register':
-            show_register()
-        else:
-            show_login()
+        # Try to get token from browser storage via JavaScript
+        token_check = components.html("""
+        <script>
+        const token = localStorage.getItem('access_token');
+        const userData = localStorage.getItem('user_data');
+        
+        if (token && userData) {
+            // Send token to Streamlit
+            window.parent.postMessage({
+                type: 'auth_token',
+                token: token,
+                user_data: JSON.parse(userData)
+            }, '*');
+        }
+        </script>
+        """, height=0)
+    
+    if not st.session_state.authenticated:
+        show_login()
     else:
         handle_navigation()
         
         if st.session_state.current_page == 'home':
             show_home()
-        elif st.session_state.current_page == 'explore':
-            show_explore()
-        elif st.session_state.current_page == 'search':
-            show_search()
-        elif st.session_state.current_page == 'create':
-            show_create_campaign()
         elif st.session_state.current_page == 'profile':
             show_profile()
         else:
