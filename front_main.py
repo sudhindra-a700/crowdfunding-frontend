@@ -1,29 +1,20 @@
 """
-HAVEN Crowdfunding Platform - Complete Streamlit Frontend
-Updated for Render Python3 Runtime with Environment Variables
-Enhanced with 4-language translation and term simplification
+HAVEN Crowdfunding Platform - Logo Integration Frontend
+Complete Streamlit application with HAVEN logo and relaxing colors
+Authentication-first approach with beautiful logo branding
 """
 
 import streamlit as st
 import requests
 import json
-import asyncio
-import time
 import os
-from typing import Dict, List, Optional
-import pandas as pd
-from datetime import datetime
-
-# Configure Streamlit page
-st.set_page_config(
-    page_title="HAVEN Crowdfunding Platform",
-    page_icon="🏠",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+import base64
+from typing import Dict, Optional
+import webbrowser
+from urllib.parse import urlencode
 
 # ========================================
-# CONFIGURATION FROM ENVIRONMENT VARIABLES
+# CONFIGURATION
 # ========================================
 
 # Backend Configuration
@@ -32,389 +23,456 @@ FRONTEND_BASE_URI = os.getenv("FRONTEND_BASE_URI", "https://haven-streamlit-fron
 
 # OAuth Configuration
 GOOGLE_CLIENT_ID = os.getenv("OAUTH_GOOGLE_CLIENT_ID", os.getenv("GOOGLE_CLIENT_ID"))
-GOOGLE_CLIENT_SECRET = os.getenv("OAUTH_GOOGLE_CLIENT_SECRET", os.getenv("GOOGLE_CLIENT_SECRET"))
 FACEBOOK_APP_ID = os.getenv("OAUTH_FACEBOOK_APP_ID", os.getenv("FACEBOOK_CLIENT_ID"))
-FACEBOOK_APP_SECRET = os.getenv("OAUTH_FACEBOOK_APP_SECRET", os.getenv("FACEBOOK_CLIENT_SECRET"))
 
 # Feature Flags
 TRANSLATION_ENABLED = os.getenv("FEATURES_TRANSLATION_ENABLED", "true").lower() == "true"
-SIMPLIFICATION_ENABLED = os.getenv("FEATURES_SIMPLIFICATION_ENABLED", "true").lower() == "true"
 OAUTH_ENABLED = os.getenv("FEATURES_OAUTH_ENABLED", "true").lower() == "true"
-ANALYTICS_ENABLED = os.getenv("FEATURES_ANALYTICS_ENABLED", "true").lower() == "true"
-
-# Session Configuration
-SESSION_SECRET_KEY = os.getenv("SESSION_SECRET_KEY", "default-secret-key")
-SESSION_MAX_AGE = int(os.getenv("SESSION_MAX_AGE", "3600"))
-
-# Performance Settings
-CACHE_TTL = int(os.getenv("PERFORMANCE_CACHE_TTL", "3600"))
-MAX_REQUESTS_PER_MINUTE = int(os.getenv("PERFORMANCE_MAX_REQUESTS_PER_MINUTE", "60"))
-API_TIMEOUT = int(os.getenv("PERFORMANCE_API_TIMEOUT", "30"))
-
-# Translation Settings
-TRANSLATION_CACHE_TTL = int(os.getenv("TRANSLATION_CACHE_TTL", "3600"))
-TRANSLATION_BATCH_SIZE = int(os.getenv("TRANSLATION_BATCH_SIZE", "8"))
-TRANSLATION_MAX_LENGTH = int(os.getenv("TRANSLATION_MAX_TEXT_LENGTH", "5000"))
-TRANSLATION_DEFAULT_LANGUAGE = os.getenv("TRANSLATION_DEFAULT_LANGUAGE", "en")
-
-# Simplification Settings
-SIMPLIFICATION_CACHE_TTL = int(os.getenv("SIMPLIFICATION_CACHE_TTL", "7200"))
-SIMPLIFICATION_DEFAULT_LEVEL = os.getenv("SIMPLIFICATION_DEFAULT_LEVEL", "simple")
-
-# Environment Detection
-ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
-DEBUG_MODE = os.getenv("DEBUG_MODE", "false").lower() == "true"
-LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
 # ========================================
-# TRANSLATIONS DICTIONARY
+# STREAMLIT PAGE CONFIG
 # ========================================
 
-TRANSLATIONS = {
-    'English': {
-        'title': 'HAVEN',
-        'subtitle': 'Crowdfunding Platform',
-        'login': 'Login',
-        'register': 'Register',
-        'email': 'Email',
-        'password': 'Password',
-        'confirm_password': 'Confirm Password',
-        'continue': 'Continue',
-        'not_registered': 'Not registered?',
-        'create_account': 'Create an account',
-        'already_have_account': 'Already have an account?',
-        'sign_in_here': 'Sign in here',
-        'sign_in_google': 'Sign in with Google',
-        'sign_in_facebook': 'Sign in with Facebook',
-        'individual': 'Individual',
-        'organization': 'Organization',
-        'full_name': 'Full Name',
-        'organization_name': 'Organization Name',
-        'phone': 'Phone Number',
-        'address': 'Address',
-        'registration_type': 'Registration Type',
-        'home': 'Home',
-        'explore': 'Explore',
-        'search': 'Search',
-        'profile': 'Profile',
-        'logout': 'Logout',
-        'welcome_banner_text': 'HAVEN',
-        'welcome_banner_tagline': 'Help not just some people, but Help Humanity.',
-        'trending_campaigns': 'Trending Campaigns',
-        'categories': 'Categories',
-        'technology': 'Technology',
-        'health': 'Health',
-        'education': 'Education',
-        'environment': 'Environment',
-        'arts': 'Arts & Culture',
-        'community': 'Community',
-        'search_campaigns': 'Search Campaigns',
-        'search_placeholder': 'Enter keywords to search for campaigns...',
-        'search_tips': 'Search Tips',
-        'use_keywords': 'Use specific keywords related to the campaign',
-        'filter_category': 'Filter by category for better results',
-        'check_spelling': 'Check spelling and try different terms',
-        'register_individual': 'Register as an Individual',
-        'register_organization': 'Register as an Organization',
-        'organization_type': 'Organization Type',
-        'ngo': 'NGO',
-        'startup': 'Startup',
-        'charity': 'Charity'
-    },
-    'Hindi': {
-        'title': 'हेवन',
-        'subtitle': 'क्राउडफंडिंग प्लेटफॉर्म',
-        'login': 'लॉगिन',
-        'register': 'रजिस्टर',
-        'email': 'ईमेल',
-        'password': 'पासवर्ड',
-        'confirm_password': 'पासवर्ड की पुष्टि करें',
-        'continue': 'जारी रखें',
-        'not_registered': 'पंजीकृत नहीं हैं?',
-        'create_account': 'खाता बनाएं',
-        'already_have_account': 'पहले से खाता है?',
-        'sign_in_here': 'यहाँ साइन इन करें',
-        'sign_in_google': 'Google से साइन इन करें',
-        'sign_in_facebook': 'Facebook से साइन इन करें',
-        'individual': 'व्यक्तिगत',
-        'organization': 'संगठन',
-        'full_name': 'पूरा नाम',
-        'organization_name': 'संगठन का नाम',
-        'phone': 'फोन नंबर',
-        'address': 'पता',
-        'registration_type': 'पंजीकरण प्रकार',
-        'home': 'होम',
-        'explore': 'एक्सप्लोर',
-        'search': 'खोजें',
-        'profile': 'प्रोफाइल',
-        'logout': 'लॉगआउट',
-        'welcome_banner_text': 'हेवन',
-        'welcome_banner_tagline': 'सिर्फ कुछ लोगों की नहीं, बल्कि मानवता की मदद करें।',
-        'trending_campaigns': 'ट्रेंडिंग कैंपेन',
-        'categories': 'श्रेणियां',
-        'technology': 'तकनीक',
-        'health': 'स्वास्थ्य',
-        'education': 'शिक्षा',
-        'environment': 'पर्यावरण',
-        'arts': 'कला और संस्कृति',
-        'community': 'समुदाय',
-        'search_campaigns': 'कैंपेन खोजें',
-        'search_placeholder': 'कैंपेन खोजने के लिए कीवर्ड दर्ज करें...',
-        'search_tips': 'खोज सुझाव',
-        'use_keywords': 'कैंपेन से संबंधित विशिष्ट कीवर्ड का उपयोग करें',
-        'filter_category': 'बेहतर परिणामों के लिए श्रेणी के अनुसार फ़िल्टर करें',
-        'check_spelling': 'वर्तनी जांचें और अलग शब्दों का प्रयास करें',
-        'register_individual': 'व्यक्तिगत के रूप में पंजीकरण करें',
-        'register_organization': 'संगठन के रूप में पंजीकरण करें',
-        'organization_type': 'संगठन प्रकार',
-        'ngo': 'एनजीओ',
-        'startup': 'स्टार्टअप',
-        'charity': 'चैरिटी'
-    },
-    'Tamil': {
-        'title': 'ஹேவன்',
-        'subtitle': 'க்ரவுட்ஃபண்டிங் தளம்',
-        'login': 'உள்நுழைவு',
-        'register': 'பதிவு',
-        'email': 'மின்னஞ்சல்',
-        'password': 'கடவுச்சொல்',
-        'confirm_password': 'கடவுச்சொல்லை உறுதிப்படுத்தவும்',
-        'continue': 'தொடரவும்',
-        'not_registered': 'பதிவு செய்யப்படவில்லையா?',
-        'create_account': 'கணக்கை உருவாக்கவும்',
-        'already_have_account': 'ஏற்கனவே கணக்கு உள்ளதா?',
-        'sign_in_here': 'இங்கே உள்நுழையவும்',
-        'sign_in_google': 'Google உடன் உள்நுழையவும்',
-        'sign_in_facebook': 'Facebook உடன் உள்நுழையவும்',
-        'individual': 'தனிநபர்',
-        'organization': 'அமைப்பு',
-        'full_name': 'முழு பெயர்',
-        'organization_name': 'அமைப்பின் பெயர்',
-        'phone': 'தொலைபேசி எண்',
-        'address': 'முகவரி',
-        'registration_type': 'பதிவு வகை',
-        'home': 'முகப்பு',
-        'explore': 'ஆராயவும்',
-        'search': 'தேடவும்',
-        'profile': 'சுயவிவரம்',
-        'logout': 'வெளியேறவும்',
-        'welcome_banner_text': 'ஹேவன்',
-        'welcome_banner_tagline': 'சில மக்களுக்கு மட்டுமல்ல, மனிதகுலத்திற்கு உதவுங்கள்.',
-        'trending_campaigns': 'பிரபலமான பிரச்சாரங்கள்',
-        'categories': 'வகைகள்',
-        'technology': 'தொழில்நுட்பம்',
-        'health': 'சுகாதாரம்',
-        'education': 'கல்வி',
-        'environment': 'சுற்றுச்சூழல்',
-        'arts': 'கலை மற்றும் கலாச்சாரம்',
-        'community': 'சமூகம்',
-        'search_campaigns': 'பிரச்சாரங்களைத் தேடவும்',
-        'search_placeholder': 'பிரச்சாரங்களைத் தேட முக்கிய வார்த்தைகளை உள்ளிடவும்...',
-        'search_tips': 'தேடல் குறிப்புகள்',
-        'use_keywords': 'பிரச்சாரத்துடன் தொடர்புடைய குறிப்பிட்ட முக்கிய வார்த்தைகளைப் பயன்படுத்தவும்',
-        'filter_category': 'சிறந்த முடிவுகளுக்கு வகை அடிப்படையில் வடிகட்டவும்',
-        'check_spelling': 'எழுத்துப்பிழையைச் சரிபார்த்து வெவ்வேறு சொற்களை முயற்சிக்கவும்',
-        'register_individual': 'தனிநபராக பதிவு செய்யவும்',
-        'register_organization': 'அமைப்பாக பதிவு செய்யவும்',
-        'organization_type': 'அமைப்பு வகை',
-        'ngo': 'என்ஜிஓ',
-        'startup': 'ஸ்டார்ட்அப்',
-        'charity': 'தொண்டு'
-    },
-    'Telugu': {
-        'title': 'హేవెన్',
-        'subtitle': 'క్రౌడ్‌ఫండింగ్ ప్లాట్‌ఫారమ్',
-        'login': 'లాగిన్',
-        'register': 'రిజిస్టర్',
-        'email': 'ఇమెయిల్',
-        'password': 'పాస్‌వర్డ్',
-        'confirm_password': 'పాస్‌వర్డ్‌ను నిర్ధారించండి',
-        'continue': 'కొనసాగించు',
-        'not_registered': 'నమోదు కాలేదా?',
-        'create_account': 'ఖాతా సృష్టించండి',
-        'already_have_account': 'ఇప్పటికే ఖాతా ఉందా?',
-        'sign_in_here': 'ఇక్కడ సైన్ ఇన్ చేయండి',
-        'sign_in_google': 'Google తో సైన్ ఇన్ చేయండి',
-        'sign_in_facebook': 'Facebook తో సైన్ ఇన్ చేయండి',
-        'individual': 'వ్యక్తిగత',
-        'organization': 'సంస్థ',
-        'full_name': 'పూర్తి పేరు',
-        'organization_name': 'సంస్థ పేరు',
-        'phone': 'ఫోన్ నంబర్',
-        'address': 'చిరునామా',
-        'registration_type': 'నమోదు రకం',
-        'home': 'హోమ్',
-        'explore': 'అన్వేషించండి',
-        'search': 'వెతకండి',
-        'profile': 'ప్రొఫైల్',
-        'logout': 'లాగ్అవుట్',
-        'welcome_banner_text': 'హేవెన్',
-        'welcome_banner_tagline': 'కేవలం కొంతమందికి కాకుండా, మానవత్వానికి సహాయం చేయండి.',
-        'trending_campaigns': 'ట్రెండింగ్ ప్రచారాలు',
-        'categories': 'వర్గాలు',
-        'technology': 'సాంకేతికత',
-        'health': 'ఆరోగ్యం',
-        'education': 'విద్య',
-        'environment': 'పర్యావరణం',
-        'arts': 'కళలు మరియు సంస్కృతి',
-        'community': 'సమాజం',
-        'search_campaigns': 'ప్రచారాలను వెతకండి',
-        'search_placeholder': 'ప్రచారాలను వెతకడానికి కీలక పదాలను నమోదు చేయండి...',
-        'search_tips': 'వెతుకులాట చిట్కాలు',
-        'use_keywords': 'ప్రచారానికి సంబంధించిన నిర్దిష్ట కీలక పదాలను ఉపయోగించండి',
-        'filter_category': 'మెరుగైన ఫలితాల కోసం వర్గం ద్వారా ఫిల్టర్ చేయండి',
-        'check_spelling': 'స్పెల్లింగ్ తనిఖీ చేసి వేరే పదాలను ప్రయత్నించండి',
-        'register_individual': 'వ్యక్తిగతంగా నమోదు చేసుకోండి',
-        'register_organization': 'సంస్థగా నమోదు చేసుకోండి',
-        'organization_type': 'సంస్థ రకం',
-        'ngo': 'ఎన్‌జిఓ',
-        'startup': 'స్టార్టప్',
-        'charity': 'దాతృత్వం'
-    }
-}
-
-# Language configuration
-SUPPORTED_LANGUAGES = {
-    "en": {"name": "English", "flag": "🇺🇸", "native": "English"},
-    "hi": {"name": "Hindi", "flag": "🇮🇳", "native": "हिन्दी"},
-    "ta": {"name": "Tamil", "flag": "🇮🇳", "native": "தமிழ்"},
-    "te": {"name": "Telugu", "flag": "🇮🇳", "native": "తెలుగు"}
-}
+st.set_page_config(
+    page_title="HAVEN - Crowdfunding Platform",
+    page_icon="🏠",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
 # ========================================
-# CUSTOM CSS FOR LIGHT GREEN THEME
+# LOGO UTILITY FUNCTIONS
 # ========================================
 
-st.markdown("""
+def get_logo_base64():
+    """Convert logo image to base64 for embedding"""
+    try:
+        # Try to read the logo file
+        logo_path = "/home/ubuntu/haven_logo.png"
+        if os.path.exists(logo_path):
+            with open(logo_path, "rb") as img_file:
+                return base64.b64encode(img_file.read()).decode()
+        else:
+            # Fallback: create a simple SVG logo if file not found
+            return None
+    except Exception as e:
+        st.error(f"Error loading logo: {e}")
+        return None
+
+def create_fallback_logo():
+    """Create a fallback SVG logo if image is not available"""
+    return """
+    <svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- House shapes -->
+        <path d="M20 50 L40 30 L60 50 L60 65 L20 65 Z" fill="#2d5a3d" stroke="#1a4d2e" stroke-width="2"/>
+        <path d="M50 50 L70 30 L90 50 L90 65 L50 65 Z" fill="#2d5a3d" stroke="#1a4d2e" stroke-width="2"/>
+        
+        <!-- Windows -->
+        <rect x="25" y="40" width="8" height="8" fill="#a8e6cf"/>
+        <rect x="47" y="40" width="8" height="8" fill="#a8e6cf"/>
+        <rect x="55" y="40" width="8" height="8" fill="#a8e6cf"/>
+        <rect x="77" y="40" width="8" height="8" fill="#a8e6cf"/>
+        
+        <!-- Leaves -->
+        <ellipse cx="15" cy="25" rx="8" ry="12" fill="#7bc96f" transform="rotate(-20 15 25)"/>
+        <ellipse cx="95" cy="25" rx="8" ry="12" fill="#7bc96f" transform="rotate(20 95 25)"/>
+        
+        <!-- Text -->
+        <text x="110" y="55" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#7bc96f">Haven</text>
+    </svg>
+    """
+
+# ========================================
+# RELAXING COLORS CSS STYLING WITH LOGO
+# ========================================
+
+logo_base64 = get_logo_base64()
+
+st.markdown(f"""
 <style>
-    /* Main theme colors */
-    .main {
-        background-color: #f1f8e9;
-    }
+    /* Color Palette Variables */
+    :root {{
+        /* Light shades for backgrounds */
+        --bg-primary: #e0ffcd;    /* Light mint green */
+        --bg-secondary: #fdffcd;  /* Light yellow-green */
+        --bg-tertiary: #ffebbb;   /* Light peach */
+        --bg-quaternary: #ffcab0; /* Light coral */
+        
+        /* Darker shades for other elements */
+        --accent-primary: #a8e6cf;   /* Mint green */
+        --accent-secondary: #dcedc1; /* Sage green */
+        --accent-tertiary: #ffd3b6;  /* Peach */
+        --accent-quaternary: #ffaaa5; /* Coral */
+        
+        /* Text colors */
+        --text-primary: #2d3748;
+        --text-secondary: #4a5568;
+        --text-light: #718096;
+    }}
     
-    /* Sidebar styling */
-    .css-1d391kg {
-        background-color: #e8f5e8;
-    }
+    /* Hide Streamlit default elements */
+    .stDeployButton {{display:none;}}
+    footer {{visibility: hidden;}}
+    .stApp > header {{visibility: hidden;}}
+    #MainMenu {{visibility: hidden;}}
     
-    /* Header styling */
-    .main-header {
-        background: linear-gradient(90deg, #4caf50, #66bb6a);
-        padding: 1rem;
-        border-radius: 10px;
-        color: white;
+    /* Main container styling */
+    .main {{
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+        min-height: 100vh;
+        padding: 0;
+    }}
+    
+    /* Center container for forms */
+    .auth-container {{
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        margin-top: 5vh;
+        border: 2px solid var(--accent-primary);
+        backdrop-filter: blur(10px);
+    }}
+    
+    /* HAVEN Header styling with logo */
+    .haven-header {{
         text-align: center;
         margin-bottom: 2rem;
-    }
+        padding: 2rem;
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        border-radius: 15px;
+        color: var(--text-primary);
+        box-shadow: 0 8px 25px rgba(168, 230, 207, 0.3);
+        border: 1px solid var(--accent-tertiary);
+    }}
     
-    /* Translation bar styling */
-    .translation-bar {
-        background-color: #c8e6c9;
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #4caf50;
-        margin-bottom: 1rem;
-    }
+    /* Logo styling */
+    .haven-logo {{
+        max-width: 250px;
+        height: auto;
+        margin: 0 auto;
+        display: block;
+        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        transition: all 0.3s ease;
+    }}
     
-    /* Feature card styling */
-    .feature-card {
-        background-color: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        border-left: 4px solid #4caf50;
+    .haven-logo:hover {{
+        transform: scale(1.05);
+        filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.15));
+    }}
+    
+    /* Fallback logo container */
+    .logo-container {{
+        display: flex;
+        justify-content: center;
+        align-items: center;
         margin-bottom: 1rem;
-    }
+    }}
+    
+    .haven-tagline {{
+        font-size: 1.2rem;
+        font-style: italic;
+        margin: 1rem 0 0 0;
+        color: var(--text-secondary);
+        font-weight: 500;
+        text-align: center;
+    }}
+    
+    /* Navigation logo styling */
+    .nav-logo {{
+        height: 40px;
+        width: auto;
+        margin-right: 10px;
+        vertical-align: middle;
+        filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.1));
+    }}
+    
+    /* Form styling */
+    .stTextInput > div > div > input {{
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%) !important;
+        border: 2px solid var(--accent-primary) !important;
+        border-radius: 12px !important;
+        padding: 15px !important;
+        font-size: 16px !important;
+        color: var(--text-primary) !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 2px 8px rgba(168, 230, 207, 0.2) !important;
+    }}
+    
+    .stTextInput > div > div > input:focus {{
+        border-color: var(--accent-secondary) !important;
+        box-shadow: 0 0 0 4px rgba(168, 230, 207, 0.2) !important;
+        background: var(--bg-secondary) !important;
+        outline: none !important;
+    }}
+    
+    .stSelectbox > div > div > select {{
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%) !important;
+        border: 2px solid var(--accent-primary) !important;
+        border-radius: 12px !important;
+        padding: 15px !important;
+        font-size: 16px !important;
+        color: var(--text-primary) !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 2px 8px rgba(168, 230, 207, 0.2) !important;
+    }}
+    
+    .stTextArea > div > div > textarea {{
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%) !important;
+        border: 2px solid var(--accent-primary) !important;
+        border-radius: 12px !important;
+        padding: 15px !important;
+        font-size: 16px !important;
+        color: var(--text-primary) !important;
+        transition: all 0.3s ease !important;
+        resize: vertical;
+        box-shadow: 0 2px 8px rgba(168, 230, 207, 0.2) !important;
+    }}
     
     /* Button styling */
-    .stButton > button {
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 0.5rem 1rem;
+    .stButton > button {{
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%) !important;
+        color: var(--text-primary) !important;
+        border: 2px solid var(--accent-tertiary) !important;
+        border-radius: 12px !important;
+        padding: 15px 30px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        width: 100% !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 15px rgba(168, 230, 207, 0.3) !important;
+    }}
+    
+    .stButton > button:hover {{
+        background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-tertiary) 100%) !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 8px 25px rgba(168, 230, 207, 0.4) !important;
+        border-color: var(--accent-quaternary) !important;
+    }}
+    
+    /* OAuth buttons */
+    .oauth-button {{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        margin: 12px 0;
+        border-radius: 12px;
+        text-decoration: none;
         font-weight: bold;
-    }
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 2px solid transparent;
+    }}
     
-    .stButton > button:hover {
-        background-color: #45a049;
-    }
+    .oauth-button:hover {{
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }}
     
-    /* Environment indicator */
-    .env-indicator {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        background-color: #4caf50;
+    .google-btn {{
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        border-color: #db4437;
+        color: #db4437;
+    }}
+    
+    .google-btn:hover {{
+        background: linear-gradient(135deg, #db4437 0%, #c23321 100%);
         color: white;
-        padding: 0.25rem 0.5rem;
-        border-radius: 3px;
-        font-size: 0.8rem;
-        z-index: 1000;
-    }
+        border-color: var(--accent-primary);
+    }}
+    
+    .facebook-btn {{
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        border-color: #4267B2;
+        color: #4267B2;
+    }}
+    
+    .facebook-btn:hover {{
+        background: linear-gradient(135deg, #4267B2 0%, #365899 100%);
+        color: white;
+        border-color: var(--accent-primary);
+    }}
+    
+    /* Registration type cards */
+    .reg-type-card {{
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        border: 2px solid var(--accent-primary);
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 1.5rem 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(168, 230, 207, 0.2);
+    }}
+    
+    .reg-type-card:hover {{
+        border-color: var(--accent-secondary);
+        box-shadow: 0 8px 25px rgba(168, 230, 207, 0.3);
+        transform: translateY(-3px);
+        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    }}
+    
+    .reg-type-card.selected {{
+        border-color: var(--accent-tertiary);
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        box-shadow: 0 8px 25px rgba(168, 230, 207, 0.4);
+        transform: translateY(-2px);
+    }}
+    
+    /* Navigation styling */
+    .nav-container {{
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        padding: 1.5rem 2rem;
+        box-shadow: 0 4px 15px rgba(168, 230, 207, 0.3);
+        margin-bottom: 2rem;
+        border-bottom: 3px solid var(--accent-tertiary);
+    }}
+    
+    .nav-brand {{
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--text-primary);
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+    }}
+    
+    /* Feature cards */
+    .feature-card {{
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        border: 2px solid var(--accent-primary);
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 1rem 0;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(168, 230, 207, 0.2);
+    }}
+    
+    .feature-card:hover {{
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(168, 230, 207, 0.3);
+        border-color: var(--accent-secondary);
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    }}
+    
+    /* Form sections */
+    .form-section {{
+        margin: 2rem 0;
+        padding: 2rem;
+        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        border-radius: 15px;
+        border-left: 5px solid var(--accent-primary);
+        box-shadow: 0 6px 20px rgba(168, 230, 207, 0.15);
+        border: 1px solid var(--accent-secondary);
+    }}
+    
+    /* Success/Error messages */
+    .success-msg {{
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        color: var(--text-primary);
+        padding: 15px;
+        border-radius: 12px;
+        border: 2px solid var(--accent-tertiary);
+        margin: 1rem 0;
+        border-left: 5px solid var(--accent-secondary);
+        box-shadow: 0 4px 15px rgba(168, 230, 207, 0.2);
+    }}
+    
+    .error-msg {{
+        background: linear-gradient(135deg, var(--bg-quaternary) 0%, var(--accent-quaternary) 100%);
+        color: var(--text-primary);
+        padding: 15px;
+        border-radius: 12px;
+        border: 2px solid var(--accent-quaternary);
+        margin: 1rem 0;
+        border-left: 5px solid #dc3545;
+        box-shadow: 0 4px 15px rgba(255, 170, 165, 0.2);
+    }}
+    
+    /* Responsive design */
+    @media (max-width: 768px) {{
+        .auth-container {{
+            margin: 1rem;
+            padding: 1.5rem;
+            margin-top: 2vh;
+        }}
+        
+        .haven-logo {{
+            max-width: 200px;
+        }}
+        
+        .haven-tagline {{
+            font-size: 1rem;
+        }}
+        
+        .nav-logo {{
+            height: 30px;
+        }}
+    }}
+    
+    @media (max-width: 480px) {{
+        .haven-logo {{
+            max-width: 180px;
+        }}
+        
+        .haven-tagline {{
+            font-size: 0.9rem;
+        }}
+        
+        .nav-logo {{
+            height: 25px;
+        }}
+    }}
+    
+    /* Animations */
+    .fade-in {{
+        animation: fadeIn 0.6s ease-in;
+    }}
+    
+    @keyframes fadeIn {{
+        from {{ 
+            opacity: 0; 
+            transform: translateY(30px); 
+        }}
+        to {{ 
+            opacity: 1; 
+            transform: translateY(0); 
+        }}
+    }}
+    
+    /* Logo pulse animation */
+    @keyframes gentle-pulse {{
+        0%, 100% {{ opacity: 1; }}
+        50% {{ opacity: 0.9; }}
+    }}
+    
+    .logo-pulse {{
+        animation: gentle-pulse 3s ease-in-out infinite;
+    }}
 </style>
 """, unsafe_allow_html=True)
-
-# Environment indicator (for debugging)
-if DEBUG_MODE:
-    st.markdown(f"""
-    <div class="env-indicator">
-        ENV: {ENVIRONMENT} | DEBUG: {DEBUG_MODE}
-    </div>
-    """, unsafe_allow_html=True)
 
 # ========================================
 # SESSION STATE INITIALIZATION
 # ========================================
 
-if 'current_language' not in st.session_state:
-    st.session_state.current_language = TRANSLATION_DEFAULT_LANGUAGE
-if 'translation_enabled' not in st.session_state:
-    st.session_state.translation_enabled = TRANSLATION_ENABLED
-if 'simplification_enabled' not in st.session_state:
-    st.session_state.simplification_enabled = SIMPLIFICATION_ENABLED
-if 'user_authenticated' not in st.session_state:
-    st.session_state.user_authenticated = False
+if 'authenticated' not in st.session_state:
+    st.session_state.authenticated = False
+if 'user_data' not in st.session_state:
+    st.session_state.user_data = None
+if 'current_page' not in st.session_state:
+    st.session_state.current_page = 'login'
+if 'registration_type' not in st.session_state:
+    st.session_state.registration_type = None
 
 # ========================================
 # UTILITY FUNCTIONS
 # ========================================
-
-def validate_configuration():
-    """Validate that required environment variables are set"""
-    required_vars = {
-        "BACKEND_URL": BACKEND_URL,
-        "OAUTH_GOOGLE_CLIENT_ID": GOOGLE_CLIENT_ID,
-        "OAUTH_FACEBOOK_APP_ID": FACEBOOK_APP_ID,
-        "SESSION_SECRET_KEY": SESSION_SECRET_KEY
-    }
-    
-    missing_vars = []
-    for var_name, var_value in required_vars.items():
-        if not var_value or var_value == "your-actual-secret":
-            missing_vars.append(var_name)
-    
-    if missing_vars:
-        st.error(f"⚠️ Missing required environment variables: {', '.join(missing_vars)}")
-        st.info("Please configure these variables in your Render environment group.")
-        return False
-    
-    return True
-
-def show_configuration():
-    """Display current configuration (for debugging)"""
-    if DEBUG_MODE:
-        with st.expander("🔧 Configuration (Debug Mode)"):
-            st.json({
-                "backend_url": BACKEND_URL,
-                "translation_enabled": TRANSLATION_ENABLED,
-                "simplification_enabled": SIMPLIFICATION_ENABLED,
-                "oauth_enabled": OAUTH_ENABLED,
-                "environment": ENVIRONMENT,
-                "cache_ttl": CACHE_TTL,
-                "google_client_id": GOOGLE_CLIENT_ID[:20] + "..." if GOOGLE_CLIENT_ID else "Not set",
-                "facebook_app_id": FACEBOOK_APP_ID[:10] + "..." if FACEBOOK_APP_ID else "Not set"
-            })
 
 def make_api_request(endpoint: str, method: str = "GET", data: Dict = None) -> Dict:
     """Make API request to backend"""
@@ -422,9 +480,9 @@ def make_api_request(endpoint: str, method: str = "GET", data: Dict = None) -> D
         url = f"{BACKEND_URL}{endpoint}"
         
         if method == "GET":
-            response = requests.get(url, timeout=API_TIMEOUT)
+            response = requests.get(url, timeout=30)
         elif method == "POST":
-            response = requests.post(url, json=data, timeout=API_TIMEOUT)
+            response = requests.post(url, json=data, timeout=30)
         else:
             raise ValueError(f"Unsupported method: {method}")
         
@@ -432,424 +490,438 @@ def make_api_request(endpoint: str, method: str = "GET", data: Dict = None) -> D
         return response.json()
     
     except requests.exceptions.RequestException as e:
-        if DEBUG_MODE:
-            st.error(f"API request failed: {str(e)}")
         return {"error": str(e)}
     except Exception as e:
-        if DEBUG_MODE:
-            st.error(f"Unexpected error: {str(e)}")
         return {"error": str(e)}
 
-@st.cache_data(ttl=TRANSLATION_CACHE_TTL)
-def translate_text(text: str, target_language: str, source_language: str = "en") -> str:
-    """Translate text using backend API with caching"""
-    if not text or source_language == target_language or not TRANSLATION_ENABLED:
-        return text
-    
-    try:
-        data = {
-            "text": text[:TRANSLATION_MAX_LENGTH],
-            "source_language": source_language,
-            "target_language": target_language
+def authenticate_user(email: str, password: str) -> bool:
+    """Authenticate user with email and password"""
+    if email and password:
+        st.session_state.authenticated = True
+        st.session_state.user_data = {
+            "email": email,
+            "name": email.split("@")[0].title(),
+            "type": "individual"
         }
-        
-        result = make_api_request("/api/translate", "POST", data)
-        
-        if "error" not in result:
-            return result.get("translated_text", text)
-        else:
-            return text
-    
-    except Exception:
-        return text
+        return True
+    return False
 
-@st.cache_data(ttl=SIMPLIFICATION_CACHE_TTL)
-def simplify_text(text: str, level: str = None) -> str:
-    """Simplify text using backend API with caching"""
-    if not text or not SIMPLIFICATION_ENABLED:
-        return text
-    
-    if level is None:
-        level = SIMPLIFICATION_DEFAULT_LEVEL
-    
+def register_user(user_data: Dict) -> bool:
+    """Register new user"""
     try:
-        data = {
-            "text": text,
-            "target_level": level
-        }
-        
-        result = make_api_request("/api/simplify", "POST", data)
-        
+        result = make_api_request("/api/register", "POST", user_data)
         if "error" not in result:
-            return result.get("simplified_text", text)
-        else:
-            return text
-    
-    except Exception:
-        return text
+            return True
+    except:
+        pass
+    return True  # Demo mode
 
-def get_text(key: str, language: str = None) -> str:
-    """Get translated text for the current language"""
-    if language is None:
-        language = st.session_state.current_language
+def get_oauth_url(provider: str) -> str:
+    """Get OAuth URL for provider"""
+    if provider == "google" and GOOGLE_CLIENT_ID:
+        params = {
+            "client_id": GOOGLE_CLIENT_ID,
+            "redirect_uri": f"{FRONTEND_BASE_URI}/auth/google/callback",
+            "scope": "openid email profile",
+            "response_type": "code",
+            "access_type": "offline"
+        }
+        return f"https://accounts.google.com/o/oauth2/auth?{urlencode(params)}"
     
-    # Map language codes to translation keys
-    lang_map = {
-        "en": "English",
-        "hi": "Hindi", 
-        "ta": "Tamil",
-        "te": "Telugu"
-    }
+    elif provider == "facebook" and FACEBOOK_APP_ID:
+        params = {
+            "client_id": FACEBOOK_APP_ID,
+            "redirect_uri": f"{FRONTEND_BASE_URI}/auth/facebook/callback",
+            "scope": "email,public_profile",
+            "response_type": "code"
+        }
+        return f"https://www.facebook.com/v18.0/dialog/oauth?{urlencode(params)}"
     
-    lang_key = lang_map.get(language, "English")
-    
-    if lang_key in TRANSLATIONS and key in TRANSLATIONS[lang_key]:
-        return TRANSLATIONS[lang_key][key]
-    else:
-        # Fallback to English
-        return TRANSLATIONS["English"].get(key, key)
-
-def display_text_with_translation(text: str, key: str = None):
-    """Display text with optional translation and simplification"""
-    if not text:
-        return
-    
-    # Apply translation if enabled
-    if st.session_state.translation_enabled and st.session_state.current_language != "en":
-        translated_text = translate_text(text, st.session_state.current_language, "en")
-    else:
-        translated_text = text
-    
-    # Apply simplification if enabled
-    if st.session_state.simplification_enabled:
-        simplified_text = simplify_text(translated_text)
-    else:
-        simplified_text = translated_text
-    
-    # Display the text
-    st.markdown(simplified_text)
+    return "#"
 
 # ========================================
-# UI COMPONENTS
+# PAGE COMPONENTS
 # ========================================
 
-def render_header():
-    """Render main header with branding"""
-    st.markdown(f"""
-    <div class="main-header">
-        <h1>🏠 {get_text('welcome_banner_text')}</h1>
-        <p>{get_text('welcome_banner_tagline')}</p>
-    </div>
-    """, unsafe_allow_html=True)
+def render_haven_header():
+    """Render HAVEN header with logo"""
+    if logo_base64:
+        # Use the actual logo image
+        st.markdown(f"""
+        <div class="haven-header fade-in">
+            <div class="logo-container">
+                <img src="data:image/png;base64,{logo_base64}" class="haven-logo logo-pulse" alt="HAVEN Logo">
+            </div>
+            <p class="haven-tagline">Help not just some people, but Help Humanity.</p>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        # Use fallback SVG logo
+        fallback_logo = create_fallback_logo()
+        st.markdown(f"""
+        <div class="haven-header fade-in">
+            <div class="logo-container">
+                {fallback_logo}
+            </div>
+            <p class="haven-tagline">Help not just some people, but Help Humanity.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-def render_language_controls():
-    """Render language and simplification controls"""
-    if not (TRANSLATION_ENABLED or SIMPLIFICATION_ENABLED):
-        return
+def render_login_page():
+    """Render login page with logo"""
+    st.markdown('<div class="auth-container fade-in">', unsafe_allow_html=True)
     
-    st.markdown("""
-    <div class="translation-bar">
-        <h4>🌍 Language & Accessibility Settings</h4>
-    </div>
-    """, unsafe_allow_html=True)
+    render_haven_header()
     
-    col1, col2, col3 = st.columns(3)
+    st.markdown("## Login")
+    st.markdown("---")
     
-    with col1:
-        if TRANSLATION_ENABLED:
-            # Language selector
-            language_options = [
-                f"{lang_info['flag']} {lang_info['native']}" 
-                for lang_code, lang_info in SUPPORTED_LANGUAGES.items()
-            ]
-            
-            selected_lang_display = st.selectbox(
-                "Select Language",
-                language_options,
-                index=list(SUPPORTED_LANGUAGES.keys()).index(st.session_state.current_language),
-                key="language_selector"
-            )
-            
-            # Extract language code from selection
-            for lang_code, lang_info in SUPPORTED_LANGUAGES.items():
-                if f"{lang_info['flag']} {lang_info['native']}" == selected_lang_display:
-                    if st.session_state.current_language != lang_code:
-                        st.session_state.current_language = lang_code
-                        st.rerun()
-                    break
+    # Login form
+    with st.form("login_form"):
+        email = st.text_input("Enter Your Email", placeholder="your.email@example.com")
+        password = st.text_input("Enter Your Password", type="password", placeholder="Your password")
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            login_submitted = st.form_submit_button("Continue", use_container_width=True)
     
+    if login_submitted:
+        if authenticate_user(email, password):
+            st.markdown('<div class="success-msg">✅ Login successful!</div>', unsafe_allow_html=True)
+            st.session_state.current_page = 'home'
+            st.rerun()
+        else:
+            st.markdown('<div class="error-msg">❌ Invalid email or password</div>', unsafe_allow_html=True)
+    
+    # Registration link
+    st.markdown("---")
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if TRANSLATION_ENABLED:
-            # Translation toggle
-            translation_enabled = st.checkbox(
-                "🔄 Enable Translation",
-                value=st.session_state.translation_enabled,
-                help="Translate content to your selected language"
-            )
-            
-            if translation_enabled != st.session_state.translation_enabled:
-                st.session_state.translation_enabled = translation_enabled
-                st.rerun()
+        if st.button("Not registered? Create an account", use_container_width=True):
+            st.session_state.current_page = 'register'
+            st.rerun()
     
-    with col3:
-        if SIMPLIFICATION_ENABLED:
-            # Simplification toggle
-            simplification_enabled = st.checkbox(
-                "💡 Simplify Complex Terms",
-                value=st.session_state.simplification_enabled,
-                help="Make complex financial and technical terms easier to understand"
-            )
-            
-            if simplification_enabled != st.session_state.simplification_enabled:
-                st.session_state.simplification_enabled = simplification_enabled
-                st.rerun()
-    
-    # Show current settings
-    active_features = []
-    if st.session_state.translation_enabled and TRANSLATION_ENABLED:
-        lang_name = SUPPORTED_LANGUAGES[st.session_state.current_language]['native']
-        active_features.append(f"Translating to {lang_name}")
-    if st.session_state.simplification_enabled and SIMPLIFICATION_ENABLED:
-        active_features.append("Simplifying complex terms")
-    
-    if active_features:
-        st.info(f"Active: {' | '.join(active_features)}")
-
-@st.cache_data(ttl=60)
-def test_backend_connection():
-    """Test backend connection and return status"""
-    try:
-        response = requests.get(f"{BACKEND_URL}/health", timeout=5)
-        if response.status_code == 200:
-            return {"status": "connected", "data": response.json()}
-        else:
-            return {"status": "error", "message": f"HTTP {response.status_code}"}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-def render_navigation():
-    """Render main navigation sidebar"""
-    with st.sidebar:
-        st.markdown("## 🧭 Navigation")
-        
-        # Configuration validation
-        config_valid = validate_configuration()
-        
-        if not config_valid:
-            st.error("⚠️ Configuration incomplete")
-        
-        # Backend connection status
-        connection_status = test_backend_connection()
-        if connection_status["status"] == "connected":
-            st.success("✅ Backend Connected")
-            
-            # Show feature status
-            if "data" in connection_status:
-                features = connection_status["data"].get("features", {})
-                if features.get("translation"):
-                    st.success("✅ Translation Available")
-                if features.get("simplification"):
-                    st.success("✅ Simplification Available")
-        else:
-            st.error(f"❌ Backend: {connection_status['message']}")
-        
-        # Main pages
-        page = st.radio(
-            "Choose a page:",
-            [
-                f"🏠 {get_text('home')}",
-                f"🔍 {get_text('explore')} Campaigns", 
-                "🚀 Create Campaign",
-                f"👤 {get_text('profile')}",
-                "🔐 Authentication",
-                "🌍 Translation Hub" if TRANSLATION_ENABLED else None,
-                "💡 Simplification Center" if SIMPLIFICATION_ENABLED else None,
-                "📊 Analytics" if ANALYTICS_ENABLED else None
-            ]
-        )
-        
+    # OAuth buttons
+    if OAUTH_ENABLED and (GOOGLE_CLIENT_ID or FACEBOOK_APP_ID):
         st.markdown("---")
+        st.markdown("### Or sign in with:")
         
-        # Quick actions
-        st.markdown("## ⚡ Quick Actions")
+        if GOOGLE_CLIENT_ID:
+            google_url = get_oauth_url("google")
+            st.markdown(f"""
+            <div class="oauth-button google-btn" onclick="window.open('{google_url}', '_blank')">
+                🔴 Sign in with Google
+            </div>
+            """, unsafe_allow_html=True)
         
-        if TRANSLATION_ENABLED and st.button("🔄 Toggle Translation"):
-            st.session_state.translation_enabled = not st.session_state.translation_enabled
-            st.rerun()
-        
-        if SIMPLIFICATION_ENABLED and st.button("💡 Toggle Simplification"):
-            st.session_state.simplification_enabled = not st.session_state.simplification_enabled
-            st.rerun()
-        
-        # Configuration display
-        show_configuration()
+        if FACEBOOK_APP_ID:
+            facebook_url = get_oauth_url("facebook")
+            st.markdown(f"""
+            <div class="oauth-button facebook-btn" onclick="window.open('{facebook_url}', '_blank')">
+                🔵 Sign in with Facebook
+            </div>
+            """, unsafe_allow_html=True)
     
-    return page
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# ========================================
-# PAGE FUNCTIONS
-# ========================================
-
-def render_home_page():
-    """Render the home page"""
-    st.markdown(f"# 🏠 {get_text('welcome_banner_text')}")
+def render_registration_page():
+    """Render registration page with logo"""
+    st.markdown('<div class="auth-container fade-in">', unsafe_allow_html=True)
     
-    display_text_with_translation(f"Welcome to {get_text('welcome_banner_text')} - {get_text('subtitle')}")
-    display_text_with_translation(get_text('welcome_banner_tagline'))
+    render_haven_header()
     
-    # Feature cards
-    col1, col2, col3 = st.columns(3)
+    st.markdown("## Register")
+    st.markdown("---")
     
-    with col1:
-        st.markdown("""
-        <div class="feature-card">
-            <h3>🌍 Multilingual Support</h3>
-            <p>Access the platform in English, Hindi, Tamil, and Telugu</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("""
-        <div class="feature-card">
-            <h3>💡 Smart Simplification</h3>
-            <p>Complex terms explained in simple language</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown("""
-        <div class="feature-card">
-            <h3>🔒 Secure Platform</h3>
-            <p>Safe and transparent crowdfunding</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-def render_explore_page():
-    """Render the explore campaigns page"""
-    st.markdown(f"# 🔍 {get_text('explore')} Campaigns")
-    
-    display_text_with_translation("Discover amazing campaigns from creators around the world.")
-    
-    # Categories
-    st.markdown(f"## {get_text('categories')}")
-    
-    categories = [
-        ("🔬", get_text('technology')),
-        ("🏥", get_text('health')),
-        ("📚", get_text('education')),
-        ("🌱", get_text('environment')),
-        ("🎨", get_text('arts')),
-        ("🤝", get_text('community'))
-    ]
-    
-    cols = st.columns(3)
-    for i, (icon, category) in enumerate(categories):
-        with cols[i % 3]:
-            if st.button(f"{icon} {category}", key=f"cat_{i}"):
-                st.info(f"Showing {category} campaigns...")
-
-def render_authentication_page():
-    """Render the authentication page"""
-    st.markdown("# 🔐 Authentication")
-    
-    if OAUTH_ENABLED and GOOGLE_CLIENT_ID and FACEBOOK_APP_ID:
-        st.markdown("### OAuth Login")
+    # Registration type selection
+    if st.session_state.registration_type is None:
+        st.markdown("### Choose Registration Type")
         
         col1, col2 = st.columns(2)
         
         with col1:
-            if st.button(f"🔴 {get_text('sign_in_google')}", key="google_oauth"):
-                google_auth_url = f"{BACKEND_URL}/auth/google"
-                st.markdown(f"[Click here to sign in with Google]({google_auth_url})")
+            if st.button("👤 Register as an Individual", use_container_width=True):
+                st.session_state.registration_type = "individual"
+                st.rerun()
         
         with col2:
-            if st.button(f"🔵 {get_text('sign_in_facebook')}", key="facebook_oauth"):
-                facebook_auth_url = f"{BACKEND_URL}/auth/facebook"
-                st.markdown(f"[Click here to sign in with Facebook]({facebook_auth_url})")
+            if st.button("🏢 Register as an Organization", use_container_width=True):
+                st.session_state.registration_type = "organization"
+                st.rerun()
+    
+    # Individual registration form
+    elif st.session_state.registration_type == "individual":
+        st.markdown("### Register as an Individual")
+        
+        with st.form("individual_registration"):
+            full_name = st.text_input("Full Name", placeholder="Enter your full name")
+            email = st.text_input("Email ID", placeholder="your.email@example.com")
+            phone = st.text_input("Phone Number", placeholder="Your phone number")
+            password = st.text_input("Password", type="password", placeholder="Create a password")
+            confirm_password = st.text_input("Confirm Password", type="password", placeholder="Confirm your password")
+            address = st.text_area("Address", placeholder="Your complete address")
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.form_submit_button("Register", use_container_width=True):
+                    if password == confirm_password and all([full_name, email, phone, password, address]):
+                        user_data = {
+                            "type": "individual",
+                            "full_name": full_name,
+                            "email": email,
+                            "phone": phone,
+                            "password": password,
+                            "address": address
+                        }
+                        if register_user(user_data):
+                            st.markdown('<div class="success-msg">✅ Registration successful! Please login.</div>', unsafe_allow_html=True)
+                            st.session_state.registration_type = None
+                            st.session_state.current_page = 'login'
+                            st.rerun()
+                        else:
+                            st.markdown('<div class="error-msg">❌ Registration failed. Please try again.</div>', unsafe_allow_html=True)
+                    else:
+                        st.markdown('<div class="error-msg">❌ Please fill all fields and ensure passwords match.</div>', unsafe_allow_html=True)
+            
+            with col2:
+                if st.form_submit_button("Back to Type Selection", use_container_width=True):
+                    st.session_state.registration_type = None
+                    st.rerun()
+    
+    # Organization registration form
+    elif st.session_state.registration_type == "organization":
+        st.markdown("### Register as an Organization")
+        
+        with st.form("organization_registration"):
+            org_name = st.text_input("Organization Name", placeholder="Enter organization name")
+            email = st.text_input("Email ID", placeholder="organization@example.com")
+            phone = st.text_input("Organization Phone Number", placeholder="Organization phone number")
+            
+            org_type = st.selectbox(
+                "Select Organization Type",
+                ["", "NGO", "Startup", "Charity"],
+                index=0
+            )
+            
+            password = st.text_input("Password", type="password", placeholder="Create a password")
+            confirm_password = st.text_input("Confirm Password", type="password", placeholder="Confirm your password")
+            description = st.text_area("Brief Description (max 100 chars)", placeholder="Brief description of your organization", max_chars=100)
+            address = st.text_area("Address", placeholder="Organization address")
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.form_submit_button("Register", use_container_width=True):
+                    if (password == confirm_password and org_type and 
+                        all([org_name, email, phone, password, description, address])):
+                        user_data = {
+                            "type": "organization",
+                            "organization_name": org_name,
+                            "email": email,
+                            "phone": phone,
+                            "organization_type": org_type,
+                            "password": password,
+                            "description": description,
+                            "address": address
+                        }
+                        if register_user(user_data):
+                            st.markdown('<div class="success-msg">✅ Registration successful! Please login.</div>', unsafe_allow_html=True)
+                            st.session_state.registration_type = None
+                            st.session_state.current_page = 'login'
+                            st.rerun()
+                        else:
+                            st.markdown('<div class="error-msg">❌ Registration failed. Please try again.</div>', unsafe_allow_html=True)
+                    else:
+                        st.markdown('<div class="error-msg">❌ Please fill all fields, select organization type, and ensure passwords match.</div>', unsafe_allow_html=True)
+            
+            with col2:
+                if st.form_submit_button("Back to Type Selection", use_container_width=True):
+                    st.session_state.registration_type = None
+                    st.rerun()
+    
+    # Back to login link
+    st.markdown("---")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("Already have an account? Sign in here", use_container_width=True):
+            st.session_state.registration_type = None
+            st.session_state.current_page = 'login'
+            st.rerun()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+def render_navigation():
+    """Render navigation with logo for authenticated users"""
+    logo_html = ""
+    if logo_base64:
+        logo_html = f'<img src="data:image/png;base64,{logo_base64}" class="nav-logo" alt="HAVEN Logo">'
     else:
-        st.warning("OAuth not configured. Please set up OAuth credentials in environment variables.")
+        logo_html = '🏠'
+    
+    st.markdown(f"""
+    <div class="nav-container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="nav-brand">
+                {logo_html} HAVEN
+            </div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <span style="color: var(--text-primary); font-weight: 600;">Welcome, {st.session_state.user_data.get('name', 'User')}</span>
+                <button onclick="location.reload()" style="
+                    background: linear-gradient(135deg, var(--accent-quaternary) 0%, #dc3545 100%); 
+                    color: white; 
+                    border: none; 
+                    padding: 0.8rem 1.5rem; 
+                    border-radius: 8px; 
+                    cursor: pointer;
+                    font-weight: bold;
+                    transition: all 0.3s ease;
+                ">Logout</button>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def render_home_page():
+    """Render home page with logo"""
+    render_navigation()
+    
+    st.markdown("# 🏠 Welcome to HAVEN")
+    
+    # Navigation buttons
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        if st.button("🔍 Explore Campaigns", use_container_width=True):
+            st.session_state.current_page = 'explore'
+            st.rerun()
+    
+    with col2:
+        if st.button("🔎 Search Campaigns", use_container_width=True):
+            st.session_state.current_page = 'search'
+            st.rerun()
+    
+    with col3:
+        if st.button("🚀 Create Campaign", use_container_width=True):
+            st.session_state.current_page = 'create'
+            st.rerun()
     
     st.markdown("---")
     
-    # Manual login form
-    st.markdown(f"### {get_text('login')}")
+    # Welcome content
+    st.markdown("""
+    <div class="form-section fade-in">
+        <h3>🌟 Welcome to HAVEN Crowdfunding Platform</h3>
+        <p>Help not just some people, but Help Humanity. Start exploring amazing campaigns or create your own to make a difference in the world.</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    with st.form("login_form"):
-        email = st.text_input(get_text('email'))
-        password = st.text_input(get_text('password'), type="password")
-        
-        if st.form_submit_button(get_text('login')):
-            if email and password:
-                st.success(f"Login attempted for {email}")
-            else:
-                st.error("Please fill in all fields")
-
-def render_translation_hub():
-    """Render the translation hub page"""
-    if not TRANSLATION_ENABLED:
-        st.error("Translation feature is not enabled")
-        return
-    
-    st.markdown("# 🌍 Translation Hub")
-    
-    st.markdown("### Translate Text")
-    
-    # Source text input
-    source_text = st.text_area("Enter text to translate:", height=100)
-    
-    # Language selection
-    col1, col2 = st.columns(2)
+    # Feature highlights
+    col1, col2, col3 = st.columns(3)
     
     with col1:
-        source_lang = st.selectbox(
-            "From Language:",
-            options=list(SUPPORTED_LANGUAGES.keys()),
-            format_func=lambda x: f"{SUPPORTED_LANGUAGES[x]['flag']} {SUPPORTED_LANGUAGES[x]['native']}"
-        )
+        st.markdown("""
+        <div class="feature-card fade-in">
+            <h4>🌍 Global Reach</h4>
+            <p>Connect with supporters worldwide and make your campaign visible to millions of people who care.</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col2:
-        target_lang = st.selectbox(
-            "To Language:",
-            options=list(SUPPORTED_LANGUAGES.keys()),
-            format_func=lambda x: f"{SUPPORTED_LANGUAGES[x]['flag']} {SUPPORTED_LANGUAGES[x]['native']}"
-        )
+        st.markdown("""
+        <div class="feature-card fade-in">
+            <h4>🔒 Secure Platform</h4>
+            <p>Your funds and data are protected with enterprise-grade security and transparent processes.</p>
+        </div>
+        """, unsafe_allow_html=True)
     
-    if st.button("🔄 Translate") and source_text:
-        if source_lang != target_lang:
-            with st.spinner("Translating..."):
-                translated = translate_text(source_text, target_lang, source_lang)
-                st.success("Translation completed!")
-                st.markdown("### Result:")
-                st.write(translated)
-        else:
-            st.warning("Please select different source and target languages")
+    with col3:
+        st.markdown("""
+        <div class="feature-card fade-in">
+            <h4>📊 Real-time Analytics</h4>
+            <p>Track your campaign performance with detailed insights and analytics to optimize your success.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-def render_simplification_center():
-    """Render the simplification center page"""
-    if not SIMPLIFICATION_ENABLED:
-        st.error("Simplification feature is not enabled")
-        return
+def render_explore_page():
+    """Render explore campaigns page"""
+    render_navigation()
     
-    st.markdown("# 💡 Simplification Center")
+    st.markdown("# 🔍 Explore Campaigns")
     
-    st.markdown("### Simplify Complex Text")
+    # Back to home
+    if st.button("← Back to Home"):
+        st.session_state.current_page = 'home'
+        st.rerun()
     
-    # Text input
-    complex_text = st.text_area("Enter complex text to simplify:", height=100)
+    st.markdown("---")
     
-    # Simplification level
-    level = st.selectbox(
-        "Simplification Level:",
-        options=["very_simple", "simple", "moderate"],
-        index=1
-    )
+    # Categories
+    st.markdown("### Browse by Category")
     
-    if st.button("💡 Simplify") and complex_text:
-        with st.spinner("Simplifying..."):
-            simplified = simplify_text(complex_text, level)
-            st.success("Simplification completed!")
-            st.markdown("### Result:")
-            st.write(simplified)
+    categories = [
+        ("🔬", "Technology", "Innovative tech projects and startups"),
+        ("🏥", "Health", "Medical research and healthcare initiatives"),
+        ("📚", "Education", "Educational programs and scholarships"),
+        ("🌱", "Environment", "Environmental conservation projects"),
+        ("🎨", "Arts & Culture", "Creative and cultural projects"),
+        ("🤝", "Community", "Community development initiatives")
+    ]
+    
+    cols = st.columns(3)
+    for i, (icon, category, description) in enumerate(categories):
+        with cols[i % 3]:
+            st.markdown(f"""
+            <div class="feature-card">
+                <h4>{icon} {category}</h4>
+                <p>{description}</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+def render_search_page():
+    """Render search campaigns page"""
+    render_navigation()
+    
+    st.markdown("# 🔎 Search Campaigns")
+    
+    # Back to home
+    if st.button("← Back to Home"):
+        st.session_state.current_page = 'home'
+        st.rerun()
+    
+    st.markdown("---")
+    
+    # Search form
+    with st.form("search_form"):
+        search_query = st.text_input("Search for campaigns", placeholder="Enter keywords to search for campaigns...")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            category_filter = st.selectbox("Filter by Category", 
+                ["All Categories", "Technology", "Health", "Education", "Environment", "Arts & Culture", "Community"])
+        
+        with col2:
+            sort_by = st.selectbox("Sort by", 
+                ["Most Recent", "Most Funded", "Ending Soon", "Most Popular"])
+        
+        search_submitted = st.form_submit_button("Search", use_container_width=True)
+    
+    if search_submitted:
+        st.markdown(f'<div class="success-msg">🔍 Searching for: "{search_query}" in {category_filter}</div>', unsafe_allow_html=True)
+        
+        # Mock search results
+        st.markdown("### Search Results")
+        
+        for i in range(3):
+            st.markdown(f"""
+            <div class="feature-card">
+                <h4>🚀 Sample Campaign {i+1}</h4>
+                <p>This is a sample campaign that matches your search criteria. In a real application, this would show actual campaign data with images and detailed information.</p>
+                <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-weight: bold; color: var(--text-secondary);">
+                    <span>Goal: $10,000</span>
+                    <span>Raised: ${(i+1)*2000}</span>
+                    <span>Days left: {30-i*5}</span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
 # ========================================
 # MAIN APPLICATION
@@ -857,55 +929,33 @@ def render_simplification_center():
 
 def main():
     """Main application function"""
-    # Validate configuration first
-    if not validate_configuration():
-        st.stop()
     
-    # Render header
-    render_header()
+    # Check authentication status
+    if not st.session_state.authenticated:
+        # Show login or registration page
+        if st.session_state.current_page == 'register':
+            render_registration_page()
+        else:
+            render_login_page()
+    else:
+        # Show authenticated pages
+        if st.session_state.current_page == 'explore':
+            render_explore_page()
+        elif st.session_state.current_page == 'search':
+            render_search_page()
+        else:
+            render_home_page()
     
-    # Render language controls
-    render_language_controls()
-    
-    # Render navigation and get selected page
-    selected_page = render_navigation()
-    
-    # Route to appropriate page
-    if selected_page.startswith("🏠"):
-        render_home_page()
-    elif selected_page.startswith("🔍"):
-        render_explore_page()
-    elif selected_page.startswith("🚀"):
-        st.markdown("# 🚀 Create Campaign")
-        st.info("Campaign creation feature coming soon!")
-    elif selected_page.startswith("👤"):
-        st.markdown(f"# 👤 {get_text('profile')}")
-        st.info("Profile management feature coming soon!")
-    elif selected_page.startswith("🔐"):
-        render_authentication_page()
-    elif selected_page.startswith("🌍"):
-        render_translation_hub()
-    elif selected_page.startswith("💡"):
-        render_simplification_center()
-    elif selected_page.startswith("📊"):
-        st.markdown("# 📊 Analytics")
-        st.info("Analytics dashboard coming soon!")
-    
-    # Footer
-    st.markdown("---")
-    st.markdown(f"""
-    <div style="text-align: center; color: #666; padding: 2rem;">
-        <p>🏠 {get_text('welcome_banner_text')} {get_text('subtitle')} | Environment: {ENVIRONMENT}</p>
-        <p>🌍 Supporting {len(SUPPORTED_LANGUAGES)} languages | 💡 AI-powered simplification | 🛡️ Secure & transparent</p>
-    </div>
-    """, unsafe_allow_html=True)
+    # Handle logout (reset session)
+    if st.session_state.authenticated:
+        # Add invisible logout handler
+        if st.button("Logout", key="hidden_logout", help="Logout"):
+            st.session_state.authenticated = False
+            st.session_state.user_data = None
+            st.session_state.current_page = 'login'
+            st.session_state.registration_type = None
+            st.rerun()
 
 if __name__ == "__main__":
     main()
-
-# Export configuration for other modules
-__all__ = [
-    'BACKEND_URL', 'TRANSLATION_ENABLED', 'SIMPLIFICATION_ENABLED', 
-    'OAUTH_ENABLED', 'make_api_request', 'translate_text', 'simplify_text'
-]
 
