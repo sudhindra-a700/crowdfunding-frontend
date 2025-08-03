@@ -1,53 +1,122 @@
 """
-HAVEN Crowdfunding Platform - Fixed Dark Text Frontend
-Complete Streamlit application with dark text on light backgrounds
-JavaScript error fixes and improved color scheme
+HAVEN Crowdfunding Platform - Complete Frontend with Automatic Term Simplification
+Features: Left sidebar navigation, language selection, backend testing, and hover tooltips
 """
 
 import streamlit as st
 import requests
 import json
-import os
 import base64
-from typing import Dict, Optional
-import webbrowser
-from urllib.parse import urlencode
+import os
+import re
+from datetime import datetime
+from typing import Dict, List, Optional, Any
+import time
 
 # ========================================
 # CONFIGURATION
 # ========================================
 
-# Backend Configuration
+# Backend configuration
 BACKEND_URL = os.getenv("BACKEND_URL", "https://haven-fastapi-backend.onrender.com")
-FRONTEND_BASE_URI = os.getenv("FRONTEND_BASE_URI", "https://haven-streamlit-frontend.onrender.com")
 
-# OAuth Configuration
-GOOGLE_CLIENT_ID = os.getenv("OAUTH_GOOGLE_CLIENT_ID", os.getenv("GOOGLE_CLIENT_ID"))
-FACEBOOK_APP_ID = os.getenv("OAUTH_FACEBOOK_APP_ID", os.getenv("FACEBOOK_CLIENT_ID"))
-
-# Feature Flags
+# Feature flags
 TRANSLATION_ENABLED = os.getenv("FEATURES_TRANSLATION_ENABLED", "true").lower() == "true"
+SIMPLIFICATION_ENABLED = os.getenv("FEATURES_SIMPLIFICATION_ENABLED", "true").lower() == "true"
 OAUTH_ENABLED = os.getenv("FEATURES_OAUTH_ENABLED", "true").lower() == "true"
 
-# ========================================
-# STREAMLIT PAGE CONFIG
-# ========================================
-
-st.set_page_config(
-    page_title="HAVEN - Crowdfunding Platform",
-    page_icon="🏠",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+# OAuth configuration
+GOOGLE_CLIENT_ID = os.getenv("OAUTH_GOOGLE_CLIENT_ID", "")
+FACEBOOK_APP_ID = os.getenv("OAUTH_FACEBOOK_APP_ID", "")
 
 # ========================================
-# LOGO UTILITY FUNCTIONS
+# TERM DEFINITIONS FOR AUTOMATIC TOOLTIPS
+# ========================================
+
+# Comprehensive term definitions for automatic simplification
+TERM_DEFINITIONS = {
+    # Financial Terms
+    "crowdfunding": "A way to raise money by asking many people to contribute small amounts online",
+    "investment": "Money put into a project or business to make more money later",
+    "equity": "Ownership share in a company",
+    "revenue": "Total money earned from sales",
+    "profit": "Money left after paying all costs",
+    "roi": "Return on Investment - how much money you make compared to what you invested",
+    "valuation": "How much a company is worth",
+    "venture capital": "Money invested in new businesses with high growth potential",
+    "angel investor": "Wealthy person who invests in startups",
+    "seed funding": "Early money given to start a business",
+    "series a": "First major round of investment funding",
+    "ipo": "Initial Public Offering - when a company first sells shares to the public",
+    "dividend": "Money paid to shareholders from company profits",
+    "market cap": "Total value of all company shares",
+    "cash flow": "Money coming in and going out of a business",
+    
+    # Technology Terms
+    "api": "Application Programming Interface - a way for different software to communicate",
+    "platform": "A system that allows people to build or use services",
+    "algorithm": "A set of rules or instructions for solving a problem",
+    "blockchain": "A secure digital ledger that records transactions",
+    "cryptocurrency": "Digital money secured by cryptography",
+    "saas": "Software as a Service - software delivered over the internet",
+    "cloud computing": "Using internet-based computing services instead of local servers",
+    "ai": "Artificial Intelligence - computer systems that can perform tasks requiring human intelligence",
+    "machine learning": "Type of AI where computers learn from data without being explicitly programmed",
+    "big data": "Extremely large datasets that require special tools to analyze",
+    "iot": "Internet of Things - everyday objects connected to the internet",
+    "cybersecurity": "Protection of computer systems and data from digital attacks",
+    
+    # Business Terms
+    "startup": "A new company trying to grow quickly",
+    "entrepreneur": "Person who starts and runs a business",
+    "scalability": "Ability to grow and handle more customers or work",
+    "market research": "Studying customers and competitors to understand demand",
+    "business model": "How a company makes money",
+    "prototype": "Early version of a product used for testing",
+    "milestone": "Important goal or achievement in a project",
+    "pivot": "Changing business direction based on what you learn",
+    "mvp": "Minimum Viable Product - simplest version that customers will use",
+    "b2b": "Business to Business - companies selling to other companies",
+    "b2c": "Business to Consumer - companies selling directly to customers",
+    "kpi": "Key Performance Indicator - important metric to measure success",
+    "burn rate": "How fast a company spends money",
+    "runway": "How long money will last at current spending rate",
+    "exit strategy": "Plan for how investors will get their money back",
+    
+    # Legal Terms
+    "intellectual property": "Legal rights to ideas, inventions, or creative works",
+    "patent": "Legal protection for an invention",
+    "trademark": "Legal protection for a brand name or logo",
+    "copyright": "Legal protection for creative works like books, music, or art",
+    "liability": "Legal responsibility for damages or debts",
+    "nda": "Non-Disclosure Agreement - legal contract to keep information secret",
+    "terms of service": "Legal agreement between a service provider and user",
+    "privacy policy": "Document explaining how personal data is collected and used",
+    "compliance": "Following laws and regulations that apply to your business",
+    "due diligence": "Careful investigation before making a business decision",
+    
+    # Marketing Terms
+    "target audience": "Specific group of people you want to reach",
+    "conversion rate": "Percentage of visitors who take a desired action",
+    "brand awareness": "How well people know and recognize your brand",
+    "viral marketing": "Marketing that spreads quickly through social sharing",
+    "seo": "Search Engine Optimization - making websites easier to find on Google",
+    "ctr": "Click-Through Rate - percentage of people who click on an ad or link",
+    "cac": "Customer Acquisition Cost - how much it costs to get a new customer",
+    "ltv": "Lifetime Value - total money a customer will spend over time",
+    "funnel": "Process that guides potential customers toward making a purchase",
+    "lead": "Potential customer who has shown interest in your product",
+    "crm": "Customer Relationship Management - system for managing customer interactions",
+    "a/b testing": "Comparing two versions to see which performs better"
+}
+
+# ========================================
+# UTILITY FUNCTIONS
 # ========================================
 
 def get_logo_base64():
-    """Convert logo image to base64 for embedding"""
+    """Convert logo image to base64 with error handling"""
     try:
-        # Try multiple possible logo paths
         logo_paths = [
             "/home/ubuntu/haven_logo.png",
             "/home/ubuntu/assets/haven_logo.png",
@@ -62,984 +131,772 @@ def get_logo_base64():
         
         return None
     except Exception as e:
-        # Silently handle errors to prevent JavaScript issues
         return None
 
-def create_fallback_logo():
-    """Create a fallback SVG logo if image is not available"""
-    return """
-    <svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
-        <!-- House shapes -->
-        <path d="M20 50 L40 30 L60 50 L60 65 L20 65 Z" fill="#2d5a3d" stroke="#1a4d2e" stroke-width="2"/>
-        <path d="M50 50 L70 30 L90 50 L90 65 L50 65 Z" fill="#2d5a3d" stroke="#1a4d2e" stroke-width="2"/>
-        
-        <!-- Windows -->
-        <rect x="25" y="40" width="8" height="8" fill="#e8f5e8"/>
-        <rect x="47" y="40" width="8" height="8" fill="#e8f5e8"/>
-        <rect x="55" y="40" width="8" height="8" fill="#e8f5e8"/>
-        <rect x="77" y="40" width="8" height="8" fill="#e8f5e8"/>
-        
-        <!-- Leaves -->
-        <ellipse cx="15" cy="25" rx="8" ry="12" fill="#7bc96f" transform="rotate(-20 15 25)"/>
-        <ellipse cx="95" cy="25" rx="8" ry="12" fill="#7bc96f" transform="rotate(20 95 25)"/>
-        
-        <!-- Text -->
-        <text x="110" y="55" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#2d5a3d">Haven</text>
-    </svg>
-    """
-
-# ========================================
-# DARK TEXT ON LIGHT BACKGROUNDS CSS
-# ========================================
-
-logo_base64 = get_logo_base64()
-
-st.markdown(f"""
-<style>
-    /* Color Palette Variables - Dark Text on Light Backgrounds */
-    :root {{
-        /* Light and bright backgrounds */
-        --bg-primary: #f0f8ff;      /* Light blue */
-        --bg-secondary: #e6e6fa;    /* Lavender */
-        --bg-tertiary: #ffffff;     /* White */
-        --bg-quaternary: #f0fff0;   /* Light green */
-        --bg-accent: #e8f5e8;       /* Very light green */
-        
-        /* Dark text colors */
-        --text-primary: #1a202c;    /* Dark blue-gray */
-        --text-secondary: #2d3748;  /* Dark gray */
-        --text-tertiary: #4a5568;   /* Medium gray */
-        --text-light: #718096;      /* Light gray for placeholders */
-        
-        /* Accent colors */
-        --accent-primary: #4299e1;   /* Blue */
-        --accent-secondary: #48bb78; /* Green */
-        --accent-tertiary: #9f7aea;  /* Purple */
-        --accent-quaternary: #ed8936; /* Orange */
-        
-        /* Border colors */
-        --border-light: #e2e8f0;
-        --border-medium: #cbd5e0;
-        --border-dark: #a0aec0;
-    }}
-    
-    /* Hide Streamlit default elements to prevent JavaScript errors */
-    .stDeployButton {{display: none !important;}}
-    footer {{visibility: hidden !important;}}
-    .stApp > header {{visibility: hidden !important;}}
-    #MainMenu {{visibility: hidden !important;}}
-    
-    /* Prevent JavaScript selector errors */
-    .stApp {{
-        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
-    }}
-    
-    /* Main container styling */
-    .main {{
-        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-quaternary) 100%);
-        min-height: 100vh;
-        padding: 0;
-        color: var(--text-primary);
-    }}
-    
-    /* Center container for forms */
-    .auth-container {{
-        max-width: 500px;
-        margin: 0 auto;
-        padding: 2rem;
-        background: var(--bg-tertiary);
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(26, 32, 44, 0.1);
-        margin-top: 5vh;
-        border: 2px solid var(--border-light);
-        color: var(--text-primary);
-    }}
-    
-    /* HAVEN Header styling with logo */
-    .haven-header {{
-        text-align: center;
-        margin-bottom: 2rem;
-        padding: 2rem;
-        background: linear-gradient(135deg, var(--bg-quaternary) 0%, var(--bg-accent) 100%);
-        border-radius: 15px;
-        color: var(--text-primary);
-        box-shadow: 0 8px 25px rgba(26, 32, 44, 0.1);
-        border: 1px solid var(--border-light);
-    }}
-    
-    /* Logo styling */
-    .haven-logo {{
-        max-width: 250px;
-        height: auto;
-        margin: 0 auto;
-        display: block;
-        filter: drop-shadow(2px 2px 4px rgba(26, 32, 44, 0.1));
-        transition: all 0.3s ease;
-    }}
-    
-    .haven-logo:hover {{
-        transform: scale(1.05);
-        filter: drop-shadow(3px 3px 6px rgba(26, 32, 44, 0.15));
-    }}
-    
-    /* Logo container */
-    .logo-container {{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 1rem;
-    }}
-    
-    .haven-tagline {{
-        font-size: 1.2rem;
-        font-style: italic;
-        margin: 1rem 0 0 0;
-        color: var(--text-secondary);
-        font-weight: 500;
-        text-align: center;
-    }}
-    
-    /* Navigation logo styling */
-    .nav-logo {{
-        height: 40px;
-        width: auto;
-        margin-right: 10px;
-        vertical-align: middle;
-        filter: drop-shadow(1px 1px 2px rgba(26, 32, 44, 0.1));
-    }}
-    
-    /* Form styling with dark text */
-    .stTextInput > div > div > input {{
-        background: var(--bg-tertiary) !important;
-        border: 2px solid var(--border-medium) !important;
-        border-radius: 12px !important;
-        padding: 15px !important;
-        font-size: 16px !important;
-        color: var(--text-primary) !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 2px 8px rgba(26, 32, 44, 0.05) !important;
-    }}
-    
-    .stTextInput > div > div > input:focus {{
-        border-color: var(--accent-primary) !important;
-        box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.1) !important;
-        background: var(--bg-tertiary) !important;
-        outline: none !important;
-        color: var(--text-primary) !important;
-    }}
-    
-    .stTextInput > div > div > input::placeholder {{
-        color: var(--text-light) !important;
-        font-style: italic;
-    }}
-    
-    .stSelectbox > div > div > select {{
-        background: var(--bg-tertiary) !important;
-        border: 2px solid var(--border-medium) !important;
-        border-radius: 12px !important;
-        padding: 15px !important;
-        font-size: 16px !important;
-        color: var(--text-primary) !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 2px 8px rgba(26, 32, 44, 0.05) !important;
-    }}
-    
-    .stSelectbox > div > div > select:focus {{
-        border-color: var(--accent-primary) !important;
-        box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.1) !important;
-        background: var(--bg-tertiary) !important;
-        outline: none !important;
-        color: var(--text-primary) !important;
-    }}
-    
-    .stTextArea > div > div > textarea {{
-        background: var(--bg-tertiary) !important;
-        border: 2px solid var(--border-medium) !important;
-        border-radius: 12px !important;
-        padding: 15px !important;
-        font-size: 16px !important;
-        color: var(--text-primary) !important;
-        transition: all 0.3s ease !important;
-        resize: vertical;
-        box-shadow: 0 2px 8px rgba(26, 32, 44, 0.05) !important;
-    }}
-    
-    .stTextArea > div > div > textarea:focus {{
-        border-color: var(--accent-primary) !important;
-        box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.1) !important;
-        background: var(--bg-tertiary) !important;
-        outline: none !important;
-        color: var(--text-primary) !important;
-    }}
-    
-    /* Button styling with dark text */
-    .stButton > button {{
-        background: linear-gradient(135deg, var(--accent-secondary) 0%, #38a169 100%) !important;
-        color: var(--bg-tertiary) !important;
-        border: 2px solid var(--accent-secondary) !important;
-        border-radius: 12px !important;
-        padding: 15px 30px !important;
-        font-size: 16px !important;
-        font-weight: bold !important;
-        width: 100% !important;
-        cursor: pointer !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 4px 15px rgba(72, 187, 120, 0.2) !important;
-    }}
-    
-    .stButton > button:hover {{
-        background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
-        transform: translateY(-3px) !important;
-        box-shadow: 0 8px 25px rgba(72, 187, 120, 0.3) !important;
-        color: var(--bg-tertiary) !important;
-    }}
-    
-    /* OAuth buttons with proper contrast */
-    .oauth-button {{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 15px;
-        margin: 12px 0;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(26, 32, 44, 0.1);
-        border: 2px solid transparent;
-        color: var(--text-primary);
-    }}
-    
-    .oauth-button:hover {{
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(26, 32, 44, 0.2);
-    }}
-    
-    .google-btn {{
-        background: var(--bg-tertiary);
-        border-color: #db4437;
-        color: #db4437;
-    }}
-    
-    .google-btn:hover {{
-        background: #db4437;
-        color: var(--bg-tertiary);
-    }}
-    
-    .facebook-btn {{
-        background: var(--bg-tertiary);
-        border-color: #4267B2;
-        color: #4267B2;
-    }}
-    
-    .facebook-btn:hover {{
-        background: #4267B2;
-        color: var(--bg-tertiary);
-    }}
-    
-    /* Registration type cards */
-    .reg-type-card {{
-        background: var(--bg-tertiary);
-        border: 2px solid var(--border-medium);
-        border-radius: 15px;
-        padding: 2rem;
-        margin: 1.5rem 0;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(26, 32, 44, 0.05);
-        color: var(--text-primary);
-    }}
-    
-    .reg-type-card:hover {{
-        border-color: var(--accent-primary);
-        box-shadow: 0 8px 25px rgba(66, 153, 225, 0.15);
-        transform: translateY(-3px);
-        background: var(--bg-primary);
-    }}
-    
-    .reg-type-card.selected {{
-        border-color: var(--accent-secondary);
-        background: var(--bg-quaternary);
-        box-shadow: 0 8px 25px rgba(72, 187, 120, 0.2);
-        transform: translateY(-2px);
-    }}
-    
-    .reg-type-card h4 {{
-        color: var(--text-primary);
-        margin-bottom: 0.8rem;
-        font-size: 1.3rem;
-    }}
-    
-    .reg-type-card p {{
-        color: var(--text-secondary);
-        font-size: 1rem;
-        line-height: 1.5;
-    }}
-    
-    /* Navigation styling */
-    .nav-container {{
-        background: linear-gradient(135deg, var(--bg-quaternary) 0%, var(--bg-accent) 100%);
-        padding: 1.5rem 2rem;
-        box-shadow: 0 4px 15px rgba(26, 32, 44, 0.1);
-        margin-bottom: 2rem;
-        border-bottom: 3px solid var(--accent-secondary);
-    }}
-    
-    .nav-brand {{
-        font-size: 1.8rem;
-        font-weight: bold;
-        color: var(--text-primary);
-        text-shadow: 1px 1px 3px rgba(26, 32, 44, 0.1);
-        display: flex;
-        align-items: center;
-    }}
-    
-    /* Feature cards */
-    .feature-card {{
-        background: var(--bg-tertiary);
-        border: 2px solid var(--border-light);
-        border-radius: 15px;
-        padding: 2rem;
-        margin: 1rem 0;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(26, 32, 44, 0.05);
-        color: var(--text-primary);
-    }}
-    
-    .feature-card:hover {{
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(26, 32, 44, 0.1);
-        border-color: var(--accent-primary);
-        background: var(--bg-primary);
-    }}
-    
-    .feature-card h4 {{
-        color: var(--text-primary);
-        margin-bottom: 1rem;
-        font-size: 1.3rem;
-    }}
-    
-    .feature-card p {{
-        color: var(--text-secondary);
-        line-height: 1.6;
-    }}
-    
-    /* Form sections */
-    .form-section {{
-        margin: 2rem 0;
-        padding: 2rem;
-        background: var(--bg-secondary);
-        border-radius: 15px;
-        border-left: 5px solid var(--accent-primary);
-        box-shadow: 0 6px 20px rgba(26, 32, 44, 0.05);
-        border: 1px solid var(--border-light);
-        color: var(--text-primary);
-    }}
-    
-    .form-section h3 {{
-        color: var(--text-primary);
-        margin-bottom: 1.2rem;
-        font-size: 1.4rem;
-    }}
-    
-    .form-section p {{
-        color: var(--text-secondary);
-        line-height: 1.7;
-        font-size: 1rem;
-    }}
-    
-    /* Success/Error messages */
-    .success-msg {{
-        background: var(--bg-quaternary);
-        color: var(--text-primary);
-        padding: 15px;
-        border-radius: 12px;
-        border: 2px solid var(--accent-secondary);
-        margin: 1rem 0;
-        border-left: 5px solid var(--accent-secondary);
-        box-shadow: 0 4px 15px rgba(72, 187, 120, 0.1);
-    }}
-    
-    .error-msg {{
-        background: #fed7d7;
-        color: #742a2a;
-        padding: 15px;
-        border-radius: 12px;
-        border: 2px solid #fc8181;
-        margin: 1rem 0;
-        border-left: 5px solid #e53e3e;
-        box-shadow: 0 4px 15px rgba(229, 62, 62, 0.1);
-    }}
-    
-    .info-msg {{
-        background: var(--bg-primary);
-        color: var(--text-primary);
-        padding: 15px;
-        border-radius: 12px;
-        border: 2px solid var(--accent-primary);
-        margin: 1rem 0;
-        border-left: 5px solid var(--accent-primary);
-        box-shadow: 0 4px 15px rgba(66, 153, 225, 0.1);
-    }}
-    
-    /* Ensure all text is dark */
-    h1, h2, h3, h4, h5, h6 {{
-        color: var(--text-primary) !important;
-    }}
-    
-    p, span, div {{
-        color: var(--text-secondary) !important;
-    }}
-    
-    /* Responsive design */
-    @media (max-width: 768px) {{
-        .auth-container {{
-            margin: 1rem;
-            padding: 1.5rem;
-            margin-top: 2vh;
-        }}
-        
-        .haven-logo {{
-            max-width: 200px;
-        }}
-        
-        .haven-tagline {{
-            font-size: 1rem;
-        }}
-        
-        .nav-logo {{
-            height: 30px;
-        }}
-    }}
-    
-    @media (max-width: 480px) {{
-        .haven-logo {{
-            max-width: 180px;
-        }}
-        
-        .haven-tagline {{
-            font-size: 0.9rem;
-        }}
-        
-        .nav-logo {{
-            height: 25px;
-        }}
-    }}
-    
-    /* Animations */
-    .fade-in {{
-        animation: fadeIn 0.6s ease-in;
-    }}
-    
-    @keyframes fadeIn {{
-        from {{ 
-            opacity: 0; 
-            transform: translateY(30px); 
-        }}
-        to {{ 
-            opacity: 1; 
-            transform: translateY(0); 
-        }}
-    }}
-    
-    /* Logo pulse animation */
-    @keyframes gentle-pulse {{
-        0%, 100% {{ opacity: 1; }}
-        50% {{ opacity: 0.95; }}
-    }}
-    
-    .logo-pulse {{
-        animation: gentle-pulse 3s ease-in-out infinite;
-    }}
-    
-    /* Fix for JavaScript errors - ensure elements exist */
-    .stApp::before {{
-        content: "";
-        display: none;
-    }}
-    
-    /* Prevent empty selectors that cause JS errors */
-    [data-testid="stSidebar"] {{
-        display: none !important;
-    }}
-    
-    /* Override any remaining light text */
-    .stMarkdown, .stMarkdown p, .stMarkdown div {{
-        color: var(--text-primary) !important;
-    }}
-</style>
-""", unsafe_allow_html=True)
-
-# ========================================
-# SESSION STATE INITIALIZATION
-# ========================================
-
-if 'authenticated' not in st.session_state:
-    st.session_state.authenticated = False
-if 'user_data' not in st.session_state:
-    st.session_state.user_data = None
-if 'current_page' not in st.session_state:
-    st.session_state.current_page = 'login'
-if 'registration_type' not in st.session_state:
-    st.session_state.registration_type = None
-
-# ========================================
-# UTILITY FUNCTIONS
-# ========================================
-
 def make_api_request(endpoint: str, method: str = "GET", data: Dict = None) -> Dict:
-    """Make API request to backend"""
+    """Make API request with comprehensive error handling"""
     try:
         url = f"{BACKEND_URL}{endpoint}"
         
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Origin": "https://haven-streamlit-frontend.onrender.com"
+        }
+        
         if method == "GET":
-            response = requests.get(url, timeout=30)
+            response = requests.get(url, headers=headers, timeout=30)
         elif method == "POST":
-            response = requests.post(url, json=data, timeout=30)
+            response = requests.post(url, json=data, headers=headers, timeout=30)
         else:
             raise ValueError(f"Unsupported method: {method}")
         
         response.raise_for_status()
         return response.json()
     
+    except requests.exceptions.ConnectionError:
+        return {"error": "Cannot connect to backend server"}
+    except requests.exceptions.Timeout:
+        return {"error": "Request timed out"}
+    except requests.exceptions.HTTPError as e:
+        return {"error": f"HTTP error: {e.response.status_code}"}
     except requests.exceptions.RequestException as e:
-        return {"error": str(e)}
+        return {"error": f"Request failed: {str(e)}"}
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": f"Unexpected error: {str(e)}"}
 
-def authenticate_user(email: str, password: str) -> bool:
-    """Authenticate user with email and password"""
-    if email and password:
-        st.session_state.authenticated = True
-        st.session_state.user_data = {
-            "email": email,
-            "name": email.split("@")[0].title(),
-            "type": "individual"
-        }
-        return True
-    return False
-
-def register_user(user_data: Dict) -> bool:
-    """Register new user"""
+def get_supported_languages() -> List[Dict[str, str]]:
+    """Get supported languages from backend or return default"""
     try:
-        result = make_api_request("/api/register", "POST", user_data)
-        if "error" not in result:
-            return True
-    except:
+        result = make_api_request("/api/supported-languages")
+        if "error" not in result and "languages" in result:
+            return result["languages"]
+    except Exception:
         pass
-    return True  # Demo mode
+    
+    return [
+        {"code": "en", "name": "English", "native": "English"},
+        {"code": "hi", "name": "Hindi", "native": "हिन्दी"},
+        {"code": "ta", "name": "Tamil", "native": "தமிழ்"},
+        {"code": "te", "name": "Telugu", "native": "తెలుగు"}
+    ]
 
-def get_oauth_url(provider: str) -> str:
-    """Get OAuth URL for provider"""
-    if provider == "google" and GOOGLE_CLIENT_ID:
-        params = {
-            "client_id": GOOGLE_CLIENT_ID,
-            "redirect_uri": f"{FRONTEND_BASE_URI}/auth/google/callback",
-            "scope": "openid email profile",
-            "response_type": "code",
-            "access_type": "offline"
-        }
-        return f"https://accounts.google.com/o/oauth2/auth?{urlencode(params)}"
+def add_tooltips_to_text(text: str) -> str:
+    """Add automatic tooltips to complex terms in text"""
+    if not text:
+        return text
     
-    elif provider == "facebook" and FACEBOOK_APP_ID:
-        params = {
-            "client_id": FACEBOOK_APP_ID,
-            "redirect_uri": f"{FRONTEND_BASE_URI}/auth/facebook/callback",
-            "scope": "email,public_profile",
-            "response_type": "code"
-        }
-        return f"https://www.facebook.com/v18.0/dialog/oauth?{urlencode(params)}"
+    # Create a copy of the text to modify
+    modified_text = text
     
-    return "#"
+    # Sort terms by length (longest first) to avoid partial matches
+    sorted_terms = sorted(TERM_DEFINITIONS.keys(), key=len, reverse=True)
+    
+    for term in sorted_terms:
+        # Create case-insensitive pattern that matches whole words
+        pattern = r'\b' + re.escape(term) + r'\b'
+        
+        # Find all matches
+        matches = list(re.finditer(pattern, modified_text, re.IGNORECASE))
+        
+        # Replace matches from right to left to preserve positions
+        for match in reversed(matches):
+            start, end = match.span()
+            original_term = modified_text[start:end]
+            definition = TERM_DEFINITIONS[term]
+            
+            # Create tooltip HTML
+            tooltip_html = f'''
+            <span class="tooltip-term" title="{definition}">
+                {original_term}
+                <span class="tooltip-icon">ℹ️</span>
+                <span class="tooltip-text">{definition}</span>
+            </span>
+            '''
+            
+            # Replace the term with tooltip version
+            modified_text = modified_text[:start] + tooltip_html + modified_text[end:]
+    
+    return modified_text
 
 # ========================================
-# PAGE COMPONENTS
+# CSS STYLING WITH TOOLTIPS
 # ========================================
 
-def render_haven_header():
-    """Render HAVEN header with logo"""
+def load_css():
+    """Load custom CSS for the application including tooltip styles"""
+    logo_base64 = get_logo_base64()
+    
+    css = f"""
+    <style>
+    /* Hide Streamlit default elements */
+    .stDeployButton {{display: none !important;}}
+    footer {{visibility: hidden !important;}}
+    .stApp > header {{visibility: hidden !important;}}
+    #MainMenu {{visibility: hidden !important;}}
+    
+    /* Main app styling */
+    .stApp {{
+        background: linear-gradient(135deg, 
+            #f0f8ff 0%,     /* Light blue */
+            #e6e6fa 50%,    /* Lavender */
+            #f0fff0 100%    /* Light green */
+        );
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }}
+    
+    /* Sidebar styling */
+    .css-1d391kg {{
+        background: linear-gradient(180deg, 
+            #2d3748 0%,     /* Dark gray */
+            #1a202c 100%   /* Dark blue-gray */
+        );
+        padding: 1rem;
+    }}
+    
+    /* Sidebar content */
+    .css-1d391kg .stSelectbox label,
+    .css-1d391kg .stMarkdown,
+    .css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3 {{
+        color: #ffffff !important;
+        font-weight: 500;
+    }}
+    
+    /* Language selector styling */
+    .css-1d391kg .stSelectbox > div > div {{
+        background-color: #4a5568 !important;
+        color: #ffffff !important;
+        border: 1px solid #718096 !important;
+        border-radius: 8px !important;
+    }}
+    
+    /* Navigation buttons */
+    .nav-button {{
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: white !important;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: block;
+        margin: 0.5rem 0;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        width: 100%;
+    }}
+    
+    .nav-button:hover {{
+        background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+    }}
+    
+    /* Main content area */
+    .main-content {{
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 2rem;
+        margin: 1rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }}
+    
+    /* Logo styling */
+    .logo-container {{
+        text-align: center;
+        margin-bottom: 2rem;
+        padding: 1rem;
+    }}
+    
+    .logo-image {{
+        max-width: 250px;
+        height: auto;
+        margin: 0 auto;
+        display: block;
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        animation: pulse 3s ease-in-out infinite;
+    }}
+    
+    @keyframes pulse {{
+        0%, 100% {{ transform: scale(1); }}
+        50% {{ transform: scale(1.02); }}
+    }}
+    
+    /* Tagline styling */
+    .tagline {{
+        text-align: center;
+        font-size: 1.2rem;
+        color: #2d3748;
+        font-style: italic;
+        margin-bottom: 2rem;
+        font-weight: 500;
+    }}
+    
+    /* TOOLTIP STYLES - AUTOMATIC TERM SIMPLIFICATION */
+    .tooltip-term {{
+        position: relative;
+        display: inline;
+        color: #2b6cb0;
+        font-weight: 600;
+        cursor: help;
+        border-bottom: 2px dotted #2b6cb0;
+        text-decoration: none;
+    }}
+    
+    .tooltip-icon {{
+        display: inline-block;
+        margin-left: 2px;
+        font-size: 0.8em;
+        color: #2b6cb0;
+        opacity: 0.7;
+    }}
+    
+    .tooltip-text {{
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        color: #ffffff;
+        text-align: center;
+        border-radius: 8px;
+        padding: 12px 16px;
+        z-index: 1000;
+        width: 280px;
+        font-size: 0.9rem;
+        font-weight: 400;
+        line-height: 1.4;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        pointer-events: none;
+    }}
+    
+    .tooltip-text::after {{
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -8px;
+        border-width: 8px;
+        border-style: solid;
+        border-color: #1a202c transparent transparent transparent;
+    }}
+    
+    .tooltip-term:hover .tooltip-text {{
+        visibility: visible;
+        opacity: 1;
+        transform: translateX(-50%) translateY(-5px);
+    }}
+    
+    .tooltip-term:hover .tooltip-icon {{
+        opacity: 1;
+        transform: scale(1.2);
+    }}
+    
+    /* Responsive tooltip positioning */
+    @media (max-width: 768px) {{
+        .tooltip-text {{
+            width: 240px;
+            font-size: 0.8rem;
+            padding: 10px 12px;
+        }}
+    }}
+    
+    @media (max-width: 480px) {{
+        .tooltip-text {{
+            width: 200px;
+            font-size: 0.75rem;
+            padding: 8px 10px;
+        }}
+    }}
+    
+    /* Form styling */
+    .stTextInput > div > div > input,
+    .stTextArea > div > div > textarea,
+    .stSelectbox > div > div > select {{
+        background-color: #ffffff !important;
+        color: #1a202c !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 0.75rem !important;
+        font-size: 1rem !important;
+    }}
+    
+    .stTextInput > div > div > input:focus,
+    .stTextArea > div > div > textarea:focus,
+    .stSelectbox > div > div > select:focus {{
+        border-color: #48bb78 !important;
+        box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1) !important;
+    }}
+    
+    /* Button styling */
+    .stButton > button {{
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 0.75rem 2rem !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+        transition: all 0.3s ease !important;
+        width: 100% !important;
+    }}
+    
+    .stButton > button:hover {{
+        background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3) !important;
+    }}
+    
+    /* OAuth buttons */
+    .oauth-button {{
+        background: #ffffff;
+        color: #1a202c;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        margin: 0.5rem 0;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }}
+    
+    .oauth-button:hover {{
+        border-color: #48bb78;
+        box-shadow: 0 2px 8px rgba(72, 187, 120, 0.2);
+        transform: translateY(-1px);
+    }}
+    
+    .oauth-button.google {{
+        border-color: #4285f4;
+    }}
+    
+    .oauth-button.google:hover {{
+        border-color: #3367d6;
+        box-shadow: 0 2px 8px rgba(66, 133, 244, 0.2);
+    }}
+    
+    .oauth-button.facebook {{
+        border-color: #1877f2;
+    }}
+    
+    .oauth-button.facebook:hover {{
+        border-color: #166fe5;
+        box-shadow: 0 2px 8px rgba(24, 119, 242, 0.2);
+    }}
+    
+    /* Status indicators */
+    .status-success {{
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        font-weight: 600;
+    }}
+    
+    .status-error {{
+        background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        font-weight: 600;
+    }}
+    
+    .status-warning {{
+        background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        font-weight: 600;
+    }}
+    
+    /* Content with tooltips */
+    .content-with-tooltips {{
+        line-height: 1.8;
+        font-size: 1.1rem;
+        color: #2d3748;
+    }}
+    
+    /* Responsive design */
+    @media (max-width: 768px) {{
+        .logo-image {{
+            max-width: 200px;
+        }}
+        
+        .main-content {{
+            margin: 0.5rem;
+            padding: 1rem;
+        }}
+        
+        .tagline {{
+            font-size: 1rem;
+        }}
+    }}
+    
+    @media (max-width: 480px) {{
+        .logo-image {{
+            max-width: 180px;
+        }}
+        
+        .main-content {{
+            margin: 0.25rem;
+            padding: 0.75rem;
+        }}
+    }}
+    </style>
+    """
+    
+    st.markdown(css, unsafe_allow_html=True)
+
+# ========================================
+# SIDEBAR NAVIGATION
+# ========================================
+
+def render_sidebar():
+    """Render the left sidebar with navigation and language selection"""
+    with st.sidebar:
+        # Language Selection
+        st.markdown("### 🌍 Select Language:")
+        
+        languages = get_supported_languages()
+        language_options = {lang["native"]: lang["code"] for lang in languages}
+        
+        selected_language_name = st.selectbox(
+            "Choose your language",
+            options=list(language_options.keys()),
+            index=0,
+            key="language_selector"
+        )
+        
+        selected_language = language_options[selected_language_name]
+        st.session_state.selected_language = selected_language
+        
+        st.markdown("---")
+        
+        # Navigation Section
+        st.markdown("### 🧭 Navigation")
+        
+        # Backend Test Button
+        if st.button("🔧 Test Backend Connection", key="test_backend", help="Test connection to backend API"):
+            st.session_state.show_backend_test = True
+            st.session_state.show_translation_test = False
+            st.session_state.show_simplification_test = False
+            st.session_state.show_demo_content = False
+        
+        # Translation Test Button
+        if TRANSLATION_ENABLED:
+            if st.button("🌐 Test Translation", key="test_translation", help="Test translation service"):
+                st.session_state.show_translation_test = True
+                st.session_state.show_backend_test = False
+                st.session_state.show_simplification_test = False
+                st.session_state.show_demo_content = False
+        
+        # Simplification Test Button
+        if SIMPLIFICATION_ENABLED:
+            if st.button("📝 Test Simplification", key="test_simplification", help="Test term simplification"):
+                st.session_state.show_simplification_test = True
+                st.session_state.show_backend_test = False
+                st.session_state.show_translation_test = False
+                st.session_state.show_demo_content = False
+        
+        # Demo Content Button
+        if st.button("📚 Demo Content with Tooltips", key="demo_content", help="See automatic term simplification in action"):
+            st.session_state.show_demo_content = True
+            st.session_state.show_backend_test = False
+            st.session_state.show_translation_test = False
+            st.session_state.show_simplification_test = False
+        
+        st.markdown("---")
+        
+        # Feature Status
+        st.markdown("### 📊 Feature Status")
+        
+        # Backend status
+        backend_status = "🟢 Online" if check_backend_health() else "🔴 Offline"
+        st.markdown(f"**Backend:** {backend_status}")
+        
+        # Feature status
+        translation_status = "🟢 Enabled" if TRANSLATION_ENABLED else "🔴 Disabled"
+        st.markdown(f"**Translation:** {translation_status}")
+        
+        simplification_status = "🟢 Enabled" if SIMPLIFICATION_ENABLED else "🔴 Disabled"
+        st.markdown(f"**Simplification:** {simplification_status}")
+        
+        oauth_status = "🟢 Configured" if (GOOGLE_CLIENT_ID or FACEBOOK_APP_ID) else "🔴 Not Configured"
+        st.markdown(f"**OAuth:** {oauth_status}")
+
+def check_backend_health() -> bool:
+    """Check if backend is healthy"""
+    try:
+        result = make_api_request("/health")
+        return "error" not in result and result.get("status") == "healthy"
+    except Exception:
+        return False
+
+# ========================================
+# MAIN CONTENT SECTIONS
+# ========================================
+
+def render_header():
+    """Render the main header with logo and tagline"""
+    logo_base64 = get_logo_base64()
+    
     if logo_base64:
-        # Use the actual logo image
         st.markdown(f"""
-        <div class="haven-header fade-in">
-            <div class="logo-container">
-                <img src="data:image/png;base64,{logo_base64}" class="haven-logo logo-pulse" alt="HAVEN Logo">
-            </div>
-            <p class="haven-tagline">Help not just some people, but Help Humanity.</p>
+        <div class="logo-container">
+            <img src="data:image/png;base64,{logo_base64}" class="logo-image" alt="HAVEN Logo">
         </div>
         """, unsafe_allow_html=True)
     else:
-        # Use fallback SVG logo
-        fallback_logo = create_fallback_logo()
-        st.markdown(f"""
-        <div class="haven-header fade-in">
-            <div class="logo-container">
-                {fallback_logo}
-            </div>
-            <p class="haven-tagline">Help not just some people, but Help Humanity.</p>
+        st.markdown("""
+        <div class="logo-container">
+            <h1 style="color: #2d3748; font-size: 3rem; margin: 0;">HAVEN</h1>
         </div>
         """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div class="tagline">
+        Help not just some people, but Help Humanity.
+    </div>
+    """, unsafe_allow_html=True)
+
+def render_demo_content():
+    """Render demo content with automatic term simplification tooltips"""
+    st.markdown("## 📚 Demo: Automatic Term Simplification")
+    
+    st.markdown("""
+    <div class="content-with-tooltips">
+    <p>Hover over the blue terms below to see automatic definitions:</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Sample content with complex terms
+    demo_text = """
+    Welcome to HAVEN, the revolutionary crowdfunding platform that's transforming how startups and entrepreneurs raise capital. Our innovative approach combines traditional investment strategies with cutting-edge blockchain technology to create unprecedented opportunities for both investors and project creators.
+
+    Whether you're an angel investor looking for the next unicorn startup, or an entrepreneur seeking seed funding for your MVP, HAVEN provides the tools and community you need. Our platform supports various funding models including equity crowdfunding, revenue-based financing, and traditional donation-based campaigns.
+
+    Key features include:
+    • Advanced due diligence tools powered by AI and machine learning
+    • Comprehensive market research and analytics dashboard  
+    • Automated compliance monitoring for regulatory requirements
+    • Smart contract integration for transparent and secure transactions
+    • Real-time ROI tracking and portfolio management
+    • Social proof mechanisms including viral marketing tools
+
+    Our scalable platform architecture ensures high performance even during peak funding periods, while our robust cybersecurity measures protect both investor funds and intellectual property. With built-in KPI tracking and detailed analytics, project creators can monitor their burn rate, extend their runway, and optimize their conversion rates.
+
+    Join thousands of successful entrepreneurs who have already leveraged our platform to achieve their funding milestones and execute their exit strategies. From B2B SaaS solutions to B2C consumer products, HAVEN supports diverse business models across all industries.
+    """
+    
+    # Add tooltips to the demo text
+    demo_with_tooltips = add_tooltips_to_text(demo_text)
+    
+    st.markdown(f"""
+    <div class="content-with-tooltips">
+    {demo_with_tooltips}
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    st.markdown("### 💡 How It Works")
+    st.markdown("""
+    1. **Automatic Detection**: Complex terms are automatically identified in all content
+    2. **Visual Indicators**: Terms appear in blue with a dotted underline and info icon (ℹ️)
+    3. **Hover Tooltips**: Simply hover your mouse over any term to see its definition
+    4. **No Clicking Required**: Definitions appear instantly without interrupting your reading
+    5. **Mobile Friendly**: Tooltips work on touch devices too
+    """)
+
+def render_backend_test():
+    """Render backend connection test"""
+    st.markdown("## 🔧 Backend Connection Test")
+    
+    with st.spinner("Testing backend connection..."):
+        result = make_api_request("/api/backend-test")
+    
+    if "error" in result:
+        st.markdown(f"""
+        <div class="status-error">
+            ❌ Backend Connection Failed<br>
+            Error: {result['error']}
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
+        <div class="status-success">
+            ✅ Backend Connection Successful<br>
+            Status: {result.get('backend_status', 'Unknown')}<br>
+            Response Time: {result.get('response_time_ms', 0):.2f}ms
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Show detailed test results
+        st.markdown("### 📊 Detailed Test Results")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.metric("CORS Enabled", "✅ Yes" if result.get('cors_enabled') else "❌ No")
+            st.metric("Translation Available", "✅ Yes" if result.get('translation_available') else "❌ No")
+        
+        with col2:
+            st.metric("Simplification Available", "✅ Yes" if result.get('simplification_available') else "❌ No")
+            st.metric("OAuth Configured", "✅ Yes" if result.get('oauth_configured') else "❌ No")
+
+def render_translation_test():
+    """Render translation test interface"""
+    st.markdown("## 🌐 Translation Test")
+    
+    # Input form
+    with st.form("translation_form"):
+        text_to_translate = st.text_area(
+            "Enter text to translate:",
+            placeholder="Type your text here...",
+            height=100
+        )
+        
+        languages = get_supported_languages()
+        target_language = st.selectbox(
+            "Target Language:",
+            options=[lang["code"] for lang in languages],
+            format_func=lambda x: next(lang["native"] for lang in languages if lang["code"] == x)
+        )
+        
+        submit_button = st.form_submit_button("🔄 Translate")
+    
+    if submit_button and text_to_translate:
+        with st.spinner("Translating..."):
+            result = make_api_request("/api/translate", "POST", {
+                "text": text_to_translate,
+                "target_language": target_language,
+                "source_language": "auto"
+            })
+        
+        if "error" in result:
+            st.markdown(f"""
+            <div class="status-error">
+                ❌ Translation Failed<br>
+                Error: {result['error']}
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("### 📝 Translation Result")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("**Original Text:**")
+                st.info(result.get('original_text', ''))
+                st.markdown(f"**Language:** {result.get('source_language', 'Unknown')}")
+            
+            with col2:
+                st.markdown("**Translated Text:**")
+                st.success(result.get('translated_text', ''))
+                st.markdown(f"**Language:** {result.get('target_language', 'Unknown')}")
+            
+            st.markdown(f"**Confidence:** {result.get('confidence', 0):.2%}")
+
+def render_simplification_test():
+    """Render simplification test interface"""
+    st.markdown("## 📝 Term Simplification Test")
+    
+    # Input form
+    with st.form("simplification_form"):
+        text_to_simplify = st.text_area(
+            "Enter text with complex terms:",
+            placeholder="Enter text containing financial, technical, or business terms...",
+            height=100,
+            value="Our startup is seeking crowdfunding to develop a blockchain-based platform for cryptocurrency investment with high ROI potential."
+        )
+        
+        submit_button = st.form_submit_button("🔍 Analyze & Simplify")
+    
+    if submit_button and text_to_simplify:
+        with st.spinner("Analyzing text..."):
+            result = make_api_request("/api/simplify", "POST", {
+                "text": text_to_simplify,
+                "level": "simple"
+            })
+        
+        if "error" in result:
+            st.markdown(f"""
+            <div class="status-error">
+                ❌ Simplification Failed<br>
+                Error: {result['error']}
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("### 📊 Analysis Results")
+            
+            # Show complexity score
+            complexity = result.get('complexity_score', 0)
+            st.metric("Complexity Score", f"{complexity:.2f}")
+            
+            # Show found terms
+            terms = result.get('simplified_terms', [])
+            if terms:
+                st.markdown("### 📚 Complex Terms Found")
+                
+                for term in terms:
+                    with st.expander(f"ℹ️ {term['term'].title()}", expanded=False):
+                        st.markdown(f"**Definition:** {term['definition']}")
+                        st.markdown(f"**Category:** {term['category'].title()}")
+                        st.markdown(f"**Complexity:** {term['complexity_level'].title()}")
+            else:
+                st.info("No complex terms found in the text.")
 
 def render_login_page():
-    """Render login page with dark text on light background"""
-    st.markdown('<div class="auth-container fade-in">', unsafe_allow_html=True)
-    
-    render_haven_header()
-    
-    st.markdown('<h2 style="color: var(--text-primary);">Login</h2>', unsafe_allow_html=True)
-    st.markdown("---")
+    """Render the login page"""
+    st.markdown("## 🔐 Login to HAVEN")
     
     # Login form
     with st.form("login_form"):
-        email = st.text_input("Enter Your Email", placeholder="your.email@example.com")
-        password = st.text_input("Enter Your Password", type="password", placeholder="Your password")
+        email = st.text_input("📧 Email Address", placeholder="Enter your email")
+        password = st.text_input("🔒 Password", type="password", placeholder="Enter your password")
         
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            login_submitted = st.form_submit_button("Continue", use_container_width=True)
+        login_button = st.form_submit_button("🚀 Continue")
     
-    if login_submitted:
-        if authenticate_user(email, password):
-            st.markdown('<div class="success-msg">✅ Login successful!</div>', unsafe_allow_html=True)
-            st.session_state.current_page = 'home'
+    if login_button:
+        if email and password:
+            # Mock login for demo
+            st.session_state.logged_in = True
+            st.session_state.user_email = email
             st.rerun()
         else:
-            st.markdown('<div class="error-msg">❌ Invalid email or password</div>', unsafe_allow_html=True)
+            st.error("Please enter both email and password")
+    
+    # OAuth buttons
+    st.markdown("### 🔗 Or sign in with:")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if GOOGLE_CLIENT_ID:
+            if st.button("🔍 Sign in with Google", key="google_login"):
+                st.info("Google OAuth integration would open here")
+    
+    with col2:
+        if FACEBOOK_APP_ID:
+            if st.button("📘 Sign in with Facebook", key="facebook_login"):
+                st.info("Facebook OAuth integration would open here")
     
     # Registration link
     st.markdown("---")
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        if st.button("Not registered? Create an account", use_container_width=True):
-            st.session_state.current_page = 'register'
-            st.rerun()
-    
-    # OAuth buttons
-    if OAUTH_ENABLED and (GOOGLE_CLIENT_ID or FACEBOOK_APP_ID):
-        st.markdown("---")
-        st.markdown('<h3 style="color: var(--text-primary);">Or sign in with:</h3>', unsafe_allow_html=True)
-        
-        if GOOGLE_CLIENT_ID:
-            google_url = get_oauth_url("google")
-            st.markdown(f"""
-            <a href="{google_url}" target="_blank" style="text-decoration: none;">
-                <div class="oauth-button google-btn">
-                    🔴 Sign in with Google
-                </div>
-            </a>
-            """, unsafe_allow_html=True)
-        
-        if FACEBOOK_APP_ID:
-            facebook_url = get_oauth_url("facebook")
-            st.markdown(f"""
-            <a href="{facebook_url}" target="_blank" style="text-decoration: none;">
-                <div class="oauth-button facebook-btn">
-                    🔵 Sign in with Facebook
-                </div>
-            </a>
-            """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-def render_registration_page():
-    """Render registration page with dark text on light background"""
-    st.markdown('<div class="auth-container fade-in">', unsafe_allow_html=True)
-    
-    render_haven_header()
-    
-    st.markdown('<h2 style="color: var(--text-primary);">Register</h2>', unsafe_allow_html=True)
-    st.markdown("---")
-    
-    # Registration type selection
-    if st.session_state.registration_type is None:
-        st.markdown('<h3 style="color: var(--text-primary);">Choose Registration Type</h3>', unsafe_allow_html=True)
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            if st.button("👤 Register as an Individual", use_container_width=True):
-                st.session_state.registration_type = "individual"
-                st.rerun()
-        
-        with col2:
-            if st.button("🏢 Register as an Organization", use_container_width=True):
-                st.session_state.registration_type = "organization"
-                st.rerun()
-    
-    # Individual registration form
-    elif st.session_state.registration_type == "individual":
-        st.markdown('<h3 style="color: var(--text-primary);">Register as an Individual</h3>', unsafe_allow_html=True)
-        
-        with st.form("individual_registration"):
-            full_name = st.text_input("Full Name", placeholder="Enter your full name")
-            email = st.text_input("Email ID", placeholder="your.email@example.com")
-            phone = st.text_input("Phone Number", placeholder="Your phone number")
-            password = st.text_input("Password", type="password", placeholder="Create a password")
-            confirm_password = st.text_input("Confirm Password", type="password", placeholder="Confirm your password")
-            address = st.text_area("Address", placeholder="Your complete address")
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.form_submit_button("Register", use_container_width=True):
-                    if password == confirm_password and all([full_name, email, phone, password, address]):
-                        user_data = {
-                            "type": "individual",
-                            "full_name": full_name,
-                            "email": email,
-                            "phone": phone,
-                            "password": password,
-                            "address": address
-                        }
-                        if register_user(user_data):
-                            st.markdown('<div class="success-msg">✅ Registration successful! Please login.</div>', unsafe_allow_html=True)
-                            st.session_state.registration_type = None
-                            st.session_state.current_page = 'login'
-                            st.rerun()
-                        else:
-                            st.markdown('<div class="error-msg">❌ Registration failed. Please try again.</div>', unsafe_allow_html=True)
-                    else:
-                        st.markdown('<div class="error-msg">❌ Please fill all fields and ensure passwords match.</div>', unsafe_allow_html=True)
-            
-            with col2:
-                if st.form_submit_button("Back to Type Selection", use_container_width=True):
-                    st.session_state.registration_type = None
-                    st.rerun()
-    
-    # Organization registration form
-    elif st.session_state.registration_type == "organization":
-        st.markdown('<h3 style="color: var(--text-primary);">Register as an Organization</h3>', unsafe_allow_html=True)
-        
-        with st.form("organization_registration"):
-            org_name = st.text_input("Organization Name", placeholder="Enter organization name")
-            email = st.text_input("Email ID", placeholder="organization@example.com")
-            phone = st.text_input("Organization Phone Number", placeholder="Organization phone number")
-            
-            org_type = st.selectbox(
-                "Select Organization Type",
-                ["", "NGO", "Startup", "Charity"],
-                index=0
-            )
-            
-            password = st.text_input("Password", type="password", placeholder="Create a password")
-            confirm_password = st.text_input("Confirm Password", type="password", placeholder="Confirm your password")
-            description = st.text_area("Brief Description (max 100 chars)", placeholder="Brief description of your organization", max_chars=100)
-            address = st.text_area("Address", placeholder="Organization address")
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.form_submit_button("Register", use_container_width=True):
-                    if (password == confirm_password and org_type and 
-                        all([org_name, email, phone, password, description, address])):
-                        user_data = {
-                            "type": "organization",
-                            "organization_name": org_name,
-                            "email": email,
-                            "phone": phone,
-                            "organization_type": org_type,
-                            "password": password,
-                            "description": description,
-                            "address": address
-                        }
-                        if register_user(user_data):
-                            st.markdown('<div class="success-msg">✅ Registration successful! Please login.</div>', unsafe_allow_html=True)
-                            st.session_state.registration_type = None
-                            st.session_state.current_page = 'login'
-                            st.rerun()
-                        else:
-                            st.markdown('<div class="error-msg">❌ Registration failed. Please try again.</div>', unsafe_allow_html=True)
-                    else:
-                        st.markdown('<div class="error-msg">❌ Please fill all fields, select organization type, and ensure passwords match.</div>', unsafe_allow_html=True)
-            
-            with col2:
-                if st.form_submit_button("Back to Type Selection", use_container_width=True):
-                    st.session_state.registration_type = None
-                    st.rerun()
-    
-    # Back to login link
-    st.markdown("---")
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        if st.button("Already have an account? Sign in here", use_container_width=True):
-            st.session_state.registration_type = None
-            st.session_state.current_page = 'login'
-            st.rerun()
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-def render_navigation():
-    """Render navigation with logo for authenticated users"""
-    logo_html = ""
-    if logo_base64:
-        logo_html = f'<img src="data:image/png;base64,{logo_base64}" class="nav-logo" alt="HAVEN Logo">'
-    else:
-        logo_html = '🏠'
-    
-    st.markdown(f"""
-    <div class="nav-container">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="nav-brand">
-                {logo_html} HAVEN
-            </div>
-            <div style="display: flex; gap: 1rem; align-items: center;">
-                <span style="color: var(--text-primary); font-weight: 600;">Welcome, {st.session_state.user_data.get('name', 'User')}</span>
-                <button onclick="location.reload()" style="
-                    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); 
-                    color: white; 
-                    border: none; 
-                    padding: 0.8rem 1.5rem; 
-                    border-radius: 8px; 
-                    cursor: pointer;
-                    font-weight: bold;
-                    transition: all 0.3s ease;
-                ">Logout</button>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-def render_home_page():
-    """Render home page with dark text on light background"""
-    render_navigation()
-    
-    st.markdown('<h1 style="color: var(--text-primary);">🏠 Welcome to HAVEN</h1>', unsafe_allow_html=True)
-    
-    # Navigation buttons
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        if st.button("🔍 Explore Campaigns", use_container_width=True):
-            st.session_state.current_page = 'explore'
-            st.rerun()
-    
-    with col2:
-        if st.button("🔎 Search Campaigns", use_container_width=True):
-            st.session_state.current_page = 'search'
-            st.rerun()
-    
-    with col3:
-        if st.button("🚀 Create Campaign", use_container_width=True):
-            st.session_state.current_page = 'create'
-            st.rerun()
-    
-    st.markdown("---")
-    
-    # Welcome content
-    st.markdown("""
-    <div class="form-section fade-in">
-        <h3>🌟 Welcome to HAVEN Crowdfunding Platform</h3>
-        <p>Help not just some people, but Help Humanity. Start exploring amazing campaigns or create your own to make a difference in the world.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Feature highlights
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.markdown("""
-        <div class="feature-card fade-in">
-            <h4>🌍 Global Reach</h4>
-            <p>Connect with supporters worldwide and make your campaign visible to millions of people who care.</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("""
-        <div class="feature-card fade-in">
-            <h4>🔒 Secure Platform</h4>
-            <p>Your funds and data are protected with enterprise-grade security and transparent processes.</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown("""
-        <div class="feature-card fade-in">
-            <h4>📊 Real-time Analytics</h4>
-            <p>Track your campaign performance with detailed insights and analytics to optimize your success.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-def render_explore_page():
-    """Render explore campaigns page"""
-    render_navigation()
-    
-    st.markdown('<h1 style="color: var(--text-primary);">🔍 Explore Campaigns</h1>', unsafe_allow_html=True)
-    
-    # Back to home
-    if st.button("← Back to Home"):
-        st.session_state.current_page = 'home'
-        st.rerun()
-    
-    st.markdown("---")
-    
-    # Categories
-    st.markdown('<h3 style="color: var(--text-primary);">Browse by Category</h3>', unsafe_allow_html=True)
-    
-    categories = [
-        ("🔬", "Technology", "Innovative tech projects and startups"),
-        ("🏥", "Health", "Medical research and healthcare initiatives"),
-        ("📚", "Education", "Educational programs and scholarships"),
-        ("🌱", "Environment", "Environmental conservation projects"),
-        ("🎨", "Arts & Culture", "Creative and cultural projects"),
-        ("🤝", "Community", "Community development initiatives")
-    ]
-    
-    cols = st.columns(3)
-    for i, (icon, category, description) in enumerate(categories):
-        with cols[i % 3]:
-            st.markdown(f"""
-            <div class="feature-card">
-                <h4>{icon} {category}</h4>
-                <p>{description}</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-def render_search_page():
-    """Render search campaigns page"""
-    render_navigation()
-    
-    st.markdown('<h1 style="color: var(--text-primary);">🔎 Search Campaigns</h1>', unsafe_allow_html=True)
-    
-    # Back to home
-    if st.button("← Back to Home"):
-        st.session_state.current_page = 'home'
-        st.rerun()
-    
-    st.markdown("---")
-    
-    # Search form
-    with st.form("search_form"):
-        search_query = st.text_input("Search for campaigns", placeholder="Enter keywords to search for campaigns...")
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            category_filter = st.selectbox("Filter by Category", 
-                ["All Categories", "Technology", "Health", "Education", "Environment", "Arts & Culture", "Community"])
-        
-        with col2:
-            sort_by = st.selectbox("Sort by", 
-                ["Most Recent", "Most Funded", "Ending Soon", "Most Popular"])
-        
-        search_submitted = st.form_submit_button("Search", use_container_width=True)
-    
-    if search_submitted:
-        st.markdown(f'<div class="success-msg">🔍 Searching for: "{search_query}" in {category_filter}</div>', unsafe_allow_html=True)
-        
-        # Mock search results
-        st.markdown('<h3 style="color: var(--text-primary);">Search Results</h3>', unsafe_allow_html=True)
-        
-        for i in range(3):
-            st.markdown(f"""
-            <div class="feature-card">
-                <h4>🚀 Sample Campaign {i+1}</h4>
-                <p>This is a sample campaign that matches your search criteria. In a real application, this would show actual campaign data with images and detailed information.</p>
-                <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-weight: bold; color: var(--text-secondary);">
-                    <span>Goal: $10,000</span>
-                    <span>Raised: ${(i+1)*2000}</span>
-                    <span>Days left: {30-i*5}</span>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+    st.markdown("**Not registered?** [Create an account](#)")
 
 # ========================================
 # MAIN APPLICATION
@@ -1047,22 +904,124 @@ def render_search_page():
 
 def main():
     """Main application function"""
+    # Page configuration
+    st.set_page_config(
+        page_title="HAVEN - Crowdfunding Platform",
+        page_icon="🏠",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
     
-    # Check authentication status
-    if not st.session_state.authenticated:
-        # Show login or registration page
-        if st.session_state.current_page == 'register':
-            render_registration_page()
-        else:
+    # Load CSS
+    load_css()
+    
+    # Initialize session state
+    if "logged_in" not in st.session_state:
+        st.session_state.logged_in = False
+    if "selected_language" not in st.session_state:
+        st.session_state.selected_language = "en"
+    if "show_backend_test" not in st.session_state:
+        st.session_state.show_backend_test = False
+    if "show_translation_test" not in st.session_state:
+        st.session_state.show_translation_test = False
+    if "show_simplification_test" not in st.session_state:
+        st.session_state.show_simplification_test = False
+    if "show_demo_content" not in st.session_state:
+        st.session_state.show_demo_content = False
+    
+    # Render sidebar
+    render_sidebar()
+    
+    # Main content area
+    with st.container():
+        st.markdown('<div class="main-content">', unsafe_allow_html=True)
+        
+        # Render header
+        render_header()
+        
+        # Check if user is logged in
+        if not st.session_state.logged_in:
             render_login_page()
-    else:
-        # Show authenticated pages
-        if st.session_state.current_page == 'explore':
-            render_explore_page()
-        elif st.session_state.current_page == 'search':
-            render_search_page()
         else:
-            render_home_page()
+            # Show main application content
+            st.markdown(f"## Welcome back, {st.session_state.get('user_email', 'User')}! 👋")
+            
+            # Show different sections based on sidebar selection
+            if st.session_state.show_backend_test:
+                render_backend_test()
+                if st.button("🔙 Back to Home"):
+                    st.session_state.show_backend_test = False
+                    st.rerun()
+            
+            elif st.session_state.show_translation_test:
+                render_translation_test()
+                if st.button("🔙 Back to Home"):
+                    st.session_state.show_translation_test = False
+                    st.rerun()
+            
+            elif st.session_state.show_simplification_test:
+                render_simplification_test()
+                if st.button("🔙 Back to Home"):
+                    st.session_state.show_simplification_test = False
+                    st.rerun()
+            
+            elif st.session_state.show_demo_content:
+                render_demo_content()
+                if st.button("🔙 Back to Home"):
+                    st.session_state.show_demo_content = False
+                    st.rerun()
+            
+            else:
+                # Default home content
+                st.markdown("### 🎯 Platform Features")
+                
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.markdown("""
+                    **🌐 Multi-language Support**
+                    - English, Hindi, Tamil, Telugu
+                    - Real-time translation
+                    - Localized content
+                    """)
+                
+                with col2:
+                    st.markdown("""
+                    **📝 Smart Simplification**
+                    - Automatic term detection
+                    - Hover tooltips
+                    - Context-aware definitions
+                    """)
+                
+                with col3:
+                    st.markdown("""
+                    **🔐 Secure Authentication**
+                    - Google OAuth
+                    - Facebook OAuth
+                    - Secure sessions
+                    """)
+                
+                # Demo content preview
+                st.markdown("---")
+                st.markdown("### 📚 Try Automatic Term Simplification")
+                
+                sample_text = "Our startup is seeking crowdfunding for a blockchain-based cryptocurrency platform with high ROI potential."
+                sample_with_tooltips = add_tooltips_to_text(sample_text)
+                
+                st.markdown(f"""
+                <div class="content-with-tooltips">
+                <p><strong>Sample text with automatic tooltips:</strong></p>
+                <p>{sample_with_tooltips}</p>
+                <p><em>Hover over the blue terms to see definitions!</em></p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Logout button
+                if st.button("🚪 Logout"):
+                    st.session_state.logged_in = False
+                    st.rerun()
+        
+        st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
