@@ -31,7 +31,7 @@ def load_logo():
 
 logo_base64 = load_logo()
 
-# Custom CSS with MaterializeCSS and HAVEN styling
+# Custom CSS with MaterializeCSS and HAVEN styling - FIXED HTML RENDERING
 def load_css():
     st.markdown("""
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
@@ -57,72 +57,92 @@ def load_css():
         --haven-light-green: #81c784;
         --haven-dark-green: #2e7d32;
         --haven-accent: #ff5722;
+        --text-dark: #212121;
+        --text-light: #ffffff;
+        --background-light: #ffffff;
+        --background-dark: #2e7d32;
     }
     
     /* Full page background */
     .stApp {
-        background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%);
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         font-family: 'Roboto', sans-serif;
+        font-size: 18px; /* Bigger base font size */
     }
     
-    /* Header styling */
+    /* Header styling - Dark background with light text */
     .haven-header {
-        background: linear-gradient(135deg, var(--haven-green) 0%, var(--haven-dark-green) 100%);
-        padding: 20px 0;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        margin-bottom: 30px;
+        background: linear-gradient(135deg, var(--haven-dark-green) 0%, var(--haven-green) 100%);
+        padding: 25px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        margin-bottom: 40px;
     }
     
     .haven-logo {
-        max-height: 60px;
+        max-height: 70px;
         width: auto;
     }
     
     .haven-title {
-        color: white;
-        font-size: 2.5rem;
+        color: var(--text-light); /* Light text on dark background */
+        font-size: 3rem; /* Bigger font */
         font-weight: 700;
         margin: 0;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
     
     .haven-subtitle {
-        color: #e8f5e8;
-        font-size: 1.2rem;
+        color: #e8f5e8; /* Light text on dark background */
+        font-size: 1.4rem; /* Bigger font */
         margin: 0;
         font-weight: 300;
     }
     
-    /* Navigation styling */
+    .header-tagline {
+        color: var(--text-light); /* Light text on dark background */
+        font-size: 1.6rem; /* Bigger font */
+        margin: 0;
+        font-weight: 500;
+    }
+    
+    .header-description {
+        color: #e8f5e8; /* Light text on dark background */
+        font-size: 1.1rem; /* Bigger font */
+        margin: 0;
+        font-weight: 300;
+    }
+    
+    /* Navigation styling - Light background with dark text */
     .haven-nav {
         position: fixed;
         right: 20px;
         top: 50%;
         transform: translateY(-50%);
         z-index: 1000;
-        background: rgba(255, 255, 255, 0.95);
+        background: var(--background-light); /* Light background */
         backdrop-filter: blur(10px);
         border-radius: 25px;
         padding: 15px 10px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(0,0,0,0.1);
     }
     
     .nav-item {
         display: block;
         padding: 12px;
         margin: 8px 0;
-        color: var(--haven-green);
+        color: var(--text-dark); /* Dark text on light background */
         text-decoration: none;
         border-radius: 50%;
         transition: all 0.3s ease;
         text-align: center;
         position: relative;
+        font-size: 1.2rem; /* Bigger icons */
     }
     
     .nav-item:hover {
         background: var(--haven-green);
-        color: white;
+        color: var(--text-light); /* Light text on dark background when hovered */
         transform: scale(1.1);
         box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
     }
@@ -132,15 +152,16 @@ def load_css():
         right: 60px;
         top: 50%;
         transform: translateY(-50%);
-        background: rgba(0,0,0,0.8);
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 14px;
+        background: var(--text-dark); /* Dark background */
+        color: var(--text-light); /* Light text */
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 16px; /* Bigger font */
         white-space: nowrap;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.3s ease;
+        font-weight: 500;
     }
     
     .nav-item:hover .nav-tooltip {
@@ -158,7 +179,7 @@ def load_css():
             transform: none;
             display: flex;
             justify-content: space-around;
-            padding: 10px;
+            padding: 15px;
         }
         
         .nav-item {
@@ -171,81 +192,95 @@ def load_css():
         }
     }
     
-    /* Card styling */
+    /* Card styling - Light background with dark text */
     .haven-card {
-        background: white;
-        border-radius: 15px;
+        background: var(--background-light); /* Light background */
+        color: var(--text-dark); /* Dark text */
+        border-radius: 20px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        padding: 30px;
-        margin: 20px 0;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 40px;
+        margin: 30px 0;
+        border: 1px solid rgba(0,0,0,0.05);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     
     .haven-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 45px rgba(0,0,0,0.15);
+        transform: translateY(-8px);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
     }
     
-    /* Campaign card styling */
+    .haven-card h3, .haven-card h4, .haven-card h5 {
+        color: var(--text-dark); /* Dark text on light background */
+        font-weight: 600;
+    }
+    
+    .haven-card p {
+        color: #424242; /* Dark gray text on light background */
+        font-size: 1.1rem; /* Bigger font */
+        line-height: 1.7;
+    }
+    
+    /* Campaign card styling - Light background with dark text */
     .campaign-card {
-        background: white;
-        border-radius: 15px;
+        background: var(--background-light); /* Light background */
+        color: var(--text-dark); /* Dark text */
+        border-radius: 20px;
         overflow: hidden;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        margin: 20px 0;
+        margin: 25px 0;
     }
     
     .campaign-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        transform: translateY(-10px);
+        box-shadow: 0 25px 70px rgba(0,0,0,0.2);
     }
     
     .campaign-image {
         width: 100%;
-        height: 200px;
+        height: 220px;
         object-fit: cover;
     }
     
     .campaign-content {
-        padding: 25px;
+        padding: 30px;
     }
     
     .campaign-title {
-        font-size: 1.4rem;
+        font-size: 1.6rem; /* Bigger font */
         font-weight: 600;
-        color: var(--haven-dark-green);
-        margin-bottom: 10px;
+        color: var(--text-dark); /* Dark text on light background */
+        margin-bottom: 15px;
+        line-height: 1.4;
     }
     
     .campaign-description {
-        color: #666;
-        font-size: 0.95rem;
-        line-height: 1.6;
-        margin-bottom: 20px;
+        color: #424242; /* Dark gray text on light background */
+        font-size: 1.1rem; /* Bigger font */
+        line-height: 1.7;
+        margin-bottom: 25px;
     }
     
     .progress-container {
         background: #f5f5f5;
-        border-radius: 10px;
-        height: 8px;
-        margin: 15px 0;
+        border-radius: 12px;
+        height: 10px;
+        margin: 20px 0;
         overflow: hidden;
     }
     
     .progress-bar {
         background: linear-gradient(90deg, var(--haven-green), var(--haven-light-green));
         height: 100%;
-        border-radius: 10px;
+        border-radius: 12px;
         transition: width 0.3s ease;
     }
     
     .campaign-stats {
         display: flex;
         justify-content: space-between;
-        margin: 15px 0;
-        font-size: 0.9rem;
+        margin: 20px 0;
+        font-size: 1rem; /* Bigger font */
     }
     
     .stat-item {
@@ -255,32 +290,35 @@ def load_css():
     .stat-value {
         font-weight: 600;
         color: var(--haven-green);
-        font-size: 1.1rem;
+        font-size: 1.3rem; /* Bigger font */
     }
     
     .stat-label {
-        color: #666;
-        font-size: 0.8rem;
+        color: #424242; /* Dark text on light background */
+        font-size: 1rem; /* Bigger font */
+        font-weight: 500;
     }
     
     /* Button styling */
     .btn-haven {
         background: linear-gradient(135deg, var(--haven-green), var(--haven-light-green));
         border: none;
-        color: white;
-        padding: 12px 30px;
-        border-radius: 25px;
-        font-weight: 500;
+        color: var(--text-light); /* Light text on dark background */
+        padding: 15px 35px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 1.1rem; /* Bigger font */
         text-transform: uppercase;
         letter-spacing: 1px;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
     }
     
     .btn-haven:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
         background: linear-gradient(135deg, var(--haven-dark-green), var(--haven-green));
+        color: var(--text-light); /* Keep light text */
     }
     
     /* Floating Action Button */
@@ -292,58 +330,62 @@ def load_css():
     }
     
     .btn-floating.btn-large {
-        width: 70px;
-        height: 70px;
+        width: 75px;
+        height: 75px;
         background: linear-gradient(135deg, #f44336, #d32f2f);
         box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4);
         transition: all 0.3s ease;
     }
     
     .btn-floating.btn-large:hover {
-        transform: scale(1.1) rotate(90deg);
-        box-shadow: 0 12px 35px rgba(244, 67, 54, 0.6);
+        transform: scale(1.15) rotate(90deg);
+        box-shadow: 0 15px 40px rgba(244, 67, 54, 0.6);
     }
     
     .btn-floating.btn-large i {
-        line-height: 70px;
-        font-size: 2rem;
+        line-height: 75px;
+        font-size: 2.2rem; /* Bigger icon */
+        color: var(--text-light); /* Light text on dark background */
     }
     
     /* OAuth button styling */
     .oauth-btn {
         width: 100%;
-        margin: 10px 0;
-        padding: 15px;
-        border-radius: 8px;
+        margin: 15px 0;
+        padding: 18px;
+        border-radius: 10px;
         border: none;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 1.1rem; /* Bigger font */
         transition: all 0.3s ease;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
+        gap: 12px;
     }
     
     .google-btn {
         background: #db4437;
-        color: white;
+        color: var(--text-light); /* Light text on dark background */
     }
     
     .google-btn:hover {
         background: #c23321;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(219, 68, 55, 0.4);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(219, 68, 55, 0.4);
+        color: var(--text-light); /* Keep light text */
     }
     
     .facebook-btn {
         background: #3b5998;
-        color: white;
+        color: var(--text-light); /* Light text on dark background */
     }
     
     .facebook-btn:hover {
         background: #2d4373;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(59, 89, 152, 0.4);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(59, 89, 152, 0.4);
+        color: var(--text-light); /* Keep light text */
     }
     
     /* Pulse animation */
@@ -356,39 +398,64 @@ def load_css():
             box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
         }
         70% {
-            box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+            box-shadow: 0 0 0 15px rgba(76, 175, 80, 0);
         }
         100% {
             box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
         }
     }
     
-    /* Form styling */
+    /* Form styling - Light background with dark text */
+    .input-field {
+        margin-bottom: 25px;
+    }
+    
+    .input-field input, .input-field textarea {
+        color: var(--text-dark); /* Dark text on light background */
+        font-size: 1.1rem; /* Bigger font */
+    }
+    
+    .input-field label {
+        color: #424242; /* Dark text on light background */
+        font-size: 1rem; /* Bigger font */
+    }
+    
     .input-field input:focus + label {
         color: var(--haven-green) !important;
     }
     
     .input-field input:focus {
-        border-bottom: 1px solid var(--haven-green) !important;
+        border-bottom: 2px solid var(--haven-green) !important;
         box-shadow: 0 1px 0 0 var(--haven-green) !important;
+    }
+    
+    .input-field .prefix {
+        color: #424242; /* Dark text */
+        font-size: 1.2rem; /* Bigger icons */
     }
     
     .input-field .prefix.active {
         color: var(--haven-green);
     }
     
-    /* Category grid */
+    .helper-text {
+        font-size: 0.9rem; /* Bigger font */
+        color: #424242; /* Dark text */
+    }
+    
+    /* Category grid - Light background with dark text */
     .category-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        margin: 30px 0;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin: 40px 0;
     }
     
     .category-card {
-        background: white;
-        border-radius: 15px;
-        padding: 25px;
+        background: var(--background-light); /* Light background */
+        color: var(--text-dark); /* Dark text */
+        border-radius: 20px;
+        padding: 35px;
         text-align: center;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         transition: all 0.3s ease;
@@ -396,75 +463,110 @@ def load_css():
     }
     
     .category-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 45px rgba(0,0,0,0.15);
+        transform: translateY(-8px);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
     }
     
     .category-icon {
-        font-size: 3rem;
+        font-size: 3.5rem; /* Bigger icons */
         color: var(--haven-green);
-        margin-bottom: 15px;
+        margin-bottom: 20px;
     }
     
     .category-title {
-        font-size: 1.2rem;
+        font-size: 1.4rem; /* Bigger font */
         font-weight: 600;
-        color: var(--haven-dark-green);
-        margin-bottom: 10px;
+        color: var(--text-dark); /* Dark text on light background */
+        margin-bottom: 12px;
     }
     
     .category-count {
-        color: #666;
-        font-size: 0.9rem;
+        color: #424242; /* Dark text on light background */
+        font-size: 1rem; /* Bigger font */
+        font-weight: 500;
+    }
+    
+    /* Text styling rules */
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--text-dark); /* Dark text on light backgrounds */
+        font-weight: 600;
+    }
+    
+    p, span, div {
+        color: var(--text-dark); /* Dark text on light backgrounds */
+    }
+    
+    /* Dark background elements get light text */
+    .haven-header *, 
+    .btn-haven *, 
+    .oauth-btn *, 
+    .btn-floating * {
+        color: var(--text-light) !important; /* Light text on dark backgrounds */
     }
     
     /* Responsive design */
     @media (max-width: 768px) {
         .haven-title {
-            font-size: 2rem;
+            font-size: 2.5rem; /* Bigger mobile font */
         }
         
         .haven-subtitle {
-            font-size: 1rem;
+            font-size: 1.2rem; /* Bigger mobile font */
+        }
+        
+        .header-tagline {
+            font-size: 1.4rem; /* Bigger mobile font */
+        }
+        
+        .header-description {
+            font-size: 1rem; /* Bigger mobile font */
         }
         
         .haven-card {
-            padding: 20px;
-            margin: 15px 0;
+            padding: 25px;
+            margin: 20px 0;
         }
         
         .campaign-content {
-            padding: 20px;
+            padding: 25px;
+        }
+        
+        .campaign-title {
+            font-size: 1.4rem; /* Bigger mobile font */
+        }
+        
+        .campaign-description {
+            font-size: 1rem; /* Bigger mobile font */
         }
         
         .fixed-action-btn {
-            bottom: 100px;
+            bottom: 120px;
             right: 20px;
         }
         
         .btn-floating.btn-large {
-            width: 60px;
-            height: 60px;
+            width: 65px;
+            height: 65px;
         }
         
         .btn-floating.btn-large i {
-            line-height: 60px;
-            font-size: 1.5rem;
+            line-height: 65px;
+            font-size: 1.8rem;
         }
     }
     
     /* Animation classes */
     .fade-in {
-        animation: fadeIn 0.6s ease-in;
+        animation: fadeIn 0.8s ease-in;
     }
     
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
+        from { opacity: 0; transform: translateY(30px); }
         to { opacity: 1; transform: translateY(0); }
     }
     
     .slide-in-right {
-        animation: slideInRight 0.5s ease-out;
+        animation: slideInRight 0.6s ease-out;
     }
     
     @keyframes slideInRight {
@@ -546,14 +648,19 @@ def load_javascript():
     
     // Smooth scroll to section
     function scrollToSection(sectionId) {
-        document.getElementById(sectionId).scrollIntoView({
-            behavior: 'smooth'
-        });
+        const element = document.getElementById(sectionId);
+        if (element) {
+            element.scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
     }
     
     // Form validation
     function validateForm(formId) {
         const form = document.getElementById(formId);
+        if (!form) return false;
+        
         const inputs = form.querySelectorAll('input[required], textarea[required]');
         let isValid = true;
         
@@ -581,9 +688,9 @@ def init_session_state():
     if 'token' not in st.session_state:
         st.session_state.token = None
 
-# Header component
+# Header component - FIXED HTML RENDERING
 def render_header():
-    st.markdown(f"""
+    header_html = f"""
     <div class="haven-header">
         <div class="container">
             <div class="row valign-wrapper">
@@ -596,18 +703,19 @@ def render_header():
                 </div>
                 <div class="col s12 m6 l8">
                     <div class="right-align hide-on-small-only">
-                        <h4 style="color: white; margin: 0;">Building Dreams Together</h4>
-                        <p style="color: #e8f5e8; margin: 0;">Empowering communities through collaborative funding</p>
+                        <h4 class="header-tagline">Building Dreams Together</h4>
+                        <p class="header-description">Empowering communities through collaborative funding</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown(header_html, unsafe_allow_html=True)
 
-# Navigation component
+# Navigation component - FIXED HTML RENDERING
 def render_navigation():
-    st.markdown("""
+    nav_html = """
     <div class="haven-nav">
         <a href="#" class="nav-item" onclick="scrollToSection('home')">
             <i class="material-icons">home</i>
@@ -630,105 +738,97 @@ def render_navigation():
             <span class="nav-tooltip">Logout</span>
         </a>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown(nav_html, unsafe_allow_html=True)
 
-# Floating Action Button
+# Floating Action Button - FIXED HTML RENDERING
 def render_fab():
-    st.markdown("""
+    fab_html = """
     <div class="fixed-action-btn">
         <a class="btn-floating btn-large waves-effect waves-light red" onclick="scrollToSection('create-campaign')">
             <i class="material-icons">add</i>
         </a>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown(fab_html, unsafe_allow_html=True)
 
-# Authentication page
+# Authentication page - FIXED HTML RENDERING
 def render_auth_page():
     st.markdown('<div id="auth" class="section">', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        st.markdown("""
+        # Welcome card
+        welcome_html = """
         <div class="haven-card fade-in">
             <div class="center-align">
-                <h4 style="color: var(--haven-green); margin-bottom: 30px;">
-                    <i class="material-icons left">account_circle</i>
+                <h3 style="color: var(--haven-green); margin-bottom: 30px;">
+                    <i class="material-icons large">account_circle</i>
                     Welcome to HAVEN
-                </h4>
+                </h3>
+                <p style="font-size: 1.2rem; margin-bottom: 30px;">
+                    Join thousands of people supporting meaningful causes and building a better tomorrow together.
+                </p>
             </div>
-        """, unsafe_allow_html=True)
+        </div>
+        """
+        st.markdown(welcome_html, unsafe_allow_html=True)
         
         # Login/Register tabs
         tab1, tab2 = st.tabs(["Sign In", "Register"])
         
         with tab1:
-            st.markdown("""
-            <form id="loginForm" class="row">
-                <div class="row">
-                    <div class="input-field col s12">
-                        <i class="material-icons prefix">email</i>
-                        <input id="email" type="email" class="validate" required>
-                        <label for="email">Email</label>
-                        <span class="helper-text" data-error="Please enter a valid email" data-success="Valid email"></span>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="input-field col s12">
-                        <i class="material-icons prefix">lock</i>
-                        <input id="password" type="password" class="validate" required minlength="6">
-                        <label for="password">Password</label>
-                        <span class="helper-text" data-error="Password must be at least 6 characters" data-success="Valid password"></span>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col s12">
-                        <label>
-                            <input type="checkbox" id="remember" />
-                            <span>Remember me</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col s6">
-                        <button class="btn waves-effect waves-light btn-haven" type="submit" style="width: 100%;">
-                            Sign In
-                            <i class="material-icons right">send</i>
-                        </button>
-                    </div>
-                    <div class="col s6">
-                        <button class="btn waves-effect waves-light grey" type="button" style="width: 100%;">
-                            Register
-                            <i class="material-icons right">person_add</i>
-                        </button>
-                    </div>
-                </div>
-            </form>
-
-            <div class="divider" style="margin: 30px 0;"></div>
-
-            <div class="row">
-                <div class="col s12 center-align">
-                    <p style="color: #666; margin-bottom: 20px;">Or continue with:</p>
-                </div>
+            # OAuth buttons - FIXED HTML RENDERING
+            oauth_html = """
+            <div class="center-align" style="margin: 30px 0;">
+                <p style="font-size: 1.1rem; margin-bottom: 25px;">Sign in with your account:</p>
+                
+                <button class="oauth-btn google-btn pulse" onclick="openOAuthPopup('google')">
+                    <i class="material-icons">search</i>
+                    Continue with Google
+                </button>
+                
+                <button class="oauth-btn facebook-btn pulse" onclick="openOAuthPopup('facebook')">
+                    <i class="material-icons">facebook</i>
+                    Continue with Facebook
+                </button>
+                
+                <div class="divider" style="margin: 30px 0;"></div>
+                <p style="font-size: 1rem; color: #666;">Or sign in with email:</p>
             </div>
-
-            <div class="row">
-                <div class="col s6">
-                    <button class="btn waves-effect waves-light google-btn oauth-btn pulse" style="width: 100%;" onclick="openOAuthPopup('google')">
-                        <i class="material-icons left">search</i>Google
-                    </button>
-                </div>
-                <div class="col s6">
-                    <button class="btn waves-effect waves-light facebook-btn oauth-btn pulse" style="width: 100%;" onclick="openOAuthPopup('facebook')">
-                        <i class="material-icons left">facebook</i>Facebook
-                    </button>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            """
+            st.markdown(oauth_html, unsafe_allow_html=True)
+            
+            # Email login form
+            with st.form("login_form"):
+                email = st.text_input("Email Address", placeholder="Enter your email")
+                password = st.text_input("Password", type="password", placeholder="Enter your password")
+                remember_me = st.checkbox("Remember me")
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    login_submitted = st.form_submit_button("Sign In", use_container_width=True)
+                with col2:
+                    register_button = st.form_submit_button("Create Account", use_container_width=True)
+                
+                if login_submitted:
+                    if email and password:
+                        try:
+                            response = requests.post(f"{BACKEND_URL}/api/auth/login", 
+                                                   params={"email": email, "password": password})
+                            if response.status_code == 200:
+                                result = response.json()
+                                st.session_state.token = result["access_token"]
+                                st.session_state.user = result["user"]
+                                st.success("Login successful!")
+                                st.rerun()
+                            else:
+                                st.error("Invalid email or password")
+                        except Exception as e:
+                            st.error(f"Login error: {str(e)}")
+                    else:
+                        st.error("Please enter both email and password")
         
         with tab2:
             with st.form("register_form"):
@@ -781,24 +881,22 @@ def render_auth_page():
                             st.error(f"Registration error: {str(e)}")
                     else:
                         st.error("Please fill in all required fields and agree to terms.")
-        
-        st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
 
-# Home page
+# Home page - FIXED HTML RENDERING
 def render_home_page():
     st.markdown('<div id="home" class="section">', unsafe_allow_html=True)
     
     # Hero section
-    st.markdown("""
+    hero_html = """
     <div class="haven-card fade-in">
         <div class="center-align">
-            <h3 style="color: var(--haven-green); margin-bottom: 20px;">
-                <i class="material-icons large">favorite</i>
+            <h3 style="margin-bottom: 25px;">
+                <i class="material-icons large" style="color: var(--haven-green);">favorite</i>
                 Make a Difference Today
             </h3>
-            <p style="font-size: 1.2rem; color: #666; margin-bottom: 30px;">
+            <p style="font-size: 1.3rem; margin-bottom: 35px;">
                 Join thousands of people supporting meaningful causes and building a better tomorrow together.
             </p>
             <button class="btn-large waves-effect waves-light btn-haven">
@@ -807,17 +905,22 @@ def render_home_page():
             </button>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown(hero_html, unsafe_allow_html=True)
     
-    # Trending campaigns
-    st.markdown("""
+    # Trending campaigns header
+    trending_header_html = """
     <div class="haven-card slide-in-right">
-        <h4 style="color: var(--haven-green); margin-bottom: 30px;">
-            <i class="material-icons left">trending_up</i>
+        <h4 style="margin-bottom: 30px;">
+            <i class="material-icons left" style="color: var(--haven-green);">trending_up</i>
             Trending Campaigns
         </h4>
+        <p style="font-size: 1.1rem;">
+            Discover the most popular campaigns making a real impact in communities worldwide.
+        </p>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown(trending_header_html, unsafe_allow_html=True)
     
     # Fetch campaigns from backend
     try:
@@ -841,18 +944,22 @@ def render_home_page():
     
     st.markdown('</div>', unsafe_allow_html=True)
 
-# Campaign card component
+# Campaign card component - FIXED HTML RENDERING
 def render_campaign_card(campaign):
     progress = min(100, (campaign["raised"] / campaign["goal"]) * 100)
-    days_remaining = max(0, (datetime.fromisoformat(campaign["end_date"].replace('Z', '+00:00')) - datetime.now()).days)
+    try:
+        end_date = datetime.fromisoformat(campaign["end_date"].replace('Z', '+00:00'))
+        days_remaining = max(0, (end_date - datetime.now()).days)
+    except:
+        days_remaining = 30  # Default fallback
     
-    st.markdown(f"""
+    campaign_html = f"""
     <div class="campaign-card">
-        <img src="{campaign.get('image_url', 'https://via.placeholder.com/400x200')}" 
+        <img src="{campaign.get('image_url', 'https://via.placeholder.com/400x220')}" 
              alt="{campaign['title']}" class="campaign-image">
         <div class="campaign-content">
             <h5 class="campaign-title">{campaign['title']}</h5>
-            <p class="campaign-description">{campaign['description'][:100]}...</p>
+            <p class="campaign-description">{campaign['description'][:120]}...</p>
             
             <div class="progress-container">
                 <div class="progress-bar" style="width: {progress}%;"></div>
@@ -873,29 +980,33 @@ def render_campaign_card(campaign):
                 </div>
             </div>
             
-            <div class="center-align" style="margin-top: 20px;">
-                <button class="btn waves-effect waves-light btn-haven" 
-                        onclick="showDonationForm('{campaign['id']}')">
+            <div class="center-align" style="margin-top: 25px;">
+                <button class="btn waves-effect waves-light btn-haven">
                     Donate Now
                     <i class="material-icons right">favorite</i>
                 </button>
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown(campaign_html, unsafe_allow_html=True)
 
-# Explore page
+# Explore page - FIXED HTML RENDERING
 def render_explore_page():
     st.markdown('<div id="explore" class="section">', unsafe_allow_html=True)
     
-    st.markdown("""
+    explore_header_html = """
     <div class="haven-card fade-in">
-        <h4 style="color: var(--haven-green); margin-bottom: 30px;">
-            <i class="material-icons left">explore</i>
+        <h4 style="margin-bottom: 30px;">
+            <i class="material-icons left" style="color: var(--haven-green);">explore</i>
             Explore Categories
         </h4>
+        <p style="font-size: 1.1rem;">
+            Browse campaigns by category to find causes that matter to you.
+        </p>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown(explore_header_html, unsafe_allow_html=True)
     
     # Category grid
     categories = [
@@ -910,30 +1021,35 @@ def render_explore_page():
     cols = st.columns(3)
     for i, category in enumerate(categories):
         with cols[i % 3]:
-            st.markdown(f"""
-            <div class="category-card" onclick="filterByCategory('{category['name'].lower()}')">
+            category_html = f"""
+            <div class="category-card">
                 <i class="material-icons category-icon" style="color: {category['color']};">
                     {category['icon']}
                 </i>
                 <div class="category-title">{category['name']}</div>
                 <div class="category-count">{category['count']} campaigns</div>
             </div>
-            """, unsafe_allow_html=True)
+            """
+            st.markdown(category_html, unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
 
-# Search page
+# Search page - FIXED HTML RENDERING
 def render_search_page():
     st.markdown('<div id="search" class="section">', unsafe_allow_html=True)
     
-    st.markdown("""
+    search_header_html = """
     <div class="haven-card fade-in">
-        <h4 style="color: var(--haven-green); margin-bottom: 30px;">
-            <i class="material-icons left">search</i>
+        <h4 style="margin-bottom: 30px;">
+            <i class="material-icons left" style="color: var(--haven-green);">search</i>
             Search Campaigns
         </h4>
+        <p style="font-size: 1.1rem;">
+            Find specific campaigns using keywords and filters.
+        </p>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown(search_header_html, unsafe_allow_html=True)
     
     with st.form("search_form"):
         col1, col2, col3 = st.columns([3, 2, 1])
@@ -979,86 +1095,6 @@ def render_search_page():
     
     st.markdown('</div>', unsafe_allow_html=True)
 
-# Donation form
-def render_donation_form():
-    st.markdown('<div id="donation" class="section">', unsafe_allow_html=True)
-    
-    if 'selected_campaign' in st.session_state:
-        campaign = st.session_state.selected_campaign
-        
-        col1, col2, col3 = st.columns([1, 2, 1])
-        
-        with col2:
-            st.markdown(f"""
-            <div class="haven-card fade-in">
-                <h4 style="color: var(--haven-green); margin-bottom: 20px;">
-                    <i class="material-icons left">favorite</i>
-                    Donate to: {campaign['title']}
-                </h4>
-                <p style="color: #666; margin-bottom: 30px;">
-                    Your contribution will make a real difference!
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            with st.form("donation_form"):
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    donor_name = st.text_input("Full Name", placeholder="Enter your full name")
-                    donor_email = st.text_input("Email", placeholder="your.email@example.com")
-                
-                with col2:
-                    donor_phone = st.text_input("Phone Number", placeholder="+91-9876543210")
-                    amount = st.number_input("Donation Amount (₹)", min_value=100, max_value=100000, value=1000)
-                
-                message = st.text_area("Message (Optional)", placeholder="Leave a message for the campaign creator...")
-                is_anonymous = st.checkbox("Make this donation anonymous")
-                
-                submitted = st.form_submit_button("Donate Now", use_container_width=True)
-                
-                if submitted:
-                    if donor_name and donor_email and donor_phone and amount:
-                        # Create donation payment
-                        donation_data = {
-                            "campaign_id": campaign["id"],
-                            "amount": amount,
-                            "donor_name": donor_name,
-                            "donor_email": donor_email,
-                            "donor_phone": donor_phone,
-                            "message": message,
-                            "is_anonymous": is_anonymous
-                        }
-                        
-                        try:
-                            headers = {"Authorization": f"Bearer {st.session_state.token}"}
-                            response = requests.post(
-                                f"{BACKEND_URL}/api/payments/create-donation",
-                                json=donation_data,
-                                headers=headers
-                            )
-                            
-                            if response.status_code == 200:
-                                payment_data = response.json()
-                                
-                                st.success("Redirecting to payment gateway...")
-                                st.markdown(f"""
-                                <script>
-                                    redirectToPayment('{payment_data["payment_url"]}');
-                                </script>
-                                """, unsafe_allow_html=True)
-                                
-                                st.info(f"Payment ID: {payment_data['payment_request_id']}")
-                                st.info(f"Amount: ₹{payment_data['amount']}")
-                            else:
-                                st.error("Failed to create payment. Please try again.")
-                        except Exception as e:
-                            st.error(f"Payment error: {str(e)}")
-                    else:
-                        st.error("Please fill in all required fields.")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
 # Main app
 def main():
     # Load CSS and JavaScript
@@ -1085,10 +1121,6 @@ def main():
         render_home_page()
         render_explore_page()
         render_search_page()
-        
-        # Render donation form if campaign selected
-        if 'selected_campaign' in st.session_state:
-            render_donation_form()
 
 if __name__ == "__main__":
     main()
