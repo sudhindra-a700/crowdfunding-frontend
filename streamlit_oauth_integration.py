@@ -1,429 +1,455 @@
-# Streamlit OAuth Integration for HAVEN Crowdfunding Platform
-# Add this to your existing front_main.py file
+"""
+HAVEN Crowdfunding Platform - Enhanced Streamlit OAuth Integration
+OAuth integration with translation and simplification support
+"""
 
 import streamlit as st
 import requests
 import json
 import time
-from urllib.parse import urlencode, parse_qs
+from typing import Dict, Optional
+from urllib.parse import urlencode, parse_qs, urlparse
+import hashlib
+import secrets
 
-# OAuth Configuration for your Render backend
-BACKEND_URL = "https://srv-d1sq8ser433s73eke7v0.onrender.com"
+# Configuration
+BACKEND_URL = st.secrets.get("BACKEND_URL", "https://haven-fastapi-backend.onrender.com")
 
-class StreamlitOAuthService:
-    """OAuth service specifically designed for Streamlit applications"""
+# Language support
+SUPPORTED_LANGUAGES = {
+    "en": {"name": "English", "flag": "🇺🇸", "native": "English"},
+    "hi": {"name": "Hindi", "flag": "🇮🇳", "native": "हिन्दी"},
+    "ta": {"name": "Tamil", "flag": "🇮🇳", "native": "தமிழ்"},
+    "te": {"name": "Telugu", "flag": "🇮🇳", "native": "తెలుగు"}
+}
+
+class EnhancedOAuthManager:
+    """Enhanced OAuth manager with translation support"""
     
     def __init__(self):
         self.backend_url = BACKEND_URL
-        self.token_key = 'oauth_access_token'
-        self.user_key = 'oauth_user_profile'
+        self.session_key = "oauth_session"
+        self.user_key = "user_data"
+        self.language_key = "user_language"
         
-    def is_authenticated(self):
+        # Initialize session state
+        if self.session_key not in st.session_state:
+            st.session_state[self.session_key] = {}
+        
+        if self.user_key not in st.session_state:
+            st.session_state[self.user_key] = None
+        
+        if self.language_key not in st.session_state:
+            st.session_state[self.language_key] = "en"
+    
+    def translate_text(self, text: str, target_language: str = None) -> str:
+        """Translate text using backend API"""
+        if not target_language:
+            target_language = st.session_state.get(self.language_key, "en")
+        
+        if not text or target_language == "en":
+            return text
+        
+        try:
+            response = requests.post(
+                f"{self.backend_url}/api/translate/quick",
+                params={
+                    "text": text,
+                    "target_language": target_language,
+                    "source_language": "en"
+                },
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                return result.get("translated_text", text)
+            else:
+                return text
+        
+        except Exception:
+            return text
+    
+    def display_translated_text(self, text: str, markdown: bool = True):
+        """Display text with translation if needed"""
+        translated = self.translate_text(text)
+        
+        if markdown:
+            st.markdown(translated)
+        else:
+            st.text(translated)
+    
+    def generate_state_token(self) -> str:
+        """Generate secure state token for OAuth"""
+        return secrets.token_urlsafe(32)
+    
+    def get_oauth_url(self, provider: str) -> str:
+        """Get OAuth URL for provider"""
+        if provider.lower() == "google":
+            return f"{self.backend_url}/auth/google/login"
+        elif provider.lower() == "facebook":
+            return f"{self.backend_url}/auth/facebook/login"
+        else:
+            raise ValueError(f"Unsupported provider: {provider}")
+    
+    def handle_oauth_callback(self, provider: str, code: str, state: str) -> Dict:
+        """Handle OAuth callback"""
+        try:
+            # Verify state token
+            stored_state = st.session_state[self.session_key].get(f"{provider}_state")
+            if not stored_state or stored_state != state:
+                return {"error": "Invalid state token"}
+            
+            # Exchange code for tokens
+            callback_url = f"{self.backend_url}/auth/{provider}/callback"
+            response = requests.get(
+                callback_url,
+                params={"code": code, "state": state},
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                user_data = response.json()
+                
+                # Store user data
+                st.session_state[self.user_key] = user_data
+                
+                # Clear OAuth session
+                if f"{provider}_state" in st.session_state[self.session_key]:
+                    del st.session_state[self.session_key][f"{provider}_state"]
+                
+                return {"success": True, "user": user_data}
+            else:
+                return {"error": f"OAuth callback failed: {response.status_code}"}
+        
+        except Exception as e:
+            return {"error": f"OAuth callback error: {str(e)}"}
+    
+    def is_authenticated(self) -> bool:
         """Check if user is authenticated"""
-        token = st.session_state.get(self.token_key)
-        if not token:
-            return False
-        
-        try:
-            # Simple JWT expiration check
-            import base64
-            payload = json.loads(base64.b64decode(token.split('.')[1] + '=='))
-            return payload.get('exp', 0) > time.time()
-        except:
-            return False
+        return st.session_state[self.user_key] is not None
     
-    def get_access_token(self):
-        """Get stored access token"""
-        return st.session_state.get(self.token_key)
-    
-    def get_user_profile(self):
-        """Get stored user profile"""
-        return st.session_state.get(self.user_key)
-    
-    def store_auth_data(self, token, user_profile):
-        """Store authentication data in session state"""
-        st.session_state[self.token_key] = token
-        st.session_state[self.user_key] = user_profile
-        st.session_state.logged_in = True
-        st.session_state.username = user_profile.get('email', 'User')
-        st.session_state.user_role = user_profile.get('role', 'user')
-    
-    def clear_auth_data(self):
-        """Clear authentication data"""
-        keys_to_remove = [self.token_key, self.user_key]
-        for key in keys_to_remove:
-            if key in st.session_state:
-                del st.session_state[key]
-        
-        st.session_state.logged_in = False
-        st.session_state.username = None
-        st.session_state.user_role = "user"
-    
-    def get_google_auth_url(self):
-        """Get Google OAuth authorization URL"""
-        return f"{self.backend_url}/auth/google"
-    
-    def get_facebook_auth_url(self):
-        """Get Facebook OAuth authorization URL"""
-        return f"{self.backend_url}/auth/facebook"
-    
-    def handle_oauth_callback(self):
-        """Handle OAuth callback from URL parameters"""
-        # Get URL parameters
-        query_params = st.query_params
-        
-        access_token = query_params.get('access_token')
-        error = query_params.get('error')
-        
-        if error:
-            st.error(f"OAuth authentication failed: {error}")
-            return False
-        
-        if access_token:
-            try:
-                # Fetch user profile with the token
-                user_profile = self.fetch_user_profile(access_token)
-                if user_profile:
-                    self.store_auth_data(access_token, user_profile)
-                    st.success(f"Welcome, {user_profile.get('name', 'User')}!")
-                    
-                    # Clear URL parameters
-                    st.query_params.clear()
-                    
-                    # Navigate to home page
-                    st.session_state.current_page = 'home'
-                    st.rerun()
-                    return True
-            except Exception as e:
-                st.error(f"Failed to complete authentication: {str(e)}")
-                return False
-        
-        return False
-    
-    def fetch_user_profile(self, token):
-        """Fetch user profile using access token"""
-        try:
-            headers = {
-                'Authorization': f'Bearer {token}',
-                'Content-Type': 'application/json'
-            }
-            
-            response = requests.get(f"{self.backend_url}/auth/profile", headers=headers)
-            response.raise_for_status()
-            
-            return response.json()
-        except requests.exceptions.RequestException as e:
-            st.error(f"Failed to fetch user profile: {str(e)}")
-            return None
+    def get_user_data(self) -> Optional[Dict]:
+        """Get current user data"""
+        return st.session_state[self.user_key]
     
     def logout(self):
         """Logout user"""
-        token = self.get_access_token()
+        st.session_state[self.user_key] = None
+        st.session_state[self.session_key] = {}
         
-        if token:
-            try:
-                headers = {
-                    'Authorization': f'Bearer {token}',
-                    'Content-Type': 'application/json'
-                }
-                requests.post(f"{self.backend_url}/auth/logout", headers=headers)
-            except:
-                pass  # Ignore logout request failures
-        
-        self.clear_auth_data()
-        st.session_state.current_page = 'login'
-        st.success("Logged out successfully!")
-        st.rerun()
+        # Clear any cached data
+        for key in list(st.session_state.keys()):
+            if key.startswith("oauth_") or key.startswith("user_"):
+                del st.session_state[key]
     
-    def check_oauth_status(self):
-        """Check which OAuth providers are available"""
+    def render_language_selector(self):
+        """Render language selector"""
+        st.markdown("### 🌍 Language Settings")
+        
+        current_lang = st.session_state.get(self.language_key, "en")
+        
+        language_options = [
+            f"{lang_info['flag']} {lang_info['native']}" 
+            for lang_code, lang_info in SUPPORTED_LANGUAGES.items()
+        ]
+        
+        selected_lang_display = st.selectbox(
+            "Select your preferred language:",
+            language_options,
+            index=list(SUPPORTED_LANGUAGES.keys()).index(current_lang),
+            key="oauth_language_selector"
+        )
+        
+        # Extract language code from selection
+        for lang_code, lang_info in SUPPORTED_LANGUAGES.items():
+            if f"{lang_info['flag']} {lang_info['native']}" == selected_lang_display:
+                if st.session_state[self.language_key] != lang_code:
+                    st.session_state[self.language_key] = lang_code
+                    st.rerun()
+                break
+    
+    def render_oauth_buttons(self):
+        """Render OAuth login buttons"""
+        st.markdown("### 🔐 Sign In Options")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if st.button("🔴 Sign in with Google", key="google_oauth", type="primary"):
+                self.initiate_oauth("google")
+        
+        with col2:
+            if st.button("🔵 Sign in with Facebook", key="facebook_oauth", type="primary"):
+                self.initiate_oauth("facebook")
+    
+    def initiate_oauth(self, provider: str):
+        """Initiate OAuth flow"""
         try:
-            response = requests.get(f"{self.backend_url}/auth/status")
-            response.raise_for_status()
-            return response.json()
-        except:
-            return {"google_available": False, "facebook_available": False}
-
-# Create global OAuth service instance
-oauth_service = StreamlitOAuthService()
-
-def render_oauth_buttons():
-    """Render OAuth login buttons with proper styling"""
+            # Generate and store state token
+            state_token = self.generate_state_token()
+            st.session_state[self.session_key][f"{provider}_state"] = state_token
+            
+            # Get OAuth URL
+            oauth_url = self.get_oauth_url(provider)
+            
+            # Add state parameter if needed
+            if "?" in oauth_url:
+                oauth_url += f"&state={state_token}"
+            else:
+                oauth_url += f"?state={state_token}"
+            
+            # Redirect user
+            st.markdown(f"""
+            <script>
+                window.open('{oauth_url}', '_blank');
+            </script>
+            """, unsafe_allow_html=True)
+            
+            st.info(f"🔄 Redirecting to {provider.title()} for authentication...")
+            st.markdown(f"[Click here if redirect doesn't work]({oauth_url})")
+            
+        except Exception as e:
+            st.error(f"OAuth initiation failed: {str(e)}")
     
-    # Check OAuth provider status
-    oauth_status = oauth_service.check_oauth_status()
+    def render_user_profile(self):
+        """Render user profile section"""
+        user_data = self.get_user_data()
+        
+        if not user_data:
+            return
+        
+        st.markdown("### 👤 User Profile")
+        
+        col1, col2 = st.columns([1, 3])
+        
+        with col1:
+            # Profile picture
+            profile_pic = user_data.get("picture", "https://via.placeholder.com/150")
+            st.image(profile_pic, width=150, caption="Profile Picture")
+        
+        with col2:
+            # User information
+            name = user_data.get("name", "Unknown User")
+            email = user_data.get("email", "No email")
+            provider = user_data.get("provider", "Unknown")
+            
+            self.display_translated_text(f"**Name:** {name}")
+            self.display_translated_text(f"**Email:** {email}")
+            self.display_translated_text(f"**Provider:** {provider.title()}")
+            
+            if "locale" in user_data:
+                self.display_translated_text(f"**Locale:** {user_data['locale']}")
+            
+            # Logout button
+            if st.button("🚪 Sign Out", key="logout_button"):
+                self.logout()
+                st.rerun()
     
-    st.markdown("""
-    <style>
-    .oauth-container {
-        background: #f0f8f0;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin: 20px 0;
-        text-align: center;
-    }
-    
-    .oauth-title {
-        color: #2d5a2d;
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 20px;
-    }
-    
-    .oauth-button {
-        display: inline-block;
-        width: 100%;
-        max-width: 300px;
-        padding: 12px 24px;
-        margin: 8px;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
-        text-decoration: none;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .google-oauth {
-        background-color: #4285f4;
-        color: white;
-    }
-    
-    .google-oauth:hover {
-        background-color: #357ae8;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
-    }
-    
-    .facebook-oauth {
-        background-color: #1877f2;
-        color: white;
-    }
-    
-    .facebook-oauth:hover {
-        background-color: #166fe5;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
-    }
-    
-    .oauth-divider {
-        margin: 20px 0;
-        text-align: center;
-        position: relative;
-    }
-    
-    .oauth-divider::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: #ddd;
-    }
-    
-    .oauth-divider span {
-        background: #f0f8f0;
-        padding: 0 15px;
-        color: #666;
-        font-size: 14px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("""
-    <div class="oauth-container">
-        <div class="oauth-title">Sign in with your social account</div>
-    """, unsafe_allow_html=True)
-    
-    # Create columns for buttons
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        if oauth_status.get('google_available', False):
-            if st.button("🔍 Sign in with Google", key="google_oauth", help="Sign in using your Google account"):
-                st.markdown(f'<meta http-equiv="refresh" content="0; url={oauth_service.get_google_auth_url()}">', unsafe_allow_html=True)
-                st.write("Redirecting to Google...")
+    def render_authentication_page(self):
+        """Render complete authentication page"""
+        st.markdown("## 🔐 Authentication")
+        
+        # Language selector
+        self.render_language_selector()
+        
+        st.markdown("---")
+        
+        if self.is_authenticated():
+            # Show user profile
+            self.render_user_profile()
+            
+            # Show user statistics
+            st.markdown("---")
+            st.markdown("### 📊 Your Activity")
+            
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.metric("Campaigns Created", "0")
+            with col2:
+                st.metric("Projects Supported", "0")
+            with col3:
+                st.metric("Total Contributed", "$0")
+            
+            self.display_translated_text("""
+            **Welcome to HAVEN!** You can now create campaigns, support projects, 
+            and access all platform features. Your profile information is securely 
+            stored and can be updated at any time.
+            """)
+        
         else:
-            st.button("🔍 Google (Not Available)", disabled=True, help="Google OAuth is not configured")
+            # Show login options
+            self.display_translated_text("""
+            **Welcome to HAVEN Crowdfunding Platform!** 
+            
+            Sign in to access all features including:
+            - Create and manage crowdfunding campaigns
+            - Support innovative projects
+            - Track your contributions and rewards
+            - Access multilingual content
+            - Get simplified explanations of complex terms
+            """)
+            
+            st.markdown("---")
+            
+            # OAuth buttons
+            self.render_oauth_buttons()
+            
+            st.markdown("---")
+            
+            # Manual login form
+            self.render_manual_login_form()
     
-    with col2:
-        if oauth_status.get('facebook_available', False):
-            if st.button("📘 Sign in with Facebook", key="facebook_oauth", help="Sign in using your Facebook account"):
-                st.markdown(f'<meta http-equiv="refresh" content="0; url={oauth_service.get_facebook_auth_url()}">', unsafe_allow_html=True)
-                st.write("Redirecting to Facebook...")
+    def render_manual_login_form(self):
+        """Render manual login form"""
+        st.markdown("### 📝 Manual Sign In")
+        
+        with st.form("manual_login"):
+            email = st.text_input("Email Address", placeholder="your@email.com")
+            password = st.text_input("Password", type="password")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                if st.form_submit_button("🔑 Sign In", type="primary"):
+                    if email and password:
+                        # Mock authentication for demo
+                        mock_user_data = {
+                            "name": "Demo User",
+                            "email": email,
+                            "provider": "manual",
+                            "picture": "https://via.placeholder.com/150",
+                            "locale": st.session_state[self.language_key]
+                        }
+                        
+                        st.session_state[self.user_key] = mock_user_data
+                        st.success("✅ Successfully signed in!")
+                        st.rerun()
+                    else:
+                        st.error("Please enter both email and password")
+            
+            with col2:
+                if st.form_submit_button("📝 Create Account"):
+                    st.info("Account creation would be handled here")
+    
+    def handle_oauth_redirect(self):
+        """Handle OAuth redirect from URL parameters"""
+        # Get URL parameters
+        query_params = st.experimental_get_query_params()
+        
+        if "code" in query_params and "state" in query_params:
+            code = query_params["code"][0]
+            state = query_params["state"][0]
+            
+            # Determine provider from state or URL
+            provider = None
+            if "google" in str(query_params):
+                provider = "google"
+            elif "facebook" in str(query_params):
+                provider = "facebook"
+            
+            if provider:
+                with st.spinner(f"Completing {provider.title()} authentication..."):
+                    result = self.handle_oauth_callback(provider, code, state)
+                    
+                    if "success" in result:
+                        st.success(f"✅ Successfully signed in with {provider.title()}!")
+                        
+                        # Clear URL parameters
+                        st.experimental_set_query_params()
+                        st.rerun()
+                    else:
+                        st.error(f"❌ Authentication failed: {result.get('error', 'Unknown error')}")
+    
+    def render_protected_content(self, content_func):
+        """Render content only if user is authenticated"""
+        if self.is_authenticated():
+            content_func()
         else:
-            st.button("📘 Facebook (Not Available)", disabled=True, help="Facebook OAuth is not configured")
+            st.warning("🔒 Please sign in to access this content")
+            
+            with st.expander("🔐 Sign In"):
+                self.render_oauth_buttons()
     
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # Add divider
-    st.markdown("""
-    <div class="oauth-divider">
-        <span>or continue with email</span>
-    </div>
-    """, unsafe_allow_html=True)
-
-def render_user_profile_widget():
-    """Render user profile widget for authenticated users"""
-    if not oauth_service.is_authenticated():
-        return
-    
-    user = oauth_service.get_user_profile()
-    if not user:
-        return
-    
-    st.markdown("""
-    <style>
-    .user-profile-widget {
-        background: #f0f8f0;
-        border-radius: 12px;
-        padding: 20px;
-        margin: 10px 0;
-        border: 2px solid #4CAF50;
-    }
-    
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 15px;
-    }
-    
-    .user-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        border: 2px solid #4CAF50;
-    }
-    
-    .user-details h4 {
-        margin: 0;
-        color: #2d5a2d;
-        font-size: 16px;
-    }
-    
-    .user-details p {
-        margin: 2px 0;
-        color: #666;
-        font-size: 12px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    with st.sidebar:
-        st.markdown(f"""
-        <div class="user-profile-widget">
-            <div class="user-info">
-                <img src="{user.get('picture', 'https://via.placeholder.com/50')}" alt="Profile" class="user-avatar">
-                <div class="user-details">
-                    <h4>{user.get('name', 'User')}</h4>
-                    <p>{user.get('email', '')}</p>
-                    <p>via {user.get('provider', 'OAuth')}</p>
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    def get_user_language(self) -> str:
+        """Get user's preferred language"""
+        user_data = self.get_user_data()
         
-        if st.button("🚪 Sign Out", key="oauth_logout"):
-            oauth_service.logout()
-
-def check_oauth_callback():
-    """Check for OAuth callback and handle it"""
-    query_params = st.query_params
-    
-    if 'access_token' in query_params or 'error' in query_params:
-        return oauth_service.handle_oauth_callback()
-    
-    return False
-
-# Modified login function to include OAuth
-def login_user_with_oauth(email, password):
-    """Enhanced login function that supports both traditional and OAuth login"""
-    try:
-        response = requests.post(f"{BACKEND_URL}/login", json={"email": email, "password": password})
-        response.raise_for_status()
-        token_data = response.json()
+        if user_data and "locale" in user_data:
+            # Try to map locale to supported language
+            locale = user_data["locale"].lower()
+            if locale.startswith("hi"):
+                return "hi"
+            elif locale.startswith("ta"):
+                return "ta"
+            elif locale.startswith("te"):
+                return "te"
         
-        # Store traditional auth data
-        st.session_state.auth_token = token_data.get("access_token")
-        st.session_state.user_role = token_data.get("role", "user")
-        st.session_state.logged_in = True
-        st.session_state.username = email
-        st.session_state.current_page = "home"
+        return st.session_state.get(self.language_key, "en")
+    
+    def update_user_language(self, language: str):
+        """Update user's language preference"""
+        st.session_state[self.language_key] = language
         
-        st.success(f"Welcome, {email}!")
-        st.rerun()
-    except requests.exceptions.HTTPError as e:
-        st.error(f"Login failed: {e.response.json().get('detail', 'Incorrect email or password')}")
-    except requests.exceptions.RequestException as e:
-        st.error(f"Login failed: Could not connect to backend. Is it running? {e}")
+        # Update user data if authenticated
+        if self.is_authenticated():
+            user_data = st.session_state[self.user_key]
+            user_data["locale"] = language
+            st.session_state[self.user_key] = user_data
 
-def logout_user_enhanced():
-    """Enhanced logout function that handles both traditional and OAuth logout"""
-    if oauth_service.is_authenticated():
-        oauth_service.logout()
-    else:
-        # Traditional logout
-        st.session_state.logged_in = False
-        st.session_state.auth_token = None
-        st.session_state.username = None
-        st.session_state.user_role = "user"
-        st.session_state.current_page = "login"
-        st.success("Logged out successfully.")
-        st.rerun()
+# Global OAuth manager instance
+oauth_manager = None
 
-# Enhanced authentication check
-def is_user_authenticated():
-    """Check if user is authenticated via OAuth or traditional login"""
-    return oauth_service.is_authenticated() or st.session_state.get('logged_in', False)
+def get_oauth_manager() -> EnhancedOAuthManager:
+    """Get or create OAuth manager instance"""
+    global oauth_manager
+    if oauth_manager is None:
+        oauth_manager = EnhancedOAuthManager()
+    return oauth_manager
 
-def get_enhanced_auth_headers():
-    """Get authentication headers for API requests"""
-    # Try OAuth token first
-    oauth_token = oauth_service.get_access_token()
-    if oauth_token:
-        return {"Authorization": f"Bearer {oauth_token}"}
+# Utility functions for easy integration
+def require_authentication(func):
+    """Decorator to require authentication for a function"""
+    def wrapper(*args, **kwargs):
+        oauth_mgr = get_oauth_manager()
+        if oauth_mgr.is_authenticated():
+            return func(*args, **kwargs)
+        else:
+            st.warning("🔒 Authentication required")
+            oauth_mgr.render_oauth_buttons()
+            return None
+    return wrapper
+
+def translate_for_user(text: str) -> str:
+    """Translate text for current user's language"""
+    oauth_mgr = get_oauth_manager()
+    return oauth_mgr.translate_text(text)
+
+def display_user_text(text: str, markdown: bool = True):
+    """Display text translated for user"""
+    oauth_mgr = get_oauth_manager()
+    oauth_mgr.display_translated_text(text, markdown)
+
+# Example usage and testing
+if __name__ == "__main__":
+    st.title("🔐 OAuth Integration Test")
     
-    # Fall back to traditional auth token
-    if st.session_state.get("auth_token"):
-        return {"Authorization": f"Bearer {st.session_state.auth_token}"}
+    oauth_mgr = get_oauth_manager()
     
-    return {}
-
-# Usage instructions for integration:
-"""
-To integrate OAuth into your existing front_main.py:
-
-1. Add the imports at the top:
-   from streamlit_oauth_integration import (
-       oauth_service, render_oauth_buttons, render_user_profile_widget,
-       check_oauth_callback, login_user_with_oauth, logout_user_enhanced,
-       is_user_authenticated, get_enhanced_auth_headers
-   )
-
-2. Replace your existing login_user function with login_user_with_oauth
-
-3. Replace your existing logout_user function with logout_user_enhanced
-
-4. Replace your existing get_auth_headers function with get_enhanced_auth_headers
-
-5. Replace st.session_state.logged_in checks with is_user_authenticated()
-
-6. In your render_login_page function, add OAuth buttons:
-   render_oauth_buttons()
-
-7. Add user profile widget to sidebar:
-   render_user_profile_widget()
-
-8. Add OAuth callback check at the start of your main app:
-   if check_oauth_callback():
-       st.rerun()
-
-9. Update your BACKEND_URL to point to your Render service:
-   BACKEND_URL = "https://srv-d1sq8ser433s73eke7v0.onrender.com"
-"""
+    # Handle OAuth redirects
+    oauth_mgr.handle_oauth_redirect()
+    
+    # Render authentication page
+    oauth_mgr.render_authentication_page()
+    
+    # Test protected content
+    st.markdown("---")
+    st.markdown("## 🔒 Protected Content Test")
+    
+    def protected_content():
+        st.success("🎉 You have access to protected content!")
+        display_user_text("This content is only available to authenticated users.")
+    
+    oauth_mgr.render_protected_content(protected_content)
 
