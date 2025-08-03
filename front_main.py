@@ -1,7 +1,7 @@
 """
-HAVEN Crowdfunding Platform - Logo Integration Frontend
-Complete Streamlit application with HAVEN logo and relaxing colors
-Authentication-first approach with beautiful logo branding
+HAVEN Crowdfunding Platform - Fixed Dark Text Frontend
+Complete Streamlit application with dark text on light backgrounds
+JavaScript error fixes and improved color scheme
 """
 
 import streamlit as st
@@ -47,16 +47,22 @@ st.set_page_config(
 def get_logo_base64():
     """Convert logo image to base64 for embedding"""
     try:
-        # Try to read the logo file
-        logo_path = "/home/ubuntu/haven_logo.png"
-        if os.path.exists(logo_path):
-            with open(logo_path, "rb") as img_file:
-                return base64.b64encode(img_file.read()).decode()
-        else:
-            # Fallback: create a simple SVG logo if file not found
-            return None
+        # Try multiple possible logo paths
+        logo_paths = [
+            "/home/ubuntu/haven_logo.png",
+            "/home/ubuntu/assets/haven_logo.png",
+            "./assets/haven_logo.png",
+            "./haven_logo.png"
+        ]
+        
+        for logo_path in logo_paths:
+            if os.path.exists(logo_path):
+                with open(logo_path, "rb") as img_file:
+                    return base64.b64encode(img_file.read()).decode()
+        
+        return None
     except Exception as e:
-        st.error(f"Error loading logo: {e}")
+        # Silently handle errors to prevent JavaScript issues
         return None
 
 def create_fallback_logo():
@@ -68,59 +74,72 @@ def create_fallback_logo():
         <path d="M50 50 L70 30 L90 50 L90 65 L50 65 Z" fill="#2d5a3d" stroke="#1a4d2e" stroke-width="2"/>
         
         <!-- Windows -->
-        <rect x="25" y="40" width="8" height="8" fill="#a8e6cf"/>
-        <rect x="47" y="40" width="8" height="8" fill="#a8e6cf"/>
-        <rect x="55" y="40" width="8" height="8" fill="#a8e6cf"/>
-        <rect x="77" y="40" width="8" height="8" fill="#a8e6cf"/>
+        <rect x="25" y="40" width="8" height="8" fill="#e8f5e8"/>
+        <rect x="47" y="40" width="8" height="8" fill="#e8f5e8"/>
+        <rect x="55" y="40" width="8" height="8" fill="#e8f5e8"/>
+        <rect x="77" y="40" width="8" height="8" fill="#e8f5e8"/>
         
         <!-- Leaves -->
         <ellipse cx="15" cy="25" rx="8" ry="12" fill="#7bc96f" transform="rotate(-20 15 25)"/>
         <ellipse cx="95" cy="25" rx="8" ry="12" fill="#7bc96f" transform="rotate(20 95 25)"/>
         
         <!-- Text -->
-        <text x="110" y="55" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#7bc96f">Haven</text>
+        <text x="110" y="55" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#2d5a3d">Haven</text>
     </svg>
     """
 
 # ========================================
-# RELAXING COLORS CSS STYLING WITH LOGO
+# DARK TEXT ON LIGHT BACKGROUNDS CSS
 # ========================================
 
 logo_base64 = get_logo_base64()
 
 st.markdown(f"""
 <style>
-    /* Color Palette Variables */
+    /* Color Palette Variables - Dark Text on Light Backgrounds */
     :root {{
-        /* Light shades for backgrounds */
-        --bg-primary: #e0ffcd;    /* Light mint green */
-        --bg-secondary: #fdffcd;  /* Light yellow-green */
-        --bg-tertiary: #ffebbb;   /* Light peach */
-        --bg-quaternary: #ffcab0; /* Light coral */
+        /* Light and bright backgrounds */
+        --bg-primary: #f0f8ff;      /* Light blue */
+        --bg-secondary: #e6e6fa;    /* Lavender */
+        --bg-tertiary: #ffffff;     /* White */
+        --bg-quaternary: #f0fff0;   /* Light green */
+        --bg-accent: #e8f5e8;       /* Very light green */
         
-        /* Darker shades for other elements */
-        --accent-primary: #a8e6cf;   /* Mint green */
-        --accent-secondary: #dcedc1; /* Sage green */
-        --accent-tertiary: #ffd3b6;  /* Peach */
-        --accent-quaternary: #ffaaa5; /* Coral */
+        /* Dark text colors */
+        --text-primary: #1a202c;    /* Dark blue-gray */
+        --text-secondary: #2d3748;  /* Dark gray */
+        --text-tertiary: #4a5568;   /* Medium gray */
+        --text-light: #718096;      /* Light gray for placeholders */
         
-        /* Text colors */
-        --text-primary: #2d3748;
-        --text-secondary: #4a5568;
-        --text-light: #718096;
+        /* Accent colors */
+        --accent-primary: #4299e1;   /* Blue */
+        --accent-secondary: #48bb78; /* Green */
+        --accent-tertiary: #9f7aea;  /* Purple */
+        --accent-quaternary: #ed8936; /* Orange */
+        
+        /* Border colors */
+        --border-light: #e2e8f0;
+        --border-medium: #cbd5e0;
+        --border-dark: #a0aec0;
     }}
     
-    /* Hide Streamlit default elements */
-    .stDeployButton {{display:none;}}
-    footer {{visibility: hidden;}}
-    .stApp > header {{visibility: hidden;}}
-    #MainMenu {{visibility: hidden;}}
+    /* Hide Streamlit default elements to prevent JavaScript errors */
+    .stDeployButton {{display: none !important;}}
+    footer {{visibility: hidden !important;}}
+    .stApp > header {{visibility: hidden !important;}}
+    #MainMenu {{visibility: hidden !important;}}
+    
+    /* Prevent JavaScript selector errors */
+    .stApp {{
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+    }}
     
     /* Main container styling */
     .main {{
-        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-quaternary) 100%);
         min-height: 100vh;
         padding: 0;
+        color: var(--text-primary);
     }}
     
     /* Center container for forms */
@@ -128,12 +147,12 @@ st.markdown(f"""
         max-width: 500px;
         margin: 0 auto;
         padding: 2rem;
-        background: rgba(255, 255, 255, 0.95);
+        background: var(--bg-tertiary);
         border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        box-shadow: 0 15px 35px rgba(26, 32, 44, 0.1);
         margin-top: 5vh;
-        border: 2px solid var(--accent-primary);
-        backdrop-filter: blur(10px);
+        border: 2px solid var(--border-light);
+        color: var(--text-primary);
     }}
     
     /* HAVEN Header styling with logo */
@@ -141,11 +160,11 @@ st.markdown(f"""
         text-align: center;
         margin-bottom: 2rem;
         padding: 2rem;
-        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        background: linear-gradient(135deg, var(--bg-quaternary) 0%, var(--bg-accent) 100%);
         border-radius: 15px;
         color: var(--text-primary);
-        box-shadow: 0 8px 25px rgba(168, 230, 207, 0.3);
-        border: 1px solid var(--accent-tertiary);
+        box-shadow: 0 8px 25px rgba(26, 32, 44, 0.1);
+        border: 1px solid var(--border-light);
     }}
     
     /* Logo styling */
@@ -154,16 +173,16 @@ st.markdown(f"""
         height: auto;
         margin: 0 auto;
         display: block;
-        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        filter: drop-shadow(2px 2px 4px rgba(26, 32, 44, 0.1));
         transition: all 0.3s ease;
     }}
     
     .haven-logo:hover {{
         transform: scale(1.05);
-        filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.15));
+        filter: drop-shadow(3px 3px 6px rgba(26, 32, 44, 0.15));
     }}
     
-    /* Fallback logo container */
+    /* Logo container */
     .logo-container {{
         display: flex;
         justify-content: center;
@@ -186,56 +205,78 @@ st.markdown(f"""
         width: auto;
         margin-right: 10px;
         vertical-align: middle;
-        filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.1));
+        filter: drop-shadow(1px 1px 2px rgba(26, 32, 44, 0.1));
     }}
     
-    /* Form styling */
+    /* Form styling with dark text */
     .stTextInput > div > div > input {{
-        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%) !important;
-        border: 2px solid var(--accent-primary) !important;
+        background: var(--bg-tertiary) !important;
+        border: 2px solid var(--border-medium) !important;
         border-radius: 12px !important;
         padding: 15px !important;
         font-size: 16px !important;
         color: var(--text-primary) !important;
         transition: all 0.3s ease !important;
-        box-shadow: 0 2px 8px rgba(168, 230, 207, 0.2) !important;
+        box-shadow: 0 2px 8px rgba(26, 32, 44, 0.05) !important;
     }}
     
     .stTextInput > div > div > input:focus {{
-        border-color: var(--accent-secondary) !important;
-        box-shadow: 0 0 0 4px rgba(168, 230, 207, 0.2) !important;
-        background: var(--bg-secondary) !important;
+        border-color: var(--accent-primary) !important;
+        box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.1) !important;
+        background: var(--bg-tertiary) !important;
         outline: none !important;
+        color: var(--text-primary) !important;
+    }}
+    
+    .stTextInput > div > div > input::placeholder {{
+        color: var(--text-light) !important;
+        font-style: italic;
     }}
     
     .stSelectbox > div > div > select {{
-        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%) !important;
-        border: 2px solid var(--accent-primary) !important;
+        background: var(--bg-tertiary) !important;
+        border: 2px solid var(--border-medium) !important;
         border-radius: 12px !important;
         padding: 15px !important;
         font-size: 16px !important;
         color: var(--text-primary) !important;
         transition: all 0.3s ease !important;
-        box-shadow: 0 2px 8px rgba(168, 230, 207, 0.2) !important;
+        box-shadow: 0 2px 8px rgba(26, 32, 44, 0.05) !important;
+    }}
+    
+    .stSelectbox > div > div > select:focus {{
+        border-color: var(--accent-primary) !important;
+        box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.1) !important;
+        background: var(--bg-tertiary) !important;
+        outline: none !important;
+        color: var(--text-primary) !important;
     }}
     
     .stTextArea > div > div > textarea {{
-        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%) !important;
-        border: 2px solid var(--accent-primary) !important;
+        background: var(--bg-tertiary) !important;
+        border: 2px solid var(--border-medium) !important;
         border-radius: 12px !important;
         padding: 15px !important;
         font-size: 16px !important;
         color: var(--text-primary) !important;
         transition: all 0.3s ease !important;
         resize: vertical;
-        box-shadow: 0 2px 8px rgba(168, 230, 207, 0.2) !important;
+        box-shadow: 0 2px 8px rgba(26, 32, 44, 0.05) !important;
     }}
     
-    /* Button styling */
-    .stButton > button {{
-        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%) !important;
+    .stTextArea > div > div > textarea:focus {{
+        border-color: var(--accent-primary) !important;
+        box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.1) !important;
+        background: var(--bg-tertiary) !important;
+        outline: none !important;
         color: var(--text-primary) !important;
-        border: 2px solid var(--accent-tertiary) !important;
+    }}
+    
+    /* Button styling with dark text */
+    .stButton > button {{
+        background: linear-gradient(135deg, var(--accent-secondary) 0%, #38a169 100%) !important;
+        color: var(--bg-tertiary) !important;
+        border: 2px solid var(--accent-secondary) !important;
         border-radius: 12px !important;
         padding: 15px 30px !important;
         font-size: 16px !important;
@@ -243,17 +284,17 @@ st.markdown(f"""
         width: 100% !important;
         cursor: pointer !important;
         transition: all 0.3s ease !important;
-        box-shadow: 0 4px 15px rgba(168, 230, 207, 0.3) !important;
+        box-shadow: 0 4px 15px rgba(72, 187, 120, 0.2) !important;
     }}
     
     .stButton > button:hover {{
-        background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-tertiary) 100%) !important;
+        background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
         transform: translateY(-3px) !important;
-        box-shadow: 0 8px 25px rgba(168, 230, 207, 0.4) !important;
-        border-color: var(--accent-quaternary) !important;
+        box-shadow: 0 8px 25px rgba(72, 187, 120, 0.3) !important;
+        color: var(--bg-tertiary) !important;
     }}
     
-    /* OAuth buttons */
+    /* OAuth buttons with proper contrast */
     .oauth-button {{
         display: flex;
         align-items: center;
@@ -265,133 +306,190 @@ st.markdown(f"""
         font-weight: bold;
         transition: all 0.3s ease;
         cursor: pointer;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(26, 32, 44, 0.1);
         border: 2px solid transparent;
+        color: var(--text-primary);
     }}
     
     .oauth-button:hover {{
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        box-shadow: 0 8px 25px rgba(26, 32, 44, 0.2);
     }}
     
     .google-btn {{
-        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        background: var(--bg-tertiary);
         border-color: #db4437;
         color: #db4437;
     }}
     
     .google-btn:hover {{
-        background: linear-gradient(135deg, #db4437 0%, #c23321 100%);
-        color: white;
-        border-color: var(--accent-primary);
+        background: #db4437;
+        color: var(--bg-tertiary);
     }}
     
     .facebook-btn {{
-        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        background: var(--bg-tertiary);
         border-color: #4267B2;
         color: #4267B2;
     }}
     
     .facebook-btn:hover {{
-        background: linear-gradient(135deg, #4267B2 0%, #365899 100%);
-        color: white;
-        border-color: var(--accent-primary);
+        background: #4267B2;
+        color: var(--bg-tertiary);
     }}
     
     /* Registration type cards */
     .reg-type-card {{
-        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-        border: 2px solid var(--accent-primary);
+        background: var(--bg-tertiary);
+        border: 2px solid var(--border-medium);
         border-radius: 15px;
         padding: 2rem;
         margin: 1.5rem 0;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(168, 230, 207, 0.2);
+        box-shadow: 0 4px 15px rgba(26, 32, 44, 0.05);
+        color: var(--text-primary);
     }}
     
     .reg-type-card:hover {{
-        border-color: var(--accent-secondary);
-        box-shadow: 0 8px 25px rgba(168, 230, 207, 0.3);
+        border-color: var(--accent-primary);
+        box-shadow: 0 8px 25px rgba(66, 153, 225, 0.15);
         transform: translateY(-3px);
-        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        background: var(--bg-primary);
     }}
     
     .reg-type-card.selected {{
-        border-color: var(--accent-tertiary);
-        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-        box-shadow: 0 8px 25px rgba(168, 230, 207, 0.4);
+        border-color: var(--accent-secondary);
+        background: var(--bg-quaternary);
+        box-shadow: 0 8px 25px rgba(72, 187, 120, 0.2);
         transform: translateY(-2px);
+    }}
+    
+    .reg-type-card h4 {{
+        color: var(--text-primary);
+        margin-bottom: 0.8rem;
+        font-size: 1.3rem;
+    }}
+    
+    .reg-type-card p {{
+        color: var(--text-secondary);
+        font-size: 1rem;
+        line-height: 1.5;
     }}
     
     /* Navigation styling */
     .nav-container {{
-        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        background: linear-gradient(135deg, var(--bg-quaternary) 0%, var(--bg-accent) 100%);
         padding: 1.5rem 2rem;
-        box-shadow: 0 4px 15px rgba(168, 230, 207, 0.3);
+        box-shadow: 0 4px 15px rgba(26, 32, 44, 0.1);
         margin-bottom: 2rem;
-        border-bottom: 3px solid var(--accent-tertiary);
+        border-bottom: 3px solid var(--accent-secondary);
     }}
     
     .nav-brand {{
         font-size: 1.8rem;
         font-weight: bold;
         color: var(--text-primary);
-        text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        text-shadow: 1px 1px 3px rgba(26, 32, 44, 0.1);
         display: flex;
         align-items: center;
     }}
     
     /* Feature cards */
     .feature-card {{
-        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-        border: 2px solid var(--accent-primary);
+        background: var(--bg-tertiary);
+        border: 2px solid var(--border-light);
         border-radius: 15px;
         padding: 2rem;
         margin: 1rem 0;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(168, 230, 207, 0.2);
+        box-shadow: 0 4px 15px rgba(26, 32, 44, 0.05);
+        color: var(--text-primary);
     }}
     
     .feature-card:hover {{
         transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(168, 230, 207, 0.3);
-        border-color: var(--accent-secondary);
-        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        box-shadow: 0 10px 30px rgba(26, 32, 44, 0.1);
+        border-color: var(--accent-primary);
+        background: var(--bg-primary);
+    }}
+    
+    .feature-card h4 {{
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+    }}
+    
+    .feature-card p {{
+        color: var(--text-secondary);
+        line-height: 1.6;
     }}
     
     /* Form sections */
     .form-section {{
         margin: 2rem 0;
         padding: 2rem;
-        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        background: var(--bg-secondary);
         border-radius: 15px;
         border-left: 5px solid var(--accent-primary);
-        box-shadow: 0 6px 20px rgba(168, 230, 207, 0.15);
-        border: 1px solid var(--accent-secondary);
+        box-shadow: 0 6px 20px rgba(26, 32, 44, 0.05);
+        border: 1px solid var(--border-light);
+        color: var(--text-primary);
+    }}
+    
+    .form-section h3 {{
+        color: var(--text-primary);
+        margin-bottom: 1.2rem;
+        font-size: 1.4rem;
+    }}
+    
+    .form-section p {{
+        color: var(--text-secondary);
+        line-height: 1.7;
+        font-size: 1rem;
     }}
     
     /* Success/Error messages */
     .success-msg {{
-        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        background: var(--bg-quaternary);
         color: var(--text-primary);
         padding: 15px;
         border-radius: 12px;
-        border: 2px solid var(--accent-tertiary);
+        border: 2px solid var(--accent-secondary);
         margin: 1rem 0;
         border-left: 5px solid var(--accent-secondary);
-        box-shadow: 0 4px 15px rgba(168, 230, 207, 0.2);
+        box-shadow: 0 4px 15px rgba(72, 187, 120, 0.1);
     }}
     
     .error-msg {{
-        background: linear-gradient(135deg, var(--bg-quaternary) 0%, var(--accent-quaternary) 100%);
+        background: #fed7d7;
+        color: #742a2a;
+        padding: 15px;
+        border-radius: 12px;
+        border: 2px solid #fc8181;
+        margin: 1rem 0;
+        border-left: 5px solid #e53e3e;
+        box-shadow: 0 4px 15px rgba(229, 62, 62, 0.1);
+    }}
+    
+    .info-msg {{
+        background: var(--bg-primary);
         color: var(--text-primary);
         padding: 15px;
         border-radius: 12px;
-        border: 2px solid var(--accent-quaternary);
+        border: 2px solid var(--accent-primary);
         margin: 1rem 0;
-        border-left: 5px solid #dc3545;
-        box-shadow: 0 4px 15px rgba(255, 170, 165, 0.2);
+        border-left: 5px solid var(--accent-primary);
+        box-shadow: 0 4px 15px rgba(66, 153, 225, 0.1);
+    }}
+    
+    /* Ensure all text is dark */
+    h1, h2, h3, h4, h5, h6 {{
+        color: var(--text-primary) !important;
+    }}
+    
+    p, span, div {{
+        color: var(--text-secondary) !important;
     }}
     
     /* Responsive design */
@@ -448,11 +546,27 @@ st.markdown(f"""
     /* Logo pulse animation */
     @keyframes gentle-pulse {{
         0%, 100% {{ opacity: 1; }}
-        50% {{ opacity: 0.9; }}
+        50% {{ opacity: 0.95; }}
     }}
     
     .logo-pulse {{
         animation: gentle-pulse 3s ease-in-out infinite;
+    }}
+    
+    /* Fix for JavaScript errors - ensure elements exist */
+    .stApp::before {{
+        content: "";
+        display: none;
+    }}
+    
+    /* Prevent empty selectors that cause JS errors */
+    [data-testid="stSidebar"] {{
+        display: none !important;
+    }}
+    
+    /* Override any remaining light text */
+    .stMarkdown, .stMarkdown p, .stMarkdown div {{
+        color: var(--text-primary) !important;
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -568,12 +682,12 @@ def render_haven_header():
         """, unsafe_allow_html=True)
 
 def render_login_page():
-    """Render login page with logo"""
+    """Render login page with dark text on light background"""
     st.markdown('<div class="auth-container fade-in">', unsafe_allow_html=True)
     
     render_haven_header()
     
-    st.markdown("## Login")
+    st.markdown('<h2 style="color: var(--text-primary);">Login</h2>', unsafe_allow_html=True)
     st.markdown("---")
     
     # Login form
@@ -604,38 +718,42 @@ def render_login_page():
     # OAuth buttons
     if OAUTH_ENABLED and (GOOGLE_CLIENT_ID or FACEBOOK_APP_ID):
         st.markdown("---")
-        st.markdown("### Or sign in with:")
+        st.markdown('<h3 style="color: var(--text-primary);">Or sign in with:</h3>', unsafe_allow_html=True)
         
         if GOOGLE_CLIENT_ID:
             google_url = get_oauth_url("google")
             st.markdown(f"""
-            <div class="oauth-button google-btn" onclick="window.open('{google_url}', '_blank')">
-                🔴 Sign in with Google
-            </div>
+            <a href="{google_url}" target="_blank" style="text-decoration: none;">
+                <div class="oauth-button google-btn">
+                    🔴 Sign in with Google
+                </div>
+            </a>
             """, unsafe_allow_html=True)
         
         if FACEBOOK_APP_ID:
             facebook_url = get_oauth_url("facebook")
             st.markdown(f"""
-            <div class="oauth-button facebook-btn" onclick="window.open('{facebook_url}', '_blank')">
-                🔵 Sign in with Facebook
-            </div>
+            <a href="{facebook_url}" target="_blank" style="text-decoration: none;">
+                <div class="oauth-button facebook-btn">
+                    🔵 Sign in with Facebook
+                </div>
+            </a>
             """, unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
 
 def render_registration_page():
-    """Render registration page with logo"""
+    """Render registration page with dark text on light background"""
     st.markdown('<div class="auth-container fade-in">', unsafe_allow_html=True)
     
     render_haven_header()
     
-    st.markdown("## Register")
+    st.markdown('<h2 style="color: var(--text-primary);">Register</h2>', unsafe_allow_html=True)
     st.markdown("---")
     
     # Registration type selection
     if st.session_state.registration_type is None:
-        st.markdown("### Choose Registration Type")
+        st.markdown('<h3 style="color: var(--text-primary);">Choose Registration Type</h3>', unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
         
@@ -651,7 +769,7 @@ def render_registration_page():
     
     # Individual registration form
     elif st.session_state.registration_type == "individual":
-        st.markdown("### Register as an Individual")
+        st.markdown('<h3 style="color: var(--text-primary);">Register as an Individual</h3>', unsafe_allow_html=True)
         
         with st.form("individual_registration"):
             full_name = st.text_input("Full Name", placeholder="Enter your full name")
@@ -690,7 +808,7 @@ def render_registration_page():
     
     # Organization registration form
     elif st.session_state.registration_type == "organization":
-        st.markdown("### Register as an Organization")
+        st.markdown('<h3 style="color: var(--text-primary);">Register as an Organization</h3>', unsafe_allow_html=True)
         
         with st.form("organization_registration"):
             org_name = st.text_input("Organization Name", placeholder="Enter organization name")
@@ -766,7 +884,7 @@ def render_navigation():
             <div style="display: flex; gap: 1rem; align-items: center;">
                 <span style="color: var(--text-primary); font-weight: 600;">Welcome, {st.session_state.user_data.get('name', 'User')}</span>
                 <button onclick="location.reload()" style="
-                    background: linear-gradient(135deg, var(--accent-quaternary) 0%, #dc3545 100%); 
+                    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); 
                     color: white; 
                     border: none; 
                     padding: 0.8rem 1.5rem; 
@@ -781,10 +899,10 @@ def render_navigation():
     """, unsafe_allow_html=True)
 
 def render_home_page():
-    """Render home page with logo"""
+    """Render home page with dark text on light background"""
     render_navigation()
     
-    st.markdown("# 🏠 Welcome to HAVEN")
+    st.markdown('<h1 style="color: var(--text-primary);">🏠 Welcome to HAVEN</h1>', unsafe_allow_html=True)
     
     # Navigation buttons
     col1, col2, col3 = st.columns(3)
@@ -845,7 +963,7 @@ def render_explore_page():
     """Render explore campaigns page"""
     render_navigation()
     
-    st.markdown("# 🔍 Explore Campaigns")
+    st.markdown('<h1 style="color: var(--text-primary);">🔍 Explore Campaigns</h1>', unsafe_allow_html=True)
     
     # Back to home
     if st.button("← Back to Home"):
@@ -855,7 +973,7 @@ def render_explore_page():
     st.markdown("---")
     
     # Categories
-    st.markdown("### Browse by Category")
+    st.markdown('<h3 style="color: var(--text-primary);">Browse by Category</h3>', unsafe_allow_html=True)
     
     categories = [
         ("🔬", "Technology", "Innovative tech projects and startups"),
@@ -880,7 +998,7 @@ def render_search_page():
     """Render search campaigns page"""
     render_navigation()
     
-    st.markdown("# 🔎 Search Campaigns")
+    st.markdown('<h1 style="color: var(--text-primary);">🔎 Search Campaigns</h1>', unsafe_allow_html=True)
     
     # Back to home
     if st.button("← Back to Home"):
@@ -908,7 +1026,7 @@ def render_search_page():
         st.markdown(f'<div class="success-msg">🔍 Searching for: "{search_query}" in {category_filter}</div>', unsafe_allow_html=True)
         
         # Mock search results
-        st.markdown("### Search Results")
+        st.markdown('<h3 style="color: var(--text-primary);">Search Results</h3>', unsafe_allow_html=True)
         
         for i in range(3):
             st.markdown(f"""
@@ -945,16 +1063,6 @@ def main():
             render_search_page()
         else:
             render_home_page()
-    
-    # Handle logout (reset session)
-    if st.session_state.authenticated:
-        # Add invisible logout handler
-        if st.button("Logout", key="hidden_logout", help="Logout"):
-            st.session_state.authenticated = False
-            st.session_state.user_data = None
-            st.session_state.current_page = 'login'
-            st.session_state.registration_type = None
-            st.rerun()
 
 if __name__ == "__main__":
     main()
