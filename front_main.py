@@ -18,6 +18,7 @@ st.set_page_config(
 )
 
 # Load HAVEN logo
+@st.cache_data
 def load_logo():
     """Load HAVEN logo from file or use base64 encoded version"""
     try:
@@ -26,18 +27,23 @@ def load_logo():
             logo_data = f.read()
             return base64.b64encode(logo_data).decode()
     except:
-        # Fallback to a simple text logo if image not found
-        return None
-
-logo_base64 = load_logo()
+        # Fallback: try from current directory
+        try:
+            with open("haven_logo.png", "rb") as f:
+                logo_data = f.read()
+                return base64.b64encode(logo_data).decode()
+        except:
+            return None
 
 # Safe MaterializeCSS with custom color scheme
-def load_safe_materialize_css():
+def load_safe_materialize():
     st.markdown("""
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
     <style>
+    /* Import MaterializeCSS safely */
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css');
+    @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+    
     /* Hide Streamlit default elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
@@ -46,7 +52,7 @@ def load_safe_materialize_css():
     
     /* Custom color scheme variables */
     :root {
-        --registration-bg: #ffcdd2;     /* Light red for registration */
+        --registration-bg: #ffcdd2;    /* Light red for registration */
         --profile-search-bg: #f3e5f5;  /* Light purple for profile and search */
         --trending-login-bg: #e3f2fd;  /* Light blue for trending and login */
         --login-alt-bg: #f1f8e9;       /* Light green for login page */
@@ -56,827 +62,487 @@ def load_safe_materialize_css():
         --text-dark-2: #212121;        /* Dark grey */
         --text-dark-3: #1a237e;        /* Dark blue */
         
-        --haven-green: #4caf50;
-        --haven-accent: #ff5722;
+        --haven-green: #4caf50;        /* HAVEN brand green */
+        --haven-accent: #ff5722;       /* HAVEN accent color */
     }
     
     /* Main app styling */
     .stApp {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        background: linear-gradient(135deg, var(--trending-login-bg) 0%, #f8f9fa 100%);
         font-family: 'Roboto', sans-serif;
+        font-size: 18px;
     }
     
     /* Increase all font sizes for better readability */
-    .stMarkdown, .stText, p, div, span {
+    .stApp, .stApp * {
         font-size: 18px !important;
-        line-height: 1.6 !important;
     }
     
-    h1 { font-size: 3rem !important; color: var(--text-dark-2) !important; }
-    h2 { font-size: 2.5rem !important; color: var(--text-dark-2) !important; }
-    h3 { font-size: 2rem !important; color: var(--text-dark-2) !important; }
-    h4 { font-size: 1.8rem !important; color: var(--text-dark-2) !important; }
-    h5 { font-size: 1.5rem !important; color: var(--text-dark-2) !important; }
+    h1 { font-size: 2.5rem !important; color: var(--text-dark-3); }
+    h2 { font-size: 2rem !important; color: var(--text-dark-2); }
+    h3 { font-size: 1.6rem !important; color: var(--text-dark-2); }
+    h4 { font-size: 1.4rem !important; color: var(--text-dark-1); }
+    p { font-size: 1.1rem !important; line-height: 1.6; }
     
-    /* Safe MaterializeCSS card styling with custom backgrounds */
-    .haven-card {
-        padding: 30px;
-        margin: 20px 0;
-        border-radius: 15px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Safe MaterializeCSS classes */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .row { display: flex; flex-wrap: wrap; margin: 0 -12px; }
+    .col { flex: 1; padding: 0 12px; }
+    .s12 { width: 100%; }
+    .m6 { width: 50%; }
+    .l4 { width: 33.333%; }
+    .center-align { text-align: center; }
+    .right-align { text-align: right; }
+    .left-align { text-align: left; }
+    
+    /* Card styling */
+    .card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin: 16px 0;
+        padding: 20px;
+        transition: all 0.3s ease;
     }
     
-    .haven-card:hover {
-        transform: translateY(-5px);
+    .card:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
     }
     
-    /* Page-specific background colors */
-    .registration-card {
-        background-color: var(--registration-bg) !important;
-        color: var(--text-dark-1) !important;
-    }
-    
-    .profile-search-card {
-        background-color: var(--profile-search-bg) !important;
-        color: var(--text-dark-2) !important;
-    }
-    
-    .trending-login-card {
-        background-color: var(--trending-login-bg) !important;
-        color: var(--text-dark-3) !important;
-    }
-    
-    .login-alt-card {
-        background-color: var(--login-alt-bg) !important;
-        color: var(--text-dark-1) !important;
-    }
-    
-    .other-card {
-        background-color: var(--other-bg) !important;
-        color: var(--text-dark-2) !important;
-    }
-    
-    /* Header styling with gradient */
-    .haven-header {
-        background: linear-gradient(135deg, var(--haven-green) 0%, #81c784 100%);
-        padding: 30px 0;
-        margin-bottom: 30px;
-    }
-    
-    .haven-logo {
-        max-height: 80px;
-        width: auto;
-    }
-    
-    /* Safe button styling using Streamlit's system */
-    .stButton > button {
-        background: linear-gradient(135deg, var(--haven-green), #81c784) !important;
+    /* Button styling */
+    .btn-haven {
+        background: var(--haven-green) !important;
         color: white !important;
         border: none !important;
-        border-radius: 25px !important;
-        padding: 15px 30px !important;
-        font-size: 18px !important;
-        font-weight: 600 !important;
-        transition: all 0.3s ease !important;
-        text-transform: uppercase !important;
-        letter-spacing: 1px !important;
-    }
-    
-    .stButton > button:hover {
-        transform: translateY(-3px) !important;
-        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4) !important;
-    }
-    
-    /* Safe input styling */
-    .stTextInput > div > div > input,
-    .stTextArea > div > div > textarea,
-    .stSelectbox > div > div > select {
+        border-radius: 4px !important;
+        padding: 12px 24px !important;
         font-size: 16px !important;
-        padding: 12px !important;
-        border-radius: 8px !important;
-        border: 2px solid #e0e0e0 !important;
-        background-color: white !important;
-        color: var(--text-dark-2) !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
     }
     
-    .stTextInput > div > div > input:focus,
-    .stTextArea > div > div > textarea:focus,
-    .stSelectbox > div > div > select:focus {
-        border-color: var(--haven-green) !important;
-        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
+    .btn-haven:hover {
+        background: #45a049 !important;
+        transform: translateY(-1px) !important;
     }
     
-    /* Safe progress bar styling */
-    .stProgress > div > div > div {
-        background: linear-gradient(90deg, var(--haven-green), #81c784) !important;
-        border-radius: 10px !important;
-    }
+    /* Page-specific backgrounds */
+    .page-login { background: var(--trending-login-bg); color: var(--text-dark-3); }
+    .page-register { background: var(--registration-bg); color: var(--text-dark-1); }
+    .page-profile { background: var(--profile-search-bg); color: var(--text-dark-2); }
+    .page-search { background: var(--profile-search-bg); color: var(--text-dark-2); }
+    .page-trending { background: var(--trending-login-bg); color: var(--text-dark-3); }
     
-    /* Safe metric styling */
-    .stMetric {
-        background: white;
+    /* Progress bar styling */
+    .progress-bar {
+        background: #e0e0e0;
         border-radius: 10px;
-        padding: 20px;
-        text-align: center;
+        height: 20px;
+        overflow: hidden;
         margin: 10px 0;
     }
     
-    /* Safe tab styling */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 20px;
-        background-color: white;
+    .progress-fill {
+        background: linear-gradient(90deg, var(--haven-green), #66bb6a);
+        height: 100%;
         border-radius: 10px;
-        padding: 10px;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        font-size: 18px !important;
-        font-weight: 600 !important;
-        padding: 15px 25px !important;
-        border-radius: 8px !important;
-        color: var(--text-dark-2) !important;
-    }
-    
-    .stTabs [data-baseweb="tab"][aria-selected="true"] {
-        background-color: var(--haven-green) !important;
-        color: white !important;
-    }
-    
-    /* Safe success/error message styling */
-    .stSuccess {
-        font-size: 16px !important;
-        padding: 15px !important;
-        border-radius: 8px !important;
-        background-color: #c8e6c9 !important;
-        color: var(--text-dark-1) !important;
-    }
-    
-    .stError {
-        font-size: 16px !important;
-        padding: 15px !important;
-        border-radius: 8px !important;
-        background-color: #ffcdd2 !important;
-        color: var(--text-dark-1) !important;
-    }
-    
-    .stInfo {
-        font-size: 16px !important;
-        padding: 15px !important;
-        border-radius: 8px !important;
-        background-color: #e3f2fd !important;
-        color: var(--text-dark-3) !important;
-    }
-    
-    /* Safe sidebar styling */
-    .css-1d391kg {
-        background-color: white !important;
-        border-right: 2px solid #e0e0e0 !important;
-    }
-    
-    /* Campaign card specific styling */
-    .campaign-stats {
-        display: flex;
-        justify-content: space-between;
-        margin: 20px 0;
-        font-size: 16px;
-    }
-    
-    .stat-item {
-        text-align: center;
-        flex: 1;
-    }
-    
-    .stat-value {
-        font-weight: 700;
-        color: var(--haven-green);
-        font-size: 1.4rem;
-        display: block;
-    }
-    
-    .stat-label {
-        color: var(--text-dark-2);
-        font-size: 0.9rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        transition: width 0.3s ease;
     }
     
     /* Responsive design */
     @media (max-width: 768px) {
-        .haven-card {
-            padding: 20px;
-            margin: 15px 0;
-        }
-        
-        h1 { font-size: 2.5rem !important; }
-        h2 { font-size: 2rem !important; }
-        h3 { font-size: 1.8rem !important; }
-        h4 { font-size: 1.5rem !important; }
-        h5 { font-size: 1.3rem !important; }
-        
-        .stMarkdown, .stText, p, div, span {
-            font-size: 16px !important;
-        }
+        .container { padding: 0 10px; }
+        .row { margin: 0 -6px; }
+        .col { padding: 0 6px; }
+        .m6, .l4 { width: 100%; }
+        h1 { font-size: 2rem !important; }
+        h2 { font-size: 1.6rem !important; }
     }
     </style>
     """, unsafe_allow_html=True)
 
 # Initialize session state
-def init_session_state():
-    if 'page' not in st.session_state:
-        st.session_state.page = 'home'
-    if 'user' not in st.session_state:
-        st.session_state.user = None
-    if 'token' not in st.session_state:
-        st.session_state.token = None
+if 'page' not in st.session_state:
+    st.session_state.page = 'login'
+if 'user' not in st.session_state:
+    st.session_state.user = None
 
-# Header component using safe MaterializeCSS
-def render_header():
-    header_html = f"""
-    <div class="haven-header z-depth-2">
-        <div class="container">
-            <div class="row valign-wrapper">
-                <div class="col s12 m6 l4 center-align">
-                    {f'<img src="data:image/png;base64,{logo_base64}" class="haven-logo" alt="HAVEN Logo">' if logo_base64 else ''}
-                    <h1 class="white-text" style="margin: 10px 0 5px 0; font-size: 3rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
-                        HAVEN
-                    </h1>
-                    <p class="white-text light" style="margin: 0; font-size: 1.4rem;">
-                        Crowdfunding Platform
-                    </p>
-                </div>
-                <div class="col s12 m6 l8 right-align hide-on-small-only">
-                    <h4 class="white-text light" style="margin: 0; font-size: 1.8rem;">
-                        Building Dreams Together
-                    </h4>
-                    <p class="white-text" style="margin: 0; font-size: 1.2rem; opacity: 0.9;">
-                        Empowering communities through collaborative funding
-                    </p>
-                </div>
-            </div>
+# API helper functions
+@st.cache_data(ttl=300)  # Cache for 5 minutes
+def fetch_campaigns(page=1, limit=10, category=None, trending=None):
+    """Fetch campaigns from backend API"""
+    try:
+        params = {"page": page, "limit": limit}
+        if category:
+            params["category"] = category
+        if trending is not None:
+            params["trending"] = trending
+            
+        response = requests.get(f"{BACKEND_URL}/api/campaigns", params=params, timeout=10)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            st.error(f"Failed to fetch campaigns: {response.status_code}")
+            return {"campaigns": [], "pagination": {"total": 0}}
+    except Exception as e:
+        st.error(f"Error connecting to backend: {str(e)}")
+        return {"campaigns": [], "pagination": {"total": 0}}
+
+@st.cache_data(ttl=300)
+def fetch_categories():
+    """Fetch categories from backend API"""
+    try:
+        response = requests.get(f"{BACKEND_URL}/api/categories", timeout=10)
+        if response.status_code == 200:
+            return response.json().get("categories", [])
+        else:
+            return []
+    except Exception as e:
+        st.error(f"Error fetching categories: {str(e)}")
+        return []
+
+@st.cache_data(ttl=300)
+def search_campaigns(query, category=None):
+    """Search campaigns via backend API"""
+    try:
+        params = {"q": query}
+        if category:
+            params["category"] = category
+            
+        response = requests.get(f"{BACKEND_URL}/api/search", params=params, timeout=10)
+        if response.status_code == 200:
+            return response.json().get("campaigns", [])
+        else:
+            return []
+    except Exception as e:
+        st.error(f"Error searching campaigns: {str(e)}")
+        return []
+
+def display_logo():
+    """Display HAVEN logo"""
+    logo_base64 = load_logo()
+    if logo_base64:
+        st.markdown(f"""
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="data:image/png;base64,{logo_base64}" 
+                 style="max-width: 200px; height: auto;" 
+                 alt="HAVEN Logo">
         </div>
-    </div>
-    """
-    st.markdown(header_html, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <div style="text-align: center; margin: 20px 0;">
+            <h1 style="color: var(--haven-green); font-size: 3rem; margin: 0;">🏠 HAVEN</h1>
+            <p style="color: var(--text-dark-2); font-size: 1.2rem; margin: 5px 0;">Crowdfunding Platform</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-# Navigation using Streamlit sidebar (safe approach)
-def render_navigation():
-    with st.sidebar:
-        st.markdown("### 🧭 Navigation")
+def display_campaign_card(campaign):
+    """Display a campaign card using Streamlit native components"""
+    with st.container():
+        col1, col2 = st.columns([1, 2])
         
-        # Navigation buttons using Streamlit native components
-        if st.button("🏠 Home", use_container_width=True, type="primary" if st.session_state.page == 'home' else "secondary"):
+        with col1:
+            st.image(campaign.get('image_url', 'https://picsum.photos/300/200'), 
+                    width=300, caption=campaign['organization'])
+        
+        with col2:
+            st.subheader(campaign['title'])
+            st.write(campaign['description'][:150] + "..." if len(campaign['description']) > 150 else campaign['description'])
+            
+            # Progress bar
+            progress = campaign.get('progress', 0)
+            st.progress(progress / 100)
+            
+            col_a, col_b, col_c = st.columns(3)
+            with col_a:
+                st.metric("Raised", f"₹{campaign['current_amount']:,}")
+            with col_b:
+                st.metric("Goal", f"₹{campaign['target_amount']:,}")
+            with col_c:
+                st.metric("Days Left", campaign['days_left'])
+            
+            if st.button(f"Donate Now", key=f"donate_{campaign['id']}", type="primary"):
+                st.session_state.selected_campaign = campaign
+                st.session_state.page = 'donate'
+                st.rerun()
+
+def login_page():
+    """Login page with your exact design"""
+    st.markdown('<div class="page-login">', unsafe_allow_html=True)
+    
+    # Display logo
+    display_logo()
+    
+    # Tagline
+    st.markdown("""
+    <div style="text-align: center; margin: 30px 0;">
+        <h3 style="color: var(--text-dark-3); font-weight: 300;">Help not just some people, but Help Humanity</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Login/Register tabs
+    tab1, tab2 = st.tabs(["Sign In", "Register"])
+    
+    with tab1:
+        st.markdown("### Welcome Back")
+        
+        with st.form("login_form"):
+            email = st.text_input("Email", placeholder="Enter your email")
+            password = st.text_input("Password", type="password", placeholder="Enter your password")
+            remember = st.checkbox("Remember me")
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.form_submit_button("Sign In", type="primary", use_container_width=True):
+                    if email and password:
+                        st.session_state.user = {"email": email, "name": "User"}
+                        st.session_state.page = 'home'
+                        st.success("Login successful!")
+                        st.rerun()
+                    else:
+                        st.error("Please fill in all fields")
+            
+            with col2:
+                if st.form_submit_button("Register", use_container_width=True):
+                    st.session_state.page = 'register'
+                    st.rerun()
+        
+        st.markdown("---")
+        st.markdown("**Or continue with:**")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🔍 Google", use_container_width=True, type="secondary"):
+                st.info("OAuth integration coming soon!")
+        with col2:
+            if st.button("📘 Facebook", use_container_width=True, type="secondary"):
+                st.info("OAuth integration coming soon!")
+    
+    with tab2:
+        st.markdown("### Create Account")
+        
+        with st.form("register_form"):
+            account_type = st.selectbox("Account Type", ["Individual", "Organization", "NGO"])
+            first_name = st.text_input("First Name")
+            last_name = st.text_input("Last Name")
+            email = st.text_input("Email Address")
+            phone = st.text_input("Phone Number")
+            password = st.text_input("Password", type="password")
+            confirm_password = st.text_input("Confirm Password", type="password")
+            address = st.text_area("Address", max_chars=200)
+            
+            terms = st.checkbox("I agree to the Terms and Conditions")
+            newsletter = st.checkbox("Subscribe to newsletter")
+            
+            if st.form_submit_button("Create Account", type="primary", use_container_width=True):
+                if all([first_name, last_name, email, password, confirm_password, terms]):
+                    if password == confirm_password:
+                        st.session_state.user = {"email": email, "name": f"{first_name} {last_name}"}
+                        st.session_state.page = 'home'
+                        st.success("Registration successful!")
+                        st.rerun()
+                    else:
+                        st.error("Passwords do not match")
+                else:
+                    st.error("Please fill in all required fields and accept terms")
+
+def home_page():
+    """Home page with trending campaigns"""
+    st.markdown('<div class="page-trending">', unsafe_allow_html=True)
+    
+    # Header with logo
+    display_logo()
+    
+    st.markdown("## 🔥 Trending Campaigns")
+    
+    # Fetch trending campaigns
+    campaigns_data = fetch_campaigns(trending=True, limit=6)
+    campaigns = campaigns_data.get('campaigns', [])
+    
+    if campaigns:
+        # Display campaigns in grid
+        for i in range(0, len(campaigns), 2):
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                if i < len(campaigns):
+                    display_campaign_card(campaigns[i])
+            
+            with col2:
+                if i + 1 < len(campaigns):
+                    display_campaign_card(campaigns[i + 1])
+    else:
+        st.info("No trending campaigns available at the moment.")
+    
+    # Quick stats
+    st.markdown("---")
+    st.markdown("### Platform Statistics")
+    
+    try:
+        response = requests.get(f"{BACKEND_URL}/api/stats", timeout=10)
+        if response.status_code == 200:
+            stats = response.json()
+            
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Total Campaigns", stats.get('total_campaigns', 0))
+            with col2:
+                st.metric("Total Raised", f"₹{stats.get('total_raised', 0):,}")
+            with col3:
+                st.metric("Total Donors", stats.get('total_donors', 0))
+            with col4:
+                st.metric("Success Rate", f"{stats.get('success_rate', 0)}%")
+    except:
+        st.info("Statistics temporarily unavailable")
+
+def explore_page():
+    """Explore categories page"""
+    st.markdown('<div class="page-profile">', unsafe_allow_html=True)
+    
+    display_logo()
+    st.markdown("## 🔍 Explore Categories")
+    
+    # Fetch categories
+    categories = fetch_categories()
+    
+    if categories:
+        # Display categories in grid
+        cols = st.columns(2)
+        for i, category in enumerate(categories):
+            with cols[i % 2]:
+                with st.container():
+                    st.markdown(f"""
+                    <div class="card">
+                        <h4>{category['name']}</h4>
+                        <p>{category['count']} campaigns</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    if st.button(f"View {category['name']}", key=f"cat_{i}"):
+                        st.session_state.selected_category = category['name']
+                        st.session_state.page = 'category'
+                        st.rerun()
+    else:
+        st.info("Categories are loading...")
+
+def search_page():
+    """Search campaigns page"""
+    st.markdown('<div class="page-search">', unsafe_allow_html=True)
+    
+    display_logo()
+    st.markdown("## 🔍 Search Campaigns")
+    
+    # Search form
+    with st.form("search_form"):
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            query = st.text_input("Search campaigns...", placeholder="Enter keywords, organization name, or campaign title")
+        with col2:
+            category = st.selectbox("Category", ["All"] + [cat['name'] for cat in fetch_categories()])
+        
+        if st.form_submit_button("Search", type="primary"):
+            if query:
+                # Perform search
+                search_category = None if category == "All" else category
+                results = search_campaigns(query, search_category)
+                
+                st.markdown(f"### Search Results ({len(results)} found)")
+                
+                if results:
+                    for campaign in results:
+                        display_campaign_card(campaign)
+                else:
+                    st.info("No campaigns found matching your search criteria.")
+            else:
+                st.warning("Please enter a search query.")
+
+def profile_page():
+    """User profile page"""
+    st.markdown('<div class="page-profile">', unsafe_allow_html=True)
+    
+    display_logo()
+    
+    if st.session_state.user:
+        st.markdown(f"## 👤 Welcome, {st.session_state.user['name']}!")
+        
+        tab1, tab2, tab3 = st.tabs(["Profile", "My Donations", "Settings"])
+        
+        with tab1:
+            st.markdown("### Profile Information")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.text_input("Name", value=st.session_state.user['name'])
+                st.text_input("Email", value=st.session_state.user['email'])
+            with col2:
+                st.text_input("Phone", placeholder="Add phone number")
+                st.text_area("Bio", placeholder="Tell us about yourself")
+        
+        with tab2:
+            st.markdown("### My Donations")
+            st.info("Your donation history will appear here.")
+        
+        with tab3:
+            st.markdown("### Settings")
+            st.checkbox("Email notifications")
+            st.checkbox("SMS notifications")
+            if st.button("Logout", type="secondary"):
+                st.session_state.user = None
+                st.session_state.page = 'login'
+                st.rerun()
+
+# Navigation
+def render_navigation():
+    """Render navigation sidebar"""
+    with st.sidebar:
+        st.markdown("### Navigation")
+        
+        if st.button("🏠 Home", use_container_width=True):
             st.session_state.page = 'home'
             st.rerun()
         
-        if st.button("🔍 Explore", use_container_width=True, type="primary" if st.session_state.page == 'explore' else "secondary"):
-            st.session_state.page = 'explore'
-            st.rerun()
-        
-        if st.button("🔎 Search", use_container_width=True, type="primary" if st.session_state.page == 'search' else "secondary"):
+        if st.button("🔍 Search", use_container_width=True):
             st.session_state.page = 'search'
             st.rerun()
         
-        if st.button("👤 Profile", use_container_width=True, type="primary" if st.session_state.page == 'profile' else "secondary"):
-            st.session_state.page = 'profile'
+        if st.button("📂 Explore", use_container_width=True):
+            st.session_state.page = 'explore'
             st.rerun()
         
         if st.session_state.user:
-            if st.button("➕ Create Campaign", use_container_width=True, type="primary" if st.session_state.page == 'create' else "secondary"):
-                st.session_state.page = 'create'
+            if st.button("👤 Profile", use_container_width=True):
+                st.session_state.page = 'profile'
                 st.rerun()
-            
-            st.markdown("---")
-            if st.button("🚪 Logout", use_container_width=True):
-                st.session_state.user = None
-                st.session_state.token = None
-                st.session_state.page = 'home'
-                st.rerun()
-
-# Authentication page with safe MaterializeCSS
-def render_auth_page():
-    # Welcome section using safe MaterializeCSS
-    welcome_html = """
-    <div class="container">
-        <div class="row">
-            <div class="col s12 m8 offset-m2">
-                <div class="login-alt-card haven-card z-depth-3 center-align">
-                    <h3 style="margin-bottom: 25px;">
-                        🔐 Welcome to HAVEN
-                    </h3>
-                    <p class="flow-text" style="font-size: 1.3rem; margin-bottom: 30px;">
-                        Join thousands of people supporting meaningful causes and building a better tomorrow together.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    """
-    st.markdown(welcome_html, unsafe_allow_html=True)
-    
-    # Create tabs for login and register using Streamlit native
-    tab1, tab2 = st.tabs(["🔑 Sign In", "📝 Register"])
-    
-    with tab1:
-        # Login page background
-        login_card_html = """
-        <div class="container">
-            <div class="row">
-                <div class="col s12 m6 offset-m3">
-                    <div class="trending-login-card haven-card z-depth-3">
-                        <h4 class="center-align" style="margin-bottom: 30px;">Sign in to your account</h4>
-        """
-        st.markdown(login_card_html, unsafe_allow_html=True)
-        
-        # OAuth buttons using Streamlit native (safe approach)
-        st.markdown("### Continue with social media:")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            if st.button("🔍 Continue with Google", use_container_width=True, type="primary"):
-                st.info("🔄 Google OAuth integration - Opening popup window...")
-                # Add OAuth logic here
-        
-        with col2:
-            if st.button("📘 Continue with Facebook", use_container_width=True):
-                st.info("🔄 Facebook OAuth integration - Opening popup window...")
-                # Add OAuth logic here
-        
-        st.markdown("---")
-        st.markdown("**Or sign in with email:**")
-        
-        # Email login form using Streamlit native
-        with st.form("login_form"):
-            email = st.text_input("📧 Email Address", placeholder="Enter your email")
-            password = st.text_input("🔒 Password", type="password", placeholder="Enter your password")
-            remember_me = st.checkbox("Remember me")
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                login_submitted = st.form_submit_button("🚀 Sign In", use_container_width=True, type="primary")
-            with col2:
-                register_button = st.form_submit_button("📝 Create Account", use_container_width=True)
-            
-            if login_submitted:
-                if email and password:
-                    try:
-                        response = requests.post(f"{BACKEND_URL}/api/auth/login", 
-                                               params={"email": email, "password": password})
-                        if response.status_code == 200:
-                            result = response.json()
-                            st.session_state.token = result["access_token"]
-                            st.session_state.user = result["user"]
-                            st.success("✅ Login successful!")
-                            st.rerun()
-                        else:
-                            st.error("❌ Invalid email or password")
-                    except Exception as e:
-                        st.error(f"❌ Login error: {str(e)}")
-                else:
-                    st.error("⚠️ Please enter both email and password")
-        
-        # Close login card
-        st.markdown("</div></div></div></div>", unsafe_allow_html=True)
-    
-    with tab2:
-        # Registration page background
-        register_card_html = """
-        <div class="container">
-            <div class="row">
-                <div class="col s12 m8 offset-m2">
-                    <div class="registration-card haven-card z-depth-3">
-                        <h4 class="center-align" style="margin-bottom: 30px;">Create your HAVEN account</h4>
-        """
-        st.markdown(register_card_html, unsafe_allow_html=True)
-        
-        # Registration form using Streamlit native
-        with st.form("register_form"):
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                first_name = st.text_input("👤 First Name", placeholder="Enter your first name")
-                email = st.text_input("📧 Email", placeholder="your.email@example.com")
-                user_type = st.selectbox("🏢 Account Type", ["individual", "organization", "ngo"])
-            
-            with col2:
-                last_name = st.text_input("👤 Last Name", placeholder="Enter your last name")
-                phone = st.text_input("📱 Phone", placeholder="+91-9876543210")
-                password = st.text_input("🔒 Password", type="password", placeholder="Minimum 6 characters")
-            
-            address = st.text_area("🏠 Address", placeholder="Enter your complete address")
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                terms_agreed = st.checkbox("✅ I agree to the Terms and Conditions")
-            with col2:
-                newsletter = st.checkbox("📧 Subscribe to newsletter")
-            
-            submitted = st.form_submit_button("🎉 Create Account", use_container_width=True, type="primary")
-            
-            if submitted:
-                if first_name and last_name and email and password and terms_agreed:
-                    # Register user
-                    user_data = {
-                        "email": email,
-                        "first_name": first_name,
-                        "last_name": last_name,
-                        "phone": phone,
-                        "user_type": user_type,
-                        "address": address,
-                        "password": password
-                    }
-                    
-                    try:
-                        response = requests.post(f"{BACKEND_URL}/api/auth/register", json=user_data)
-                        if response.status_code == 200:
-                            result = response.json()
-                            st.session_state.token = result["access_token"]
-                            st.session_state.user = result["user"]
-                            st.success("✅ Account created successfully!")
-                            st.rerun()
-                        else:
-                            st.error("❌ Registration failed. Please try again.")
-                    except Exception as e:
-                        st.error(f"❌ Registration error: {str(e)}")
-                else:
-                    st.error("⚠️ Please fill in all required fields and agree to terms.")
-        
-        # Close registration card
-        st.markdown("</div></div></div></div>", unsafe_allow_html=True)
-
-# Home page with safe MaterializeCSS
-def render_home_page():
-    # Hero section using safe MaterializeCSS
-    hero_html = """
-    <div class="container">
-        <div class="row">
-            <div class="col s12">
-                <div class="trending-login-card haven-card z-depth-3 center-align">
-                    <h3 style="margin-bottom: 25px;">
-                        ❤️ Make a Difference Today
-                    </h3>
-                    <p class="flow-text" style="font-size: 1.3rem; margin-bottom: 35px;">
-                        Join thousands of people supporting meaningful causes and building a better tomorrow together.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    """
-    st.markdown(hero_html, unsafe_allow_html=True)
-    
-    if st.button("🚀 Start Exploring", use_container_width=True, type="primary"):
-        st.session_state.page = 'explore'
-        st.rerun()
-    
-    # Trending campaigns section
-    trending_header_html = """
-    <div class="container">
-        <div class="row">
-            <div class="col s12">
-                <div class="trending-login-card haven-card z-depth-2">
-                    <h4 style="margin-bottom: 20px;">
-                        📈 Trending Campaigns
-                    </h4>
-                    <p class="flow-text">
-                        Discover the most popular campaigns making a real impact in communities worldwide.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    """
-    st.markdown(trending_header_html, unsafe_allow_html=True)
-    
-    # Fetch campaigns from backend
-    try:
-        response = requests.get(f"{BACKEND_URL}/api/campaigns")
-        if response.status_code == 200:
-            campaigns_data = response.json()
-            campaigns = campaigns_data.get("campaigns", [])
-            
-            # Display campaigns in grid using safe MaterializeCSS
-            for i in range(0, len(campaigns), 3):
-                cols = st.columns(3)
-                for j, col in enumerate(cols):
-                    if i + j < len(campaigns):
-                        campaign = campaigns[i + j]
-                        with col:
-                            render_campaign_card(campaign)
         else:
-            st.error("❌ Failed to load campaigns")
-    except Exception as e:
-        st.error(f"❌ Error loading campaigns: {str(e)}")
-
-# Campaign card component using safe MaterializeCSS
-def render_campaign_card(campaign):
-    progress = min(100, (campaign["raised"] / campaign["goal"]) * 100)
-    try:
-        end_date = datetime.fromisoformat(campaign["end_date"].replace('Z', '+00:00'))
-        days_remaining = max(0, (end_date - datetime.now()).days)
-    except:
-        days_remaining = 30
-    
-    # Campaign card using safe MaterializeCSS
-    campaign_html = f"""
-    <div class="other-card haven-card z-depth-2" style="margin: 15px 0;">
-        <div style="text-align: center;">
-            <h5 style="margin-bottom: 15px; font-weight: 600;">{campaign['title']}</h5>
-            <p style="margin-bottom: 20px; line-height: 1.6;">{campaign['description'][:120]}...</p>
-        </div>
-    </div>
-    """
-    st.markdown(campaign_html, unsafe_allow_html=True)
-    
-    # Progress bar using Streamlit native
-    st.progress(progress / 100)
-    
-    # Campaign stats using safe MaterializeCSS
-    stats_html = f"""
-    <div class="campaign-stats">
-        <div class="stat-item">
-            <span class="stat-value">₹{campaign['raised']:,.0f}</span>
-            <span class="stat-label">Raised</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-value">{progress:.0f}%</span>
-            <span class="stat-label">Funded</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-value">{days_remaining}</span>
-            <span class="stat-label">Days Left</span>
-        </div>
-    </div>
-    """
-    st.markdown(stats_html, unsafe_allow_html=True)
-    
-    # Donate button using Streamlit native
-    if st.button(f"❤️ Donate", key=f"donate_{campaign['id']}", use_container_width=True):
-        st.success(f"Redirecting to donation page for {campaign['title']}")
-
-# Explore page with safe MaterializeCSS
-def render_explore_page():
-    # Explore header
-    explore_header_html = """
-    <div class="container">
-        <div class="row">
-            <div class="col s12">
-                <div class="other-card haven-card z-depth-3">
-                    <h4 style="margin-bottom: 20px;">
-                        🔍 Explore Categories
-                    </h4>
-                    <p class="flow-text">
-                        Browse campaigns by category to find causes that matter to you.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    """
-    st.markdown(explore_header_html, unsafe_allow_html=True)
-    
-    # Category grid using safe MaterializeCSS
-    categories = [
-        {"name": "Medical", "icon": "🏥", "count": 45, "description": "Healthcare and medical support"},
-        {"name": "Education", "icon": "🎓", "count": 32, "description": "Educational initiatives and scholarships"},
-        {"name": "Community", "icon": "👥", "count": 28, "description": "Community development projects"},
-        {"name": "Environment", "icon": "🌱", "count": 19, "description": "Environmental conservation"},
-        {"name": "Technology", "icon": "💻", "count": 15, "description": "Tech innovation and startups"},
-        {"name": "Arts", "icon": "🎨", "count": 12, "description": "Creative arts and culture"}
-    ]
-    
-    # Display categories using safe MaterializeCSS grid
-    category_grid_html = """
-    <div class="container">
-        <div class="row">
-    """
-    
-    for i, category in enumerate(categories):
-        category_grid_html += f"""
-            <div class="col s12 m6 l4">
-                <div class="other-card haven-card z-depth-2 center-align" style="margin: 15px 0; cursor: pointer;">
-                    <div style="font-size: 3rem; margin-bottom: 15px;">{category['icon']}</div>
-                    <h5 style="margin-bottom: 10px; font-weight: 600;">{category['name']}</h5>
-                    <p style="margin-bottom: 10px; font-size: 1rem;">{category['description']}</p>
-                    <p style="font-weight: 600; font-size: 1.1rem;">{category['count']} campaigns</p>
-                </div>
-            </div>
-        """
-    
-    category_grid_html += """
-        </div>
-    </div>
-    """
-    
-    st.markdown(category_grid_html, unsafe_allow_html=True)
-    
-    # Category buttons using Streamlit native
-    cols = st.columns(3)
-    for i, category in enumerate(categories):
-        with cols[i % 3]:
-            if st.button(f"View {category['name']}", key=f"cat_{category['name']}", use_container_width=True):
-                st.success(f"Showing {category['name']} campaigns")
-
-# Search page with safe MaterializeCSS
-def render_search_page():
-    # Search header
-    search_header_html = """
-    <div class="container">
-        <div class="row">
-            <div class="col s12">
-                <div class="profile-search-card haven-card z-depth-3">
-                    <h4 style="margin-bottom: 20px;">
-                        🔎 Search Campaigns
-                    </h4>
-                    <p class="flow-text">
-                        Find specific campaigns using keywords and filters.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    """
-    st.markdown(search_header_html, unsafe_allow_html=True)
-    
-    # Search form using Streamlit native
-    with st.form("search_form"):
-        col1, col2, col3 = st.columns([3, 2, 1])
-        
-        with col1:
-            search_query = st.text_input("🔍 Search campaigns", placeholder="Enter keywords...")
-        
-        with col2:
-            category_filter = st.selectbox("📂 Category", ["All", "Medical", "Education", "Community", "Environment", "Technology", "Arts"])
-        
-        with col3:
-            st.write("")  # Spacing
-            search_submitted = st.form_submit_button("🔍 Search", use_container_width=True, type="primary")
-        
-        if search_submitted and search_query:
-            try:
-                params = {"query": search_query}
-                if category_filter != "All":
-                    params["category"] = category_filter.lower()
-                
-                response = requests.post(f"{BACKEND_URL}/api/search", params=params)
-                if response.status_code == 200:
-                    results = response.json()
-                    campaigns = results.get("campaigns", [])
-                    
-                    if campaigns:
-                        st.success(f"✅ Found {len(campaigns)} campaigns")
-                        
-                        # Display search results
-                        for i in range(0, len(campaigns), 3):
-                            cols = st.columns(3)
-                            for j, col in enumerate(cols):
-                                if i + j < len(campaigns):
-                                    campaign = campaigns[i + j]
-                                    with col:
-                                        render_campaign_card(campaign)
-                    else:
-                        st.info("ℹ️ No campaigns found matching your search.")
-                else:
-                    st.error("❌ Search failed. Please try again.")
-            except Exception as e:
-                st.error(f"❌ Search error: {str(e)}")
-
-# Profile page with safe MaterializeCSS
-def render_profile_page():
-    if not st.session_state.user:
-        st.warning("⚠️ Please log in to view your profile.")
-        return
-    
-    user = st.session_state.user
-    
-    # Profile header
-    profile_header_html = f"""
-    <div class="container">
-        <div class="row">
-            <div class="col s12">
-                <div class="profile-search-card haven-card z-depth-3 center-align">
-                    <h3 style="margin-bottom: 20px;">
-                        👤 Welcome, {user.get('first_name', 'User')}!
-                    </h3>
-                    <p class="flow-text">
-                        Manage your profile and track your contributions to meaningful causes.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    """
-    st.markdown(profile_header_html, unsafe_allow_html=True)
-    
-    # Profile information using safe MaterializeCSS
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        profile_info_html = f"""
-        <div class="profile-search-card haven-card z-depth-2">
-            <h5 style="margin-bottom: 20px;">📋 Profile Information</h5>
-            <p><strong>Name:</strong> {user.get('first_name', '')} {user.get('last_name', '')}</p>
-            <p><strong>Email:</strong> {user.get('email', '')}</p>
-            <p><strong>Type:</strong> {user.get('user_type', '').title()}</p>
-            <p><strong>Phone:</strong> {user.get('phone', 'Not provided')}</p>
-        </div>
-        """
-        st.markdown(profile_info_html, unsafe_allow_html=True)
-    
-    with col2:
-        activity_html = """
-        <div class="profile-search-card haven-card z-depth-2">
-            <h5 style="margin-bottom: 20px;">📊 Activity Summary</h5>
-        </div>
-        """
-        st.markdown(activity_html, unsafe_allow_html=True)
-        
-        # Activity metrics using Streamlit native
-        st.metric("💰 Total Donated", "₹0")
-        st.metric("🎯 Campaigns Supported", "0")
-        st.metric("🏆 Campaigns Created", "0")
-
-# Create campaign page
-def render_create_campaign_page():
-    # Create campaign header
-    create_header_html = """
-    <div class="container">
-        <div class="row">
-            <div class="col s12">
-                <div class="other-card haven-card z-depth-3 center-align">
-                    <h3 style="margin-bottom: 20px;">
-                        ➕ Create New Campaign
-                    </h3>
-                    <p class="flow-text">
-                        Start your journey to make a positive impact in the world.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    """
-    st.markdown(create_header_html, unsafe_allow_html=True)
-    
-    # Create campaign form using Streamlit native
-    with st.form("create_campaign_form"):
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            title = st.text_input("📝 Campaign Title", placeholder="Enter campaign title")
-            category = st.selectbox("📂 Category", ["medical", "education", "community", "environment", "technology", "arts"])
-            goal = st.number_input("💰 Funding Goal (₹)", min_value=1000, max_value=10000000, value=50000)
-        
-        with col2:
-            location = st.selectbox("📍 Location", ["Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata", "Hyderabad", "Pune", "Ahmedabad"])
-            duration = st.number_input("⏰ Duration (days)", min_value=1, max_value=365, value=30)
-            contact_email = st.text_input("📧 Contact Email", placeholder="contact@example.com")
-        
-        description = st.text_area("📄 Description", placeholder="Describe your campaign in detail...", height=150)
-        
-        # File upload for images
-        uploaded_files = st.file_uploader("📸 Upload Images", accept_multiple_files=True, type=['png', 'jpg', 'jpeg'])
-        
-        submitted = st.form_submit_button("🚀 Create Campaign", use_container_width=True, type="primary")
-        
-        if submitted:
-            if title and description and goal:
-                st.success("✅ Campaign created successfully!")
-                st.balloons()
-            else:
-                st.error("⚠️ Please fill in all required fields.")
+            if st.button("🔑 Login", use_container_width=True):
+                st.session_state.page = 'login'
+                st.rerun()
 
 # Main app
 def main():
     # Load safe MaterializeCSS
-    load_safe_materialize_css()
+    load_safe_materialize()
     
-    # Initialize session state
-    init_session_state()
-    
-    # Render header
-    render_header()
-    
-    # Check authentication
-    if not st.session_state.user:
-        render_auth_page()
-    else:
-        # Render navigation
+    # Show navigation if logged in
+    if st.session_state.user:
         render_navigation()
-        
-        # Render pages based on selection
-        if st.session_state.page == 'home':
-            render_home_page()
-        elif st.session_state.page == 'explore':
-            render_explore_page()
-        elif st.session_state.page == 'search':
-            render_search_page()
-        elif st.session_state.page == 'profile':
-            render_profile_page()
-        elif st.session_state.page == 'create':
-            render_create_campaign_page()
-        else:
-            render_home_page()
+    
+    # Route to appropriate page
+    if st.session_state.page == 'login':
+        login_page()
+    elif st.session_state.page == 'home':
+        home_page()
+    elif st.session_state.page == 'search':
+        search_page()
+    elif st.session_state.page == 'explore':
+        explore_page()
+    elif st.session_state.page == 'profile':
+        profile_page()
+    else:
+        # Default to login
+        st.session_state.page = 'login'
+        login_page()
 
 if __name__ == "__main__":
     main()
