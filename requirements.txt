@@ -18,7 +18,7 @@ altair==4.2.2
 
 # Authentication and security
 PyJWT==2.8.0
-cryptography==41.0.8
+cryptography<=41.0.8
 python-jose[cryptography]==3.3.0
 
 # OAuth integration
