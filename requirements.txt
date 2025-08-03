@@ -14,7 +14,7 @@ plotly==5.17.0
 altair==4.2.2
 # Environment variables
 python-dotenv==1.0.0
-
+pydantic==2.5.0
 # Basic authentication
 PyJWT==2.8.0
 
