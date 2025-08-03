@@ -18,36 +18,7 @@ st.set_page_config(
 # Environment variables
 BACKEND_URL = os.environ.get("BACKEND_URL", "https://haven-fastapi-backend.onrender.com")
 
-# HAVEN Logo (without white background)
-HAVEN_LOGO_SVG = """
-<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
-  <!-- House 1 -->
-  <g transform="translate(10, 15)">
-    <polygon points="15,5 25,15 15,15" fill="#2d5a27" stroke="#1a3d1a" stroke-width="1"/>
-    <rect x="10" y="15" width="12" height="12" fill="#4a7c59" stroke="#2d5a27" stroke-width="1"/>
-    <rect x="13" y="18" width="3" height="6" fill="#2d5a27"/>
-  </g>
-  
-  <!-- House 2 -->
-  <g transform="translate(35, 12)">
-    <polygon points="12,8 20,16 16,16" fill="#2d5a27" stroke="#1a3d1a" stroke-width="1"/>
-    <rect x="8" y="16" width="9" height="9" fill="#4a7c59" stroke="#2d5a27" stroke-width="1"/>
-    <rect x="10" y="19" width="2" height="4" fill="#2d5a27"/>
-  </g>
-  
-  <!-- Leaves -->
-  <g transform="translate(55, 20)">
-    <ellipse cx="5" cy="8" rx="4" ry="6" fill="#6b8e23" transform="rotate(15 5 8)"/>
-    <ellipse cx="12" cy="6" rx="3" ry="5" fill="#9acd32" transform="rotate(-20 12 6)"/>
-    <ellipse cx="8" cy="12" rx="3" ry="4" fill="#6b8e23" transform="rotate(45 8 12)"/>
-  </g>
-  
-  <!-- HAVEN Text -->
-  <text x="80" y="35" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#2d5a27">HAVEN</text>
-</svg>
-"""
-
-# Custom CSS for proper styling
+# Custom CSS for proper layout and background containment
 def load_css():
     st.markdown("""
     <style>
@@ -55,39 +26,80 @@ def load_css():
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    .stDeployButton {visibility: hidden;}
     
-    /* Main container styling */
-    .main {
-        padding: 0;
-        margin: 0;
+    /* Main app container - ensure everything is contained */
+    .main .block-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
     }
     
-    /* Header styling */
+    /* Full page background */
+    .stApp {
+        background: linear-gradient(135deg, #f0fff0 0%, #e6ffe6 50%, #ddffd6 100%);
+        min-height: 100vh;
+    }
+    
+    /* Main content wrapper */
+    .main-wrapper {
+        background: linear-gradient(135deg, #f0fff0 0%, #e6ffe6 50%, #ddffd6 100%);
+        min-height: 100vh;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+    }
+    
+    /* Header container - contained within background */
     .header-container {
         background: linear-gradient(135deg, #e0ffcd 0%, #fdffcd 50%, #ffebbb 100%);
-        padding: 20px;
+        padding: 30px 20px;
         text-align: center;
-        border-bottom: 2px solid #a8e6cf;
-        margin-bottom: 20px;
+        border-bottom: 3px solid #a8e6cf;
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .header-logo {
-        margin-bottom: 10px;
+        margin-bottom: 15px;
     }
     
     .header-title {
-        font-size: 2.5rem;
+        font-size: 3rem;
         font-weight: bold;
         color: #2d5a27;
-        margin: 10px 0;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        margin: 15px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }
     
     .header-subtitle {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         color: #4a7c59;
         font-style: italic;
-        margin: 0;
+        margin: 10px 0;
+    }
+    
+    /* Content area - properly contained */
+    .content-area {
+        background: linear-gradient(135deg, #f0fff0 0%, #e6ffe6 50%, #ddffd6 100%);
+        padding: 40px 20px;
+        min-height: calc(100vh - 200px);
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    /* Authentication container - centered and contained */
+    .auth-container {
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 40px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(168, 230, 207, 0.4);
     }
     
     /* Sidebar styling */
@@ -95,172 +107,155 @@ def load_css():
         background: linear-gradient(180deg, #a8e6cf 0%, #dcedc1 100%);
     }
     
-    /* Content area styling */
-    .content-container {
-        background: linear-gradient(135deg, #f0ffff 0%, #e6e6fa 50%, #ffffff 100%);
-        min-height: 100vh;
-        padding: 20px;
-    }
-    
-    /* Authentication container */
-    .auth-container {
-        max-width: 400px;
-        margin: 50px auto;
-        padding: 30px;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 15px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(168, 230, 207, 0.3);
-    }
-    
-    /* Form styling */
+    /* Form elements styling */
     .stTextInput > div > div > input {
-        background: #f8fff8;
-        border: 2px solid #a8e6cf;
-        border-radius: 8px;
-        padding: 12px;
-        font-size: 16px;
-        color: #2d5a27;
+        background: #f8fff8 !important;
+        border: 2px solid #a8e6cf !important;
+        border-radius: 10px !important;
+        padding: 15px !important;
+        font-size: 16px !important;
+        color: #2d5a27 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     .stTextInput > div > div > input:focus {
-        border-color: #4a7c59;
-        box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.3);
+        border-color: #4a7c59 !important;
+        box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.3) !important;
     }
     
     /* Button styling */
     .stButton > button {
-        background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
-        color: #2d5a27;
-        border: none;
-        border-radius: 8px;
-        padding: 12px 24px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        width: 100%;
-        margin: 5px 0;
+        background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%) !important;
+        color: #2d5a27 !important;
+        border: none !important;
+        border-radius: 10px !important;
+        padding: 15px 30px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        width: 100% !important;
+        margin: 8px 0 !important;
+        box-sizing: border-box !important;
     }
     
     .stButton > button:hover {
-        background: linear-gradient(135deg, #dcedc1 0%, #a8e6cf 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(168, 230, 207, 0.4);
-    }
-    
-    /* OAuth button styling */
-    .oauth-button {
-        display: inline-block;
-        padding: 12px 24px;
-        margin: 5px;
-        background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
-        color: #2d5a27;
-        text-decoration: none;
-        border-radius: 8px;
-        font-weight: bold;
-        text-align: center;
-        transition: all 0.3s ease;
-        border: 2px solid #a8e6cf;
-    }
-    
-    .oauth-button:hover {
-        background: linear-gradient(135deg, #dcedc1 0%, #a8e6cf 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(168, 230, 207, 0.4);
-        text-decoration: none;
-        color: #2d5a27;
+        background: linear-gradient(135deg, #dcedc1 0%, #a8e6cf 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(168, 230, 207, 0.4) !important;
     }
     
     /* Campaign card styling */
     .campaign-card {
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 15px;
-        padding: 20px;
-        margin: 15px 0;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(168, 230, 207, 0.3);
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 25px;
+        margin: 20px 0;
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        border: 2px solid rgba(168, 230, 207, 0.3);
         transition: all 0.3s ease;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .campaign-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        transform: translateY(-8px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
     }
     
     /* Progress bar styling */
     .progress-bar {
         background: #e0e0e0;
-        border-radius: 10px;
-        height: 20px;
+        border-radius: 15px;
+        height: 25px;
         overflow: hidden;
-        margin: 10px 0;
+        margin: 15px 0;
+        width: 100%;
     }
     
     .progress-fill {
         background: linear-gradient(90deg, #a8e6cf 0%, #4a7c59 100%);
         height: 100%;
-        border-radius: 10px;
-        transition: width 0.3s ease;
+        border-radius: 15px;
+        transition: width 0.5s ease;
     }
     
     /* Category grid styling */
     .category-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        margin: 20px 0;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin: 30px 0;
+        width: 100%;
     }
     
     .category-card {
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 15px;
-        padding: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 25px;
         text-align: center;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(168, 230, 207, 0.3);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        border: 2px solid rgba(168, 230, 207, 0.3);
         transition: all 0.3s ease;
         cursor: pointer;
     }
     
     .category-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        background: rgba(168, 230, 207, 0.1);
+        transform: translateY(-8px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        background: rgba(168, 230, 207, 0.15);
     }
     
     /* Success/Error messages */
     .success-message {
         background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
         color: #2d5a27;
-        padding: 15px;
-        border-radius: 8px;
-        margin: 10px 0;
-        border: 1px solid #4a7c59;
+        padding: 20px;
+        border-radius: 15px;
+        margin: 15px 0;
+        border: 2px solid #4a7c59;
+        font-weight: bold;
     }
     
     .error-message {
         background: linear-gradient(135deg, #ffaaa5 0%, #ffd3b6 100%);
         color: #8b0000;
-        padding: 15px;
-        border-radius: 8px;
-        margin: 10px 0;
-        border: 1px solid #ff6b6b;
+        padding: 20px;
+        border-radius: 15px;
+        margin: 15px 0;
+        border: 2px solid #ff6b6b;
+        font-weight: bold;
     }
     
-    /* Hide Streamlit elements that might show HTML */
-    .element-container {
-        background: transparent !important;
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .header-title {
+            font-size: 2.5rem;
+        }
+        
+        .header-subtitle {
+            font-size: 1.2rem;
+        }
+        
+        .auth-container {
+            margin: 20px;
+            padding: 30px 20px;
+        }
+        
+        .content-area {
+            padding: 20px 10px;
+        }
     }
     
-    /* Ensure no HTML code is visible */
-    code {
-        display: none !important;
+    /* Ensure all content stays within bounds */
+    * {
+        box-sizing: border-box;
     }
     
-    pre {
-        display: none !important;
+    .main > div {
+        width: 100% !important;
+        max-width: 100% !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -325,15 +320,19 @@ def create_campaign(campaign_data):
 
 # Authentication functions
 def show_login():
-    st.markdown(f"""
+    st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
+    
+    st.markdown("""
     <div class="header-container">
         <div class="header-logo">
-            {HAVEN_LOGO_SVG}
+            🏠🌿
         </div>
+        <div class="header-title">HAVEN</div>
         <div class="header-subtitle">Help not just some people, but Help Humanity</div>
     </div>
     """, unsafe_allow_html=True)
     
+    st.markdown('<div class="content-area">', unsafe_allow_html=True)
     st.markdown('<div class="auth-container">', unsafe_allow_html=True)
     
     st.markdown("## Login to HAVEN")
@@ -382,17 +381,23 @@ def show_login():
         st.rerun()
     
     st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def show_register():
-    st.markdown(f"""
+    st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
+    
+    st.markdown("""
     <div class="header-container">
         <div class="header-logo">
-            {HAVEN_LOGO_SVG}
+            🏠🌿
         </div>
+        <div class="header-title">HAVEN</div>
         <div class="header-subtitle">Help not just some people, but Help Humanity</div>
     </div>
     """, unsafe_allow_html=True)
     
+    st.markdown('<div class="content-area">', unsafe_allow_html=True)
     st.markdown('<div class="auth-container">', unsafe_allow_html=True)
     
     st.markdown("## Register for HAVEN")
@@ -444,13 +449,16 @@ def show_register():
         st.rerun()
     
     st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def show_header():
-    st.markdown(f"""
+    st.markdown("""
     <div class="header-container">
         <div class="header-logo">
-            {HAVEN_LOGO_SVG}
+            🏠🌿
         </div>
+        <div class="header-title">HAVEN</div>
         <div class="header-subtitle">Help not just some people, but Help Humanity</div>
     </div>
     """, unsafe_allow_html=True)
@@ -491,25 +499,25 @@ def show_campaign_card(campaign):
     st.markdown(f"""
     <div class="campaign-card">
         <img src="{campaign.get('image_url', 'https://via.placeholder.com/600x400/4CAF50/FFFFFF?text=Campaign')}" 
-             style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">
-        <h3 style="color: #2d5a27; margin: 10px 0;">{campaign['title']}</h3>
-        <p style="color: #4a7c59; margin: 10px 0;">{campaign['description'][:100]}...</p>
-        <p style="color: #2d5a27; font-weight: bold;">by {campaign['creator']}</p>
+             style="width: 100%; height: 250px; object-fit: cover; border-radius: 15px; margin-bottom: 20px;">
+        <h3 style="color: #2d5a27; margin: 15px 0; font-size: 1.5rem;">{campaign['title']}</h3>
+        <p style="color: #4a7c59; margin: 15px 0; line-height: 1.6;">{campaign['description'][:150]}...</p>
+        <p style="color: #2d5a27; font-weight: bold; margin: 10px 0;">by {campaign['creator']}</p>
         
         <div class="progress-bar">
-            <div class="progress-fill" style="width: {campaign['percentage']}%;"></div>
+            <div class="progress-fill" style="width: {campaign.get('percentage', 0)}%;"></div>
         </div>
         
-        <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-            <span style="color: #4a7c59;"><strong>₹{campaign['raised']:,}</strong> raised</span>
-            <span style="color: #4a7c59;"><strong>{campaign['percentage']}%</strong> funded</span>
-            <span style="color: #4a7c59;"><strong>{campaign['days_left']}</strong> days left</span>
+        <div style="display: flex; justify-content: space-between; margin: 15px 0; flex-wrap: wrap;">
+            <span style="color: #4a7c59; font-weight: bold;">₹{campaign.get('raised', 0):,} raised</span>
+            <span style="color: #4a7c59; font-weight: bold;">{campaign.get('percentage', 0)}% funded</span>
+            <span style="color: #4a7c59; font-weight: bold;">{campaign.get('days_left', 0)} days left</span>
         </div>
         
-        <div style="text-align: center; margin-top: 15px;">
+        <div style="text-align: center; margin-top: 20px;">
             <button style="background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%); 
-                           color: #2d5a27; border: none; padding: 10px 20px; 
-                           border-radius: 8px; font-weight: bold; cursor: pointer;">
+                           color: #2d5a27; border: none; padding: 12px 25px; 
+                           border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px;">
                 View Campaign
             </button>
         </div>
@@ -517,7 +525,10 @@ def show_campaign_card(campaign):
     """, unsafe_allow_html=True)
 
 def show_home():
+    st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
     show_header()
+    
+    st.markdown('<div class="content-area">', unsafe_allow_html=True)
     
     st.markdown("## 🔥 Trending Campaigns")
     
@@ -561,9 +572,15 @@ def show_home():
     
     for campaign in campaigns:
         show_campaign_card(campaign)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def show_explore():
+    st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
     show_header()
+    
+    st.markdown('<div class="content-area">', unsafe_allow_html=True)
     
     st.markdown("## 🔍 Explore Categories")
     
@@ -589,9 +606,15 @@ def show_explore():
                 st.session_state.current_page = 'search'
                 st.session_state.search_category = category
                 st.rerun()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def show_search():
+    st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
     show_header()
+    
+    st.markdown('<div class="content-area">', unsafe_allow_html=True)
     
     st.markdown("## 🔎 Search Campaigns")
     
@@ -612,9 +635,15 @@ def show_search():
             results = search_campaigns("medical")
             for campaign in results:
                 show_campaign_card(campaign)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def show_create_campaign():
+    st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
     show_header()
+    
+    st.markdown('<div class="content-area">', unsafe_allow_html=True)
     
     st.markdown("## ➕ Create New Campaign")
     
@@ -653,9 +682,15 @@ def show_create_campaign():
                 st.rerun()
             else:
                 st.error("Failed to create campaign. Please try again.")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def show_profile():
+    st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
     show_header()
+    
+    st.markdown('<div class="content-area">', unsafe_allow_html=True)
     
     st.markdown("## 👤 Profile")
     
@@ -674,6 +709,9 @@ def show_profile():
         if st.form_submit_button("Update Profile"):
             st.session_state.user_data.update({"name": new_name, "email": new_email})
             st.success("Profile updated successfully!")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # Main application
 def main():
