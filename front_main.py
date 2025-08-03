@@ -1,6 +1,6 @@
 """
-HAVEN Crowdfunding Platform - Complete Frontend with Automatic Term Simplification
-Features: Left sidebar navigation, language selection, backend testing, and hover tooltips
+HAVEN Crowdfunding Platform - Streamlined Frontend
+Features: OAuth login, automatic term simplification, post-login navigation, campaign creation
 """
 
 import streamlit as st
@@ -33,7 +33,6 @@ FACEBOOK_APP_ID = os.getenv("OAUTH_FACEBOOK_APP_ID", "")
 # TERM DEFINITIONS FOR AUTOMATIC TOOLTIPS
 # ========================================
 
-# Comprehensive term definitions for automatic simplification
 TERM_DEFINITIONS = {
     # Financial Terms
     "crowdfunding": "A way to raise money by asking many people to contribute small amounts online",
@@ -83,31 +82,22 @@ TERM_DEFINITIONS = {
     "runway": "How long money will last at current spending rate",
     "exit strategy": "Plan for how investors will get their money back",
     
-    # Legal Terms
-    "intellectual property": "Legal rights to ideas, inventions, or creative works",
-    "patent": "Legal protection for an invention",
-    "trademark": "Legal protection for a brand name or logo",
-    "copyright": "Legal protection for creative works like books, music, or art",
-    "liability": "Legal responsibility for damages or debts",
-    "nda": "Non-Disclosure Agreement - legal contract to keep information secret",
-    "terms of service": "Legal agreement between a service provider and user",
-    "privacy policy": "Document explaining how personal data is collected and used",
-    "compliance": "Following laws and regulations that apply to your business",
-    "due diligence": "Careful investigation before making a business decision",
+    # Medical Terms
+    "medical treatment": "Healthcare services provided to treat illness or injury",
+    "surgery": "Medical procedure involving cutting into the body to treat disease",
+    "therapy": "Treatment designed to help with physical or mental health problems",
+    "diagnosis": "Identifying what disease or condition a patient has",
+    "prescription": "Written order from a doctor for specific medicine",
+    "rehabilitation": "Process of helping someone recover from illness or injury",
     
-    # Marketing Terms
-    "target audience": "Specific group of people you want to reach",
-    "conversion rate": "Percentage of visitors who take a desired action",
-    "brand awareness": "How well people know and recognize your brand",
-    "viral marketing": "Marketing that spreads quickly through social sharing",
-    "seo": "Search Engine Optimization - making websites easier to find on Google",
-    "ctr": "Click-Through Rate - percentage of people who click on an ad or link",
-    "cac": "Customer Acquisition Cost - how much it costs to get a new customer",
-    "ltv": "Lifetime Value - total money a customer will spend over time",
-    "funnel": "Process that guides potential customers toward making a purchase",
-    "lead": "Potential customer who has shown interest in your product",
-    "crm": "Customer Relationship Management - system for managing customer interactions",
-    "a/b testing": "Comparing two versions to see which performs better"
+    # NGO/Charity Terms
+    "ngo": "Non-Governmental Organization - group working for social causes",
+    "charity": "Organization that helps people in need without making profit",
+    "donation": "Money or goods given to help others",
+    "volunteer": "Person who helps without being paid",
+    "fundraising": "Activities to collect money for a cause",
+    "grant": "Money given by organizations to support specific projects",
+    "nonprofit": "Organization that uses money to help others, not make profit"
 }
 
 # ========================================
@@ -186,26 +176,18 @@ def add_tooltips_to_text(text: str) -> str:
     if not text:
         return text
     
-    # Create a copy of the text to modify
     modified_text = text
-    
-    # Sort terms by length (longest first) to avoid partial matches
     sorted_terms = sorted(TERM_DEFINITIONS.keys(), key=len, reverse=True)
     
     for term in sorted_terms:
-        # Create case-insensitive pattern that matches whole words
         pattern = r'\b' + re.escape(term) + r'\b'
-        
-        # Find all matches
         matches = list(re.finditer(pattern, modified_text, re.IGNORECASE))
         
-        # Replace matches from right to left to preserve positions
         for match in reversed(matches):
             start, end = match.span()
             original_term = modified_text[start:end]
             definition = TERM_DEFINITIONS[term]
             
-            # Create tooltip HTML
             tooltip_html = f'''
             <span class="tooltip-term" title="{definition}">
                 {original_term}
@@ -214,17 +196,16 @@ def add_tooltips_to_text(text: str) -> str:
             </span>
             '''
             
-            # Replace the term with tooltip version
             modified_text = modified_text[:start] + tooltip_html + modified_text[end:]
     
     return modified_text
 
 # ========================================
-# CSS STYLING WITH TOOLTIPS
+# CSS STYLING
 # ========================================
 
 def load_css():
-    """Load custom CSS for the application including tooltip styles"""
+    """Load custom CSS for the application"""
     logo_base64 = get_logo_base64()
     
     css = f"""
@@ -291,6 +272,55 @@ def load_css():
         background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+    }}
+    
+    /* Create campaign button */
+    .create-button {{
+        background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+        color: white !important;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        text-decoration: none;
+        display: block;
+        margin: 1rem 0;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        width: 100%;
+        font-size: 1.1rem;
+    }}
+    
+    .create-button:hover {{
+        background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+    }}
+    
+    /* Profile button */
+    .profile-button {{
+        background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+        color: white !important;
+        border: none;
+        padding: 0.5rem;
+        border-radius: 50%;
+        font-weight: 600;
+        text-decoration: none;
+        display: block;
+        margin: 1rem auto;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }}
+    
+    .profile-button:hover {{
+        background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(159, 122, 234, 0.3);
     }}
     
     /* Main content area */
@@ -399,23 +429,6 @@ def load_css():
         transform: scale(1.2);
     }}
     
-    /* Responsive tooltip positioning */
-    @media (max-width: 768px) {{
-        .tooltip-text {{
-            width: 240px;
-            font-size: 0.8rem;
-            padding: 10px 12px;
-        }}
-    }}
-    
-    @media (max-width: 480px) {{
-        .tooltip-text {{
-            width: 200px;
-            font-size: 0.75rem;
-            padding: 8px 10px;
-        }}
-    }}
-    
     /* Form styling */
     .stTextInput > div > div > input,
     .stTextArea > div > div > textarea,
@@ -469,6 +482,7 @@ def load_css():
         justify-content: center;
         transition: all 0.3s ease;
         cursor: pointer;
+        width: 100%;
     }}
     
     .oauth-button:hover {{
@@ -495,39 +509,29 @@ def load_css():
         box-shadow: 0 2px 8px rgba(24, 119, 242, 0.2);
     }}
     
-    /* Status indicators */
-    .status-success {{
-        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-        color: white;
-        padding: 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-        font-weight: 600;
-    }}
-    
-    .status-error {{
-        background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-        color: white;
-        padding: 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-        font-weight: 600;
-    }}
-    
-    .status-warning {{
-        background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
-        color: white;
-        padding: 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-        font-weight: 600;
-    }}
-    
-    /* Content with tooltips */
+    /* Content with automatic tooltips */
     .content-with-tooltips {{
         line-height: 1.8;
         font-size: 1.1rem;
         color: #2d3748;
+    }}
+    
+    /* Campaign form styling */
+    .campaign-form {{
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }}
+    
+    /* File upload styling */
+    .stFileUploader > div > div {{
+        background-color: #f7fafc !important;
+        border: 2px dashed #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 2rem !important;
+        text-align: center !important;
     }}
     
     /* Responsive design */
@@ -544,6 +548,11 @@ def load_css():
         .tagline {{
             font-size: 1rem;
         }}
+        
+        .tooltip-text {{
+            width: 240px;
+            font-size: 0.8rem;
+        }}
     }}
     
     @media (max-width: 480px) {{
@@ -554,6 +563,11 @@ def load_css():
         .main-content {{
             margin: 0.25rem;
             padding: 0.75rem;
+        }}
+        
+        .tooltip-text {{
+            width: 200px;
+            font-size: 0.75rem;
         }}
     }}
     </style>
@@ -586,57 +600,62 @@ def render_sidebar():
         
         st.markdown("---")
         
-        # Navigation Section
-        st.markdown("### 🧭 Navigation")
+        # Show different navigation based on login status
+        if st.session_state.get('logged_in', False):
+            # Post-login navigation
+            st.markdown("### 🧭 Navigation")
+            
+            # Home button
+            if st.button("🏠 Home", key="nav_home", help="Go to home page"):
+                st.session_state.current_page = "home"
+                st.rerun()
+            
+            # Explore button
+            if st.button("🔍 Explore", key="nav_explore", help="Explore campaigns"):
+                st.session_state.current_page = "explore"
+                st.rerun()
+            
+            # Search button
+            if st.button("🔎 Search", key="nav_search", help="Search campaigns"):
+                st.session_state.current_page = "search"
+                st.rerun()
+            
+            st.markdown("---")
+            
+            # Create Campaign button
+            st.markdown("""
+            <div class="create-button" onclick="document.getElementById('create_campaign').click()">
+                ➕ Create Campaign
+            </div>
+            """, unsafe_allow_html=True)
+            
+            if st.button("", key="create_campaign", help="Create a new campaign"):
+                st.session_state.current_page = "create_campaign"
+                st.rerun()
+            
+            st.markdown("---")
+            
+            # Backend connection status
+            backend_status = "🟢 Online" if check_backend_health() else "🔴 Offline"
+            st.markdown(f"**Backend:** {backend_status}")
+            
+            # Profile button at bottom
+            st.markdown("---")
+            st.markdown("""
+            <div class="profile-button" onclick="document.getElementById('profile').click()">
+                👤
+            </div>
+            """, unsafe_allow_html=True)
+            
+            if st.button("", key="profile", help="Go to your profile"):
+                st.session_state.current_page = "profile"
+                st.rerun()
         
-        # Backend Test Button
-        if st.button("🔧 Test Backend Connection", key="test_backend", help="Test connection to backend API"):
-            st.session_state.show_backend_test = True
-            st.session_state.show_translation_test = False
-            st.session_state.show_simplification_test = False
-            st.session_state.show_demo_content = False
-        
-        # Translation Test Button
-        if TRANSLATION_ENABLED:
-            if st.button("🌐 Test Translation", key="test_translation", help="Test translation service"):
-                st.session_state.show_translation_test = True
-                st.session_state.show_backend_test = False
-                st.session_state.show_simplification_test = False
-                st.session_state.show_demo_content = False
-        
-        # Simplification Test Button
-        if SIMPLIFICATION_ENABLED:
-            if st.button("📝 Test Simplification", key="test_simplification", help="Test term simplification"):
-                st.session_state.show_simplification_test = True
-                st.session_state.show_backend_test = False
-                st.session_state.show_translation_test = False
-                st.session_state.show_demo_content = False
-        
-        # Demo Content Button
-        if st.button("📚 Demo Content with Tooltips", key="demo_content", help="See automatic term simplification in action"):
-            st.session_state.show_demo_content = True
-            st.session_state.show_backend_test = False
-            st.session_state.show_translation_test = False
-            st.session_state.show_simplification_test = False
-        
-        st.markdown("---")
-        
-        # Feature Status
-        st.markdown("### 📊 Feature Status")
-        
-        # Backend status
-        backend_status = "🟢 Online" if check_backend_health() else "🔴 Offline"
-        st.markdown(f"**Backend:** {backend_status}")
-        
-        # Feature status
-        translation_status = "🟢 Enabled" if TRANSLATION_ENABLED else "🔴 Disabled"
-        st.markdown(f"**Translation:** {translation_status}")
-        
-        simplification_status = "🟢 Enabled" if SIMPLIFICATION_ENABLED else "🔴 Disabled"
-        st.markdown(f"**Simplification:** {simplification_status}")
-        
-        oauth_status = "🟢 Configured" if (GOOGLE_CLIENT_ID or FACEBOOK_APP_ID) else "🔴 Not Configured"
-        st.markdown(f"**OAuth:** {oauth_status}")
+        else:
+            # Pre-login sidebar (minimal)
+            st.markdown("### 📊 System Status")
+            backend_status = "🟢 Online" if check_backend_health() else "🔴 Offline"
+            st.markdown(f"**Backend:** {backend_status}")
 
 def check_backend_health() -> bool:
     """Check if backend is healthy"""
@@ -647,7 +666,7 @@ def check_backend_health() -> bool:
         return False
 
 # ========================================
-# MAIN CONTENT SECTIONS
+# PAGE COMPONENTS
 # ========================================
 
 def render_header():
@@ -673,194 +692,8 @@ def render_header():
     </div>
     """, unsafe_allow_html=True)
 
-def render_demo_content():
-    """Render demo content with automatic term simplification tooltips"""
-    st.markdown("## 📚 Demo: Automatic Term Simplification")
-    
-    st.markdown("""
-    <div class="content-with-tooltips">
-    <p>Hover over the blue terms below to see automatic definitions:</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Sample content with complex terms
-    demo_text = """
-    Welcome to HAVEN, the revolutionary crowdfunding platform that's transforming how startups and entrepreneurs raise capital. Our innovative approach combines traditional investment strategies with cutting-edge blockchain technology to create unprecedented opportunities for both investors and project creators.
-
-    Whether you're an angel investor looking for the next unicorn startup, or an entrepreneur seeking seed funding for your MVP, HAVEN provides the tools and community you need. Our platform supports various funding models including equity crowdfunding, revenue-based financing, and traditional donation-based campaigns.
-
-    Key features include:
-    • Advanced due diligence tools powered by AI and machine learning
-    • Comprehensive market research and analytics dashboard  
-    • Automated compliance monitoring for regulatory requirements
-    • Smart contract integration for transparent and secure transactions
-    • Real-time ROI tracking and portfolio management
-    • Social proof mechanisms including viral marketing tools
-
-    Our scalable platform architecture ensures high performance even during peak funding periods, while our robust cybersecurity measures protect both investor funds and intellectual property. With built-in KPI tracking and detailed analytics, project creators can monitor their burn rate, extend their runway, and optimize their conversion rates.
-
-    Join thousands of successful entrepreneurs who have already leveraged our platform to achieve their funding milestones and execute their exit strategies. From B2B SaaS solutions to B2C consumer products, HAVEN supports diverse business models across all industries.
-    """
-    
-    # Add tooltips to the demo text
-    demo_with_tooltips = add_tooltips_to_text(demo_text)
-    
-    st.markdown(f"""
-    <div class="content-with-tooltips">
-    {demo_with_tooltips}
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    st.markdown("### 💡 How It Works")
-    st.markdown("""
-    1. **Automatic Detection**: Complex terms are automatically identified in all content
-    2. **Visual Indicators**: Terms appear in blue with a dotted underline and info icon (ℹ️)
-    3. **Hover Tooltips**: Simply hover your mouse over any term to see its definition
-    4. **No Clicking Required**: Definitions appear instantly without interrupting your reading
-    5. **Mobile Friendly**: Tooltips work on touch devices too
-    """)
-
-def render_backend_test():
-    """Render backend connection test"""
-    st.markdown("## 🔧 Backend Connection Test")
-    
-    with st.spinner("Testing backend connection..."):
-        result = make_api_request("/api/backend-test")
-    
-    if "error" in result:
-        st.markdown(f"""
-        <div class="status-error">
-            ❌ Backend Connection Failed<br>
-            Error: {result['error']}
-        </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown(f"""
-        <div class="status-success">
-            ✅ Backend Connection Successful<br>
-            Status: {result.get('backend_status', 'Unknown')}<br>
-            Response Time: {result.get('response_time_ms', 0):.2f}ms
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Show detailed test results
-        st.markdown("### 📊 Detailed Test Results")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.metric("CORS Enabled", "✅ Yes" if result.get('cors_enabled') else "❌ No")
-            st.metric("Translation Available", "✅ Yes" if result.get('translation_available') else "❌ No")
-        
-        with col2:
-            st.metric("Simplification Available", "✅ Yes" if result.get('simplification_available') else "❌ No")
-            st.metric("OAuth Configured", "✅ Yes" if result.get('oauth_configured') else "❌ No")
-
-def render_translation_test():
-    """Render translation test interface"""
-    st.markdown("## 🌐 Translation Test")
-    
-    # Input form
-    with st.form("translation_form"):
-        text_to_translate = st.text_area(
-            "Enter text to translate:",
-            placeholder="Type your text here...",
-            height=100
-        )
-        
-        languages = get_supported_languages()
-        target_language = st.selectbox(
-            "Target Language:",
-            options=[lang["code"] for lang in languages],
-            format_func=lambda x: next(lang["native"] for lang in languages if lang["code"] == x)
-        )
-        
-        submit_button = st.form_submit_button("🔄 Translate")
-    
-    if submit_button and text_to_translate:
-        with st.spinner("Translating..."):
-            result = make_api_request("/api/translate", "POST", {
-                "text": text_to_translate,
-                "target_language": target_language,
-                "source_language": "auto"
-            })
-        
-        if "error" in result:
-            st.markdown(f"""
-            <div class="status-error">
-                ❌ Translation Failed<br>
-                Error: {result['error']}
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown("### 📝 Translation Result")
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.markdown("**Original Text:**")
-                st.info(result.get('original_text', ''))
-                st.markdown(f"**Language:** {result.get('source_language', 'Unknown')}")
-            
-            with col2:
-                st.markdown("**Translated Text:**")
-                st.success(result.get('translated_text', ''))
-                st.markdown(f"**Language:** {result.get('target_language', 'Unknown')}")
-            
-            st.markdown(f"**Confidence:** {result.get('confidence', 0):.2%}")
-
-def render_simplification_test():
-    """Render simplification test interface"""
-    st.markdown("## 📝 Term Simplification Test")
-    
-    # Input form
-    with st.form("simplification_form"):
-        text_to_simplify = st.text_area(
-            "Enter text with complex terms:",
-            placeholder="Enter text containing financial, technical, or business terms...",
-            height=100,
-            value="Our startup is seeking crowdfunding to develop a blockchain-based platform for cryptocurrency investment with high ROI potential."
-        )
-        
-        submit_button = st.form_submit_button("🔍 Analyze & Simplify")
-    
-    if submit_button and text_to_simplify:
-        with st.spinner("Analyzing text..."):
-            result = make_api_request("/api/simplify", "POST", {
-                "text": text_to_simplify,
-                "level": "simple"
-            })
-        
-        if "error" in result:
-            st.markdown(f"""
-            <div class="status-error">
-                ❌ Simplification Failed<br>
-                Error: {result['error']}
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown("### 📊 Analysis Results")
-            
-            # Show complexity score
-            complexity = result.get('complexity_score', 0)
-            st.metric("Complexity Score", f"{complexity:.2f}")
-            
-            # Show found terms
-            terms = result.get('simplified_terms', [])
-            if terms:
-                st.markdown("### 📚 Complex Terms Found")
-                
-                for term in terms:
-                    with st.expander(f"ℹ️ {term['term'].title()}", expanded=False):
-                        st.markdown(f"**Definition:** {term['definition']}")
-                        st.markdown(f"**Category:** {term['category'].title()}")
-                        st.markdown(f"**Complexity:** {term['complexity_level'].title()}")
-            else:
-                st.info("No complex terms found in the text.")
-
 def render_login_page():
-    """Render the login page"""
+    """Render the login page with OAuth buttons"""
     st.markdown("## 🔐 Login to HAVEN")
     
     # Login form
@@ -875,6 +708,7 @@ def render_login_page():
             # Mock login for demo
             st.session_state.logged_in = True
             st.session_state.user_email = email
+            st.session_state.current_page = "home"
             st.rerun()
         else:
             st.error("Please enter both email and password")
@@ -885,18 +719,332 @@ def render_login_page():
     col1, col2 = st.columns(2)
     
     with col1:
-        if GOOGLE_CLIENT_ID:
-            if st.button("🔍 Sign in with Google", key="google_login"):
-                st.info("Google OAuth integration would open here")
+        if st.button("🔍 Sign in with Google", key="google_login", use_container_width=True):
+            # Mock Google OAuth
+            st.session_state.logged_in = True
+            st.session_state.user_email = "user@gmail.com"
+            st.session_state.current_page = "home"
+            st.rerun()
     
     with col2:
-        if FACEBOOK_APP_ID:
-            if st.button("📘 Sign in with Facebook", key="facebook_login"):
-                st.info("Facebook OAuth integration would open here")
+        if st.button("📘 Sign in with Facebook", key="facebook_login", use_container_width=True):
+            # Mock Facebook OAuth
+            st.session_state.logged_in = True
+            st.session_state.user_email = "user@facebook.com"
+            st.session_state.current_page = "home"
+            st.rerun()
     
     # Registration link
     st.markdown("---")
     st.markdown("**Not registered?** [Create an account](#)")
+
+def render_home_page():
+    """Render the home page with automatic term simplification"""
+    st.markdown("## 🏠 Welcome to HAVEN")
+    
+    # Welcome message with automatic tooltips
+    welcome_text = """
+    Welcome to HAVEN, the revolutionary crowdfunding platform that's transforming how startups and entrepreneurs raise capital. 
+    Our innovative approach combines traditional investment strategies with cutting-edge technology to create unprecedented 
+    opportunities for both investors and project creators.
+    
+    Whether you're seeking funding for medical treatment, supporting an NGO or charity, or launching your next big idea, 
+    HAVEN provides the tools and community you need to succeed.
+    """
+    
+    welcome_with_tooltips = add_tooltips_to_text(welcome_text)
+    
+    st.markdown(f"""
+    <div class="content-with-tooltips">
+    {welcome_with_tooltips}
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Feature highlights
+    st.markdown("### 🎯 Platform Features")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        feature_text = """
+        **🌐 Multi-language Support**
+        - English, Hindi, Tamil, Telugu
+        - Real-time translation
+        - Localized content
+        """
+        feature_with_tooltips = add_tooltips_to_text(feature_text)
+        st.markdown(f'<div class="content-with-tooltips">{feature_with_tooltips}</div>', unsafe_allow_html=True)
+    
+    with col2:
+        feature_text = """
+        **📝 Smart Simplification**
+        - Automatic term detection
+        - Hover tooltips for complex terms
+        - Context-aware definitions
+        """
+        feature_with_tooltips = add_tooltips_to_text(feature_text)
+        st.markdown(f'<div class="content-with-tooltips">{feature_with_tooltips}</div>', unsafe_allow_html=True)
+    
+    with col3:
+        feature_text = """
+        **🔐 Secure Authentication**
+        - Google OAuth integration
+        - Facebook OAuth integration
+        - Secure session management
+        """
+        feature_with_tooltips = add_tooltips_to_text(feature_text)
+        st.markdown(f'<div class="content-with-tooltips">{feature_with_tooltips}</div>', unsafe_allow_html=True)
+
+def render_explore_page():
+    """Render the explore page"""
+    st.markdown("## 🔍 Explore Campaigns")
+    
+    # Campaign categories
+    st.markdown("### 📂 Campaign Categories")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        if st.button("🏥 Medical Treatment", use_container_width=True):
+            st.info("Showing medical treatment campaigns...")
+    
+    with col2:
+        if st.button("🤝 NGO / Charity", use_container_width=True):
+            st.info("Showing NGO and charity campaigns...")
+    
+    with col3:
+        if st.button("💡 Other Causes", use_container_width=True):
+            st.info("Showing other cause campaigns...")
+    
+    # Sample campaigns with tooltips
+    st.markdown("### 🌟 Featured Campaigns")
+    
+    sample_campaigns = [
+        {
+            "title": "Emergency Surgery Fund",
+            "description": "Help raise funds for life-saving surgery for a young entrepreneur who needs immediate medical treatment.",
+            "raised": "$15,000",
+            "goal": "$50,000"
+        },
+        {
+            "title": "Clean Water NGO Project",
+            "description": "Support our charity initiative to provide clean water access to rural communities through innovative technology.",
+            "raised": "$8,500",
+            "goal": "$25,000"
+        },
+        {
+            "title": "Educational Startup Platform",
+            "description": "Invest in our revolutionary AI-powered platform that's transforming online education for students worldwide.",
+            "raised": "$75,000",
+            "goal": "$200,000"
+        }
+    ]
+    
+    for campaign in sample_campaigns:
+        with st.expander(f"📋 {campaign['title']}", expanded=False):
+            description_with_tooltips = add_tooltips_to_text(campaign['description'])
+            st.markdown(f'<div class="content-with-tooltips">{description_with_tooltips}</div>', unsafe_allow_html=True)
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Raised", campaign['raised'])
+            with col2:
+                st.metric("Goal", campaign['goal'])
+
+def render_search_page():
+    """Render the search page"""
+    st.markdown("## 🔎 Search Campaigns")
+    
+    # Search form
+    with st.form("search_form"):
+        search_query = st.text_input("🔍 Search for campaigns", placeholder="Enter keywords...")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            category_filter = st.selectbox("Category", ["All", "Medical Treatment", "NGO / Charity", "Other Cause"])
+        with col2:
+            amount_filter = st.selectbox("Funding Goal", ["All", "Under $10K", "$10K - $50K", "Over $50K"])
+        
+        search_button = st.form_submit_button("🔍 Search")
+    
+    if search_button and search_query:
+        st.success(f"Searching for: '{search_query}' in {category_filter} category with {amount_filter} funding goal")
+        
+        # Mock search results with tooltips
+        search_text = f"""
+        Found 12 campaigns matching your search for '{search_query}'. These include various startups, 
+        NGO projects, and medical treatment fundraising campaigns. Each campaign has been verified 
+        for authenticity and compliance with our platform guidelines.
+        """
+        
+        search_with_tooltips = add_tooltips_to_text(search_text)
+        st.markdown(f'<div class="content-with-tooltips">{search_with_tooltips}</div>', unsafe_allow_html=True)
+
+def render_create_campaign_page():
+    """Render the create campaign page"""
+    st.markdown("## ➕ Create New Campaign")
+    
+    with st.form("campaign_form"):
+        st.markdown("### 📋 Campaign Details")
+        
+        # Purpose dropdown (first question as requested)
+        purpose = st.selectbox(
+            "Purpose of raising fund *",
+            ["Select purpose...", "Medical Treatment", "NGO / Charity", "Other Cause"],
+            help="Choose the main purpose for your fundraising campaign"
+        )
+        
+        # Campaign name
+        campaign_name = st.text_input(
+            "Campaign Name *",
+            placeholder="Enter a clear, descriptive name for your campaign"
+        )
+        
+        # Basic description (second detail as requested)
+        description = st.text_area(
+            "Basic Description *",
+            placeholder="Provide a detailed description of your campaign, including why you need funding and how it will be used...",
+            height=150,
+            help="Explain your campaign clearly - this will be automatically enhanced with helpful tooltips for complex terms"
+        )
+        
+        # Funding goal
+        funding_goal = st.number_input(
+            "Funding Goal (USD) *",
+            min_value=100,
+            max_value=1000000,
+            value=5000,
+            step=100
+        )
+        
+        # Campaign duration
+        duration = st.selectbox(
+            "Campaign Duration",
+            ["30 days", "60 days", "90 days", "120 days"]
+        )
+        
+        # Pictures/Media (third detail as requested)
+        st.markdown("### 📸 Pictures of Actions")
+        uploaded_files = st.file_uploader(
+            "Upload images that show your cause, progress, or planned actions",
+            type=['png', 'jpg', 'jpeg'],
+            accept_multiple_files=True,
+            help="Upload clear, relevant images that help tell your story"
+        )
+        
+        # Additional details
+        st.markdown("### 📝 Additional Information")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            contact_email = st.text_input("Contact Email *", placeholder="your.email@example.com")
+            phone = st.text_input("Phone Number", placeholder="+1 (555) 123-4567")
+        
+        with col2:
+            location = st.text_input("Location", placeholder="City, State/Country")
+            website = st.text_input("Website (optional)", placeholder="https://yourwebsite.com")
+        
+        # Terms and conditions
+        terms_accepted = st.checkbox("I agree to the Terms of Service and Privacy Policy *")
+        
+        # Submit button
+        submit_button = st.form_submit_button("🚀 Create Campaign")
+    
+    if submit_button:
+        if purpose == "Select purpose...":
+            st.error("Please select a purpose for your campaign")
+        elif not campaign_name:
+            st.error("Please enter a campaign name")
+        elif not description:
+            st.error("Please provide a campaign description")
+        elif not contact_email:
+            st.error("Please provide a contact email")
+        elif not terms_accepted:
+            st.error("Please accept the terms and conditions")
+        else:
+            st.success("🎉 Campaign created successfully!")
+            st.balloons()
+            
+            # Show preview with tooltips
+            st.markdown("### 📋 Campaign Preview")
+            
+            preview_text = f"""
+            **{campaign_name}**
+            
+            Purpose: {purpose}
+            Goal: ${funding_goal:,}
+            Duration: {duration}
+            
+            {description}
+            """
+            
+            preview_with_tooltips = add_tooltips_to_text(preview_text)
+            st.markdown(f'<div class="content-with-tooltips">{preview_with_tooltips}</div>', unsafe_allow_html=True)
+            
+            if uploaded_files:
+                st.markdown("**Uploaded Images:**")
+                for file in uploaded_files:
+                    st.image(file, caption=file.name, width=200)
+
+def render_profile_page():
+    """Render the profile page"""
+    st.markdown("## 👤 Your Profile")
+    
+    # User info
+    user_email = st.session_state.get('user_email', 'user@example.com')
+    st.markdown(f"**Email:** {user_email}")
+    
+    # Profile type selection
+    profile_type = st.radio(
+        "Profile Type",
+        ["Individual", "Organization"],
+        help="Select whether you're an individual or representing an organization"
+    )
+    
+    if profile_type == "Individual":
+        st.markdown("### 👤 Individual Profile")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.text_input("Full Name", value="John Doe")
+            st.text_input("Phone Number", value="+1 (555) 123-4567")
+        with col2:
+            st.text_input("Location", value="New York, USA")
+            st.date_input("Date of Birth")
+        
+        st.text_area("Bio", placeholder="Tell us about yourself...")
+    
+    else:
+        st.markdown("### 🏢 Organization Profile")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.text_input("Organization Name", value="ACME Foundation")
+            st.selectbox("Organization Type", ["NGO", "Startup", "Charity", "Other"])
+        with col2:
+            st.text_input("Contact Person", value="Jane Smith")
+            st.text_input("Registration Number", value="REG123456")
+        
+        st.text_area("Organization Description", placeholder="Describe your organization's mission and activities...")
+    
+    # Campaign history
+    st.markdown("### 📊 Your Campaigns")
+    
+    campaign_history_text = """
+    You have created 2 campaigns with a total funding goal of $75,000. Your campaigns have received 
+    strong community support with an average success rate of 85%. Your most successful campaign 
+    was for medical treatment which exceeded its funding goal by 120%.
+    """
+    
+    history_with_tooltips = add_tooltips_to_text(campaign_history_text)
+    st.markdown(f'<div class="content-with-tooltips">{history_with_tooltips}</div>', unsafe_allow_html=True)
+    
+    # Logout button
+    if st.button("🚪 Logout"):
+        st.session_state.logged_in = False
+        st.session_state.current_page = "login"
+        st.rerun()
 
 # ========================================
 # MAIN APPLICATION
@@ -920,14 +1068,8 @@ def main():
         st.session_state.logged_in = False
     if "selected_language" not in st.session_state:
         st.session_state.selected_language = "en"
-    if "show_backend_test" not in st.session_state:
-        st.session_state.show_backend_test = False
-    if "show_translation_test" not in st.session_state:
-        st.session_state.show_translation_test = False
-    if "show_simplification_test" not in st.session_state:
-        st.session_state.show_simplification_test = False
-    if "show_demo_content" not in st.session_state:
-        st.session_state.show_demo_content = False
+    if "current_page" not in st.session_state:
+        st.session_state.current_page = "login"
     
     # Render sidebar
     render_sidebar()
@@ -939,87 +1081,24 @@ def main():
         # Render header
         render_header()
         
-        # Check if user is logged in
+        # Route to appropriate page
         if not st.session_state.logged_in:
             render_login_page()
         else:
-            # Show main application content
-            st.markdown(f"## Welcome back, {st.session_state.get('user_email', 'User')}! 👋")
+            current_page = st.session_state.get('current_page', 'home')
             
-            # Show different sections based on sidebar selection
-            if st.session_state.show_backend_test:
-                render_backend_test()
-                if st.button("🔙 Back to Home"):
-                    st.session_state.show_backend_test = False
-                    st.rerun()
-            
-            elif st.session_state.show_translation_test:
-                render_translation_test()
-                if st.button("🔙 Back to Home"):
-                    st.session_state.show_translation_test = False
-                    st.rerun()
-            
-            elif st.session_state.show_simplification_test:
-                render_simplification_test()
-                if st.button("🔙 Back to Home"):
-                    st.session_state.show_simplification_test = False
-                    st.rerun()
-            
-            elif st.session_state.show_demo_content:
-                render_demo_content()
-                if st.button("🔙 Back to Home"):
-                    st.session_state.show_demo_content = False
-                    st.rerun()
-            
+            if current_page == "home":
+                render_home_page()
+            elif current_page == "explore":
+                render_explore_page()
+            elif current_page == "search":
+                render_search_page()
+            elif current_page == "create_campaign":
+                render_create_campaign_page()
+            elif current_page == "profile":
+                render_profile_page()
             else:
-                # Default home content
-                st.markdown("### 🎯 Platform Features")
-                
-                col1, col2, col3 = st.columns(3)
-                
-                with col1:
-                    st.markdown("""
-                    **🌐 Multi-language Support**
-                    - English, Hindi, Tamil, Telugu
-                    - Real-time translation
-                    - Localized content
-                    """)
-                
-                with col2:
-                    st.markdown("""
-                    **📝 Smart Simplification**
-                    - Automatic term detection
-                    - Hover tooltips
-                    - Context-aware definitions
-                    """)
-                
-                with col3:
-                    st.markdown("""
-                    **🔐 Secure Authentication**
-                    - Google OAuth
-                    - Facebook OAuth
-                    - Secure sessions
-                    """)
-                
-                # Demo content preview
-                st.markdown("---")
-                st.markdown("### 📚 Try Automatic Term Simplification")
-                
-                sample_text = "Our startup is seeking crowdfunding for a blockchain-based cryptocurrency platform with high ROI potential."
-                sample_with_tooltips = add_tooltips_to_text(sample_text)
-                
-                st.markdown(f"""
-                <div class="content-with-tooltips">
-                <p><strong>Sample text with automatic tooltips:</strong></p>
-                <p>{sample_with_tooltips}</p>
-                <p><em>Hover over the blue terms to see definitions!</em></p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Logout button
-                if st.button("🚪 Logout"):
-                    st.session_state.logged_in = False
-                    st.rerun()
+                render_home_page()
         
         st.markdown('</div>', unsafe_allow_html=True)
 
