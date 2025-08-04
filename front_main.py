@@ -1,7 +1,7 @@
 # front_main.py
 # This is the corrected and complete Streamlit frontend application.
-# It addresses the NameError by ensuring the 'title' variable is properly defined
-# when generating HTML for the text simplification feature.
+# It now includes the necessary imports for `Optional` and `Dict`
+# to resolve the latest NameError.
 
 import streamlit as st
 import requests
@@ -12,12 +12,13 @@ import os
 from urllib.parse import urlencode
 import time
 from dotenv import load_dotenv
+from typing import Optional, Dict # Added this import
 
 # --- Environment Variable Loading ---
 load_dotenv()
 
 # --- Backend URL Configuration ---
-BACKEND_URL = os.getenv("BACKEND_URL", "http://haven-fastapi-backend.onrender.com")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 # Page configuration
 st.set_page_config(
