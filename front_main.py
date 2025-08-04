@@ -4,7 +4,7 @@ HAVEN Crowdfunding Streamlit App - Final Improved Version
 
 This script is a complete and enhanced version of the frontend, incorporating
 a modern layout, advanced CSS styling, and key components from `streamlit-extras`
-to create a more professional user interface.
+and `streamlit-card` to create a more professional user interface.
 """
 
 import streamlit as st
@@ -17,6 +17,11 @@ from urllib.parse import urlencode
 import time
 from streamlit_extras.metric_cards import metric_card
 from streamlit_extras.stoggle import stoggle
+from streamlit_card import card # Importing the new streamlit-card library
+from streamlit_extras.grid import grid # New import for grid layout
+from streamlit_extras.badges import badge # New import for badges
+from streamlit_avatar import avatar # New import for avatars
+from streamlit_extras.image_selector import image_selector # New import for image selector
 
 # --- Page configuration ---
 st.set_page_config(
@@ -171,16 +176,6 @@ def load_custom_css():
         padding-right: 1rem;
         padding-bottom: 0px;
         padding-left: 1rem;
-    }
-    
-    /* Custom card styling for campaigns */
-    .campaign-card {
-        padding: 1.5rem;
-        border-radius: 10px;
-        background-color: #f8f9fa;
-        border: 1px solid #e9ecef;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        margin-bottom: 1.5rem;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -406,17 +401,35 @@ def trending_page():
     st.header("Trending Campaigns")
     trending_campaigns = get_trending_campaigns()
     if trending_campaigns:
-        # Use columns and custom CSS for a card-like layout
-        cols = st.columns(3)
+        # Use grid layout for a cleaner display
+        grid_cols = grid([1, 1, 1], gap="medium")
         for i, campaign in enumerate(trending_campaigns):
-            with cols[i % 3]:
-                with st.container(border=True):
-                    st.markdown(f"**{campaign['title']}**")
-                    st.write(f"**Organization:** {campaign['organization']}")
-                    st.write(f"**Amount Raised:** ${campaign['current_amount']:,}")
-                    st.write(f"**Target:** ${campaign['target_amount']:,}")
-                    # Use a unique key for each button to avoid Streamlit errors
-                    st.button("View Details", key=f"trend_{campaign['id']}")
+            with grid_cols.container():
+                # Add a badge for trending campaigns
+                badge(type="success", label="Trending")
+                # Use streamlit-card to display the campaign
+                card(
+                    title=campaign['title'],
+                    text=f"Raised: ${campaign['current_amount']:,} of ${campaign['target_amount']:,}\nCategory: {campaign['category']}",
+                    image="https://placehold.co/600x400/2980b9/ffffff?text=Campaign",
+                    url=f"?page=campaign_{campaign['id']}",
+                    styles={
+                        "card": {
+                            "width": "100%",
+                            "height": "auto",
+                            "border-radius": "10px",
+                            "box-shadow": "0 4px 12px rgba(0, 0, 0, 0.05)",
+                            "transition": "all 0.3s ease-in-out",
+                        },
+                        "title": {
+                            "font-size": "22px",
+                            "font-weight": "bold",
+                        },
+                        "text": {
+                            "font-size": "16px",
+                        },
+                    }
+                )
     else:
         st.info("No trending campaigns found.")
 
@@ -424,17 +437,33 @@ def explore_page():
     st.header("Explore All Campaigns")
     all_campaigns = get_all_campaigns()
     if all_campaigns:
-        # Use columns and custom CSS for a card-like layout
-        cols = st.columns(3)
+        # Use grid layout for a cleaner display
+        grid_cols = grid([1, 1, 1], gap="medium")
         for i, campaign in enumerate(all_campaigns):
-            with cols[i % 3]:
-                with st.container(border=True):
-                    st.markdown(f"**{campaign['title']}**")
-                    st.write(f"**Organization:** {campaign['organization']}")
-                    st.write(f"**Amount Raised:** ${campaign['current_amount']:,}")
-                    st.write(f"**Target:** ${campaign['target_amount']:,}")
-                    # Use a unique key for each button
-                    st.button("View Details", key=f"explore_{campaign['id']}")
+            with grid_cols.container():
+                # Use streamlit-card to display the campaign
+                card(
+                    title=campaign['title'],
+                    text=f"Raised: ${campaign['current_amount']:,} of ${campaign['target_amount']:,}\nCategory: {campaign['category']}",
+                    image="https://placehold.co/600x400/2980b9/ffffff?text=Campaign",
+                    url=f"?page=campaign_{campaign['id']}",
+                    styles={
+                        "card": {
+                            "width": "100%",
+                            "height": "auto",
+                            "border-radius": "10px",
+                            "box-shadow": "0 4px 12px rgba(0, 0, 0, 0.05)",
+                            "transition": "all 0.3s ease-in-out",
+                        },
+                        "title": {
+                            "font-size": "22px",
+                            "font-weight": "bold",
+                        },
+                        "text": {
+                            "font-size": "16px",
+                        },
+                    }
+                )
     else:
         st.info("No campaigns to display.")
 
@@ -442,30 +471,52 @@ def search_page():
     st.header("Search Campaigns")
     query = st.text_input("Enter a keyword to search for campaigns...")
     if st.button("Search"):
-        # Placeholder for search logic
-        st.info("Search functionality is not yet implemented.")
+        with st.spinner("Searching for campaigns..."):
+            time.sleep(2) # Simulate search time
+            # Placeholder for search logic
+            st.info(f"Search results for '{query}' will be displayed here.")
 
 def profile_page():
     st.header("My Profile")
     st.info("This is a placeholder for the user profile page.")
+    
+    # Display user avatar
+    avatar(name="John Doe", src="https://placehold.co/50x50/3498db/ffffff?text=JD")
+    st.markdown("### Welcome, John Doe!")
+
     st.subheader("Create a New Campaign")
     
     with st.form(key='new_campaign_form'):
-        title = st.text_input("Campaign Title")
-        description = st.text_area("Campaign Description")
-        organization = st.text_input("Organization Name")
-        category = st.selectbox("Category", ["Education", "Health", "Community", "Technology"])
+        col1, col2 = st.columns(2)
+        with col1:
+            title = st.text_input("Campaign Title")
+            organization = st.text_input("Organization Name")
+            category = st.selectbox("Category", ["Education", "Health", "Community", "Technology"])
+            ngo_darpan_id = st.text_input("NGO Darpan ID (optional)")
+            pan_number = st.text_input("PAN Number (optional)")
         
-        # Corrected usage of stoggle
-        has_certificate = stoggle(
-            "Do you have a registration certificate?", 
-            "Yes, I have a certificate."
-        )
+        with col2:
+            description = st.text_area("Campaign Description", height=200)
+            
+            # Use image_selector for a nicer campaign image upload experience
+            st.markdown("Select a campaign image:")
+            selected_image = image_selector(
+                images=[
+                    "https://placehold.co/600x400/2980b9/ffffff?text=Education",
+                    "https://placehold.co/600x400/27ae60/ffffff?text=Health",
+                    "https://placehold.co/600x400/e67e22/ffffff?text=Community",
+                    "https://placehold.co/600x400/9b59b6/ffffff?text=Technology",
+                ],
+                key="campaign_image_selector"
+            )
+
+            # Corrected usage of stoggle
+            has_certificate = stoggle(
+                "Do you have a registration certificate?", 
+                "Yes, I have a certificate."
+            )
         
-        ngo_darpan_id = st.text_input("NGO Darpan ID (optional)")
-        pan_number = st.text_input("PAN Number (optional)")
-        
-        submit_button = st.form_submit_button(label="Submit for Review")
+        submit_button = st.form_submit_button(label="Submit for Review", use_container_width=True)
         
         if submit_button:
             campaign_data = {
@@ -475,7 +526,8 @@ def profile_page():
                 "category": category,
                 "ngo_darpan_id": ngo_darpan_id,
                 "pan_number": pan_number,
-                "has_certificate": has_certificate
+                "has_certificate": has_certificate,
+                "image_url": selected_image # Assuming backend can handle this
             }
             with st.spinner("Submitting campaign for fraud moderation..."):
                 result = submit_campaign_for_moderation(campaign_data)
@@ -493,14 +545,19 @@ def campaign_detail_page(campaign_id):
     campaign = get_campaign_by_id(campaign_id)
     if campaign:
         with st.container():
-            st.title(campaign['title'])
-            st.markdown(f"**Organization:** {campaign['organization']}")
+            col1, col2 = st.columns([1, 4])
+            with col1:
+                # Display organization avatar
+                avatar(name=campaign['organization'], src="https://placehold.co/50x50/3498db/ffffff?text=Org")
+            with col2:
+                st.title(campaign['title'])
+                st.markdown(f"**Organization:** {campaign['organization']}")
+            
             st.markdown(f"**Category:** {campaign['category']}")
             
-            with st.expander("Read full description"):
-                st.write(campaign['description'])
+            # Calculate progress percentage
+            progress_percent = (campaign['current_amount'] / campaign['target_amount']) * 100 if campaign['target_amount'] > 0 else 0
             
-            # Use metric_card for a professional data display
             col1, col2 = st.columns(2)
             with col1:
                 metric_card(
@@ -515,6 +572,13 @@ def campaign_detail_page(campaign_id):
                     value=f"{campaign.get('donors_count', 0):,}",
                     # You can add an icon for donors here
                 )
+            
+            # Display a larger progress bar
+            st.markdown("### Progress")
+            st.progress(progress_percent / 100, text=f"{progress_percent:.2f}% of goal reached")
+
+            with st.expander("Read full description"):
+                st.write(campaign['description'])
 
             if st.button("Donate"):
                 st.success("Thank you for your donation! (This is a placeholder)")
