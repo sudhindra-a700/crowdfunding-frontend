@@ -65,6 +65,29 @@ TRANSLATIONS = {
         'user_type': "User Type",
         'individual': "Individual",
         'organization': "Organization",
+        'full_name': 'Full Name',
+        'email_id': 'Email ID',
+        'phone_number': 'Phone Number',
+        'otp': 'Enter OTP',
+        'password': 'Password',
+        'confirm_password': 'Confirm Password',
+        'address': 'Address',
+        'identity_verification': 'Identity Verification (Upload any one):',
+        'document_type': 'Document Type',
+        'upload_document': 'Upload Document',
+        'register_button': 'Register',
+        'org_name': 'Organization Name',
+        'org_phone': 'Organization Phone Number',
+        'org_type': 'Select Organization Type',
+        'org_description': 'Brief Description (max 100 chars)',
+        'contact_person': 'Contact Person Name',
+        'contact_email': 'Contact Email',
+        'org_verification': 'Organization Verification (Required):',
+        'cert_type': 'Certificate Type',
+        'upload_cert': 'Upload Certificate',
+        'passwords_not_match': 'Passwords do not match!',
+        'day_mode': 'Day Mode',
+        'night_mode': 'Night Mode'
     },
     'hi': {
         'page_title': "हेवन - क्राउडफंडिंग प्लेटफ़ॉर्म",
@@ -92,6 +115,29 @@ TRANSLATIONS = {
         'user_type': "उपयोगकर्ता प्रकार",
         'individual': "व्यक्तिगत",
         'organization': "संगठन",
+        'full_name': 'पूरा नाम',
+        'email_id': 'ईमेल आईडी',
+        'phone_number': 'फ़ोन नंबर',
+        'otp': 'ओटीपी दर्ज करें',
+        'password': 'पासवर्ड',
+        'confirm_password': 'पासवर्ड की पुष्टि करें',
+        'address': 'पता',
+        'identity_verification': 'पहचान सत्यापन (कोई भी एक अपलोड करें):',
+        'document_type': 'दस्तावेज़ का प्रकार',
+        'upload_document': 'दस्तावेज़ अपलोड करें',
+        'register_button': 'पंजीकरण करें',
+        'org_name': 'संगठन का नाम',
+        'org_phone': 'संगठन का फोन नंबर',
+        'org_type': 'संगठन का प्रकार चुनें',
+        'org_description': 'संक्षिप्त विवरण (अधिकतम 100 वर्ण)',
+        'contact_person': 'संपर्क व्यक्ति का नाम',
+        'contact_email': 'संपर्क ईमेल',
+        'org_verification': 'संगठन सत्यापन (आवश्यक):',
+        'cert_type': 'प्रमाण पत्र का प्रकार',
+        'upload_cert': 'प्रमाण पत्र अपलोड करें',
+        'passwords_not_match': 'पासवर्ड मेल नहीं खाते!',
+        'day_mode': 'दिन का मोड',
+        'night_mode': 'रात का मोड'
     },
     'ta': {
         'page_title': "ஹெவன் - கிரவுட்ஃபண்டிங் பிளாட்ஃபார்ம்",
@@ -119,6 +165,29 @@ TRANSLATIONS = {
         'user_type': "பயனர் வகை",
         'individual': "தனிநபர்",
         'organization': "நிறுவனம்",
+        'full_name': 'முழு பெயர்',
+        'email_id': 'மின்னஞ்சல் ஐடி',
+        'phone_number': 'தொலைபேசி எண்',
+        'otp': 'OTP ஐ உள்ளிடவும்',
+        'password': 'கடவுச்சொல்',
+        'confirm_password': 'கடவுச்சொல்லை உறுதிப்படுத்து',
+        'address': 'முகவரி',
+        'identity_verification': 'அடையாளச் சரிபார்ப்பு (ஏதேனும் ஒன்றைப் பதிவேற்றவும்):',
+        'document_type': 'ஆவண வகை',
+        'upload_document': 'ஆவணத்தைப் பதிவேற்று',
+        'register_button': 'பதிவுசெய்',
+        'org_name': 'நிறுவனத்தின் பெயர்',
+        'org_phone': 'நிறுவனத்தின் தொலைபேசி எண்',
+        'org_type': 'நிறுவன வகையைத் தேர்ந்தெடு',
+        'org_description': 'சுருக்கமான விளக்கம் (அதிகபட்சம் 100 எழுத்துக்கள்)',
+        'contact_person': 'தொடர்பு நபரின் பெயர்',
+        'contact_email': 'தொடர்பு மின்னஞ்சல்',
+        'org_verification': 'நிறுவனச் சரிபார்ப்பு (தேவை):',
+        'cert_type': 'சான்றிதழ் வகை',
+        'upload_cert': 'சான்றிதழைப் பதிவேற்று',
+        'passwords_not_match': 'கடவுச்சொற்கள் பொருந்தவில்லை!',
+        'day_mode': 'பகல் பயன்முறை',
+        'night_mode': 'இரவு பயன்முறை'
     },
     'te': {
         'page_title': "హేవెన్ - క్రౌడ్‌ఫండింగ్ ప్లాట్‌ఫారమ్",
@@ -146,6 +215,29 @@ TRANSLATIONS = {
         'user_type': "వినియోగదారు రకం",
         'individual': "వ్యక్తిగత",
         'organization': "సంస్థ",
+        'full_name': 'పూర్తి పేరు',
+        'email_id': 'ఇమెయిల్ ఐడి',
+        'phone_number': 'ఫోన్ నంబర్',
+        'otp': 'OTP ని నమోదు చేయండి',
+        'password': 'పాస్వర్డ్',
+        'confirm_password': 'పాస్వర్డ్ను నిర్ధారించండి',
+        'address': 'చిరునామా',
+        'identity_verification': 'గుర్తింపు ధృవీకరణ (ఏదైనా ఒకదాన్ని అప్‌లోడ్ చేయండి):',
+        'document_type': 'పత్రం రకం',
+        'upload_document': 'పత్రాన్ని అప్‌లోడ్ చేయండి',
+        'register_button': 'నమోదు చేయండి',
+        'org_name': 'సంస్థ పేరు',
+        'org_phone': 'సంస్థ ఫోన్ నంబర్',
+        'org_type': 'సంస్థ రకాన్ని ఎంచుకోండి',
+        'org_description': 'సంక్షిప్త వివరణ (గరిష్టంగా 100 అక్షరాలు)',
+        'contact_person': 'సంప్రదింపు వ్యక్తి పేరు',
+        'contact_email': 'సంప్రదింపు ఇమెయిల్',
+        'org_verification': 'సంస్థ ధృవీకరణ (అవసరం):',
+        'cert_type': 'సర్టిఫికేట్ రకం',
+        'upload_cert': 'సర్టిఫికేట్‌ను అప్‌లోడ్ చేయండి',
+        'passwords_not_match': 'పాస్‌వర్డ్‌లు సరిపోలడం లేదు!',
+        'day_mode': 'పగటి మోడ్',
+        'night_mode': 'రాత్రి మోడ్'
     }
 }
 
@@ -203,91 +295,111 @@ def get_profile_image():
 
 def load_custom_css():
     """
-    Loads custom CSS for the entire app.
+    Loads custom CSS for the entire app, including theme support.
     """
     # Using Font Awesome for icons
     st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">', unsafe_allow_html=True)
-    st.markdown("""
+    st.markdown(f"""
     <style>
-    /* Hide Streamlit default elements */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .stDeployButton {display: none;}
+    /* Theme variables */
+    :root {{
+        --day-bg-color: #f0f2f6;
+        --day-text-color: #333333;
+        --day-card-bg-color: #ffffff;
+        --day-nav-bg-color: #ffffff;
+        --day-border-color: #e0e0e0;
+
+        --night-bg-color: #121212;
+        --night-text-color: #e0e0e0;
+        --night-card-bg-color: #1e1e1e;
+        --night-nav-bg-color: #1e1e1e;
+        --night-border-color: #333333;
+    }}
+
+    /* Apply theme based on session state */
+    .day-mode {{
+        background-color: var(--day-bg-color);
+        color: var(--day-text-color);
+    }}
+
+    .night-mode {{
+        background-color: var(--night-bg-color);
+        color: var(--night-text-color);
+    }}
 
     /* Global styling for main container */
-    .main .block-container {
+    .main .block-container {{
         padding-top: 1rem;
         padding-bottom: 1rem;
         max-width: 100%;
         min-height: 100vh;
-    }
+    }}
 
     /* Top navigation bar styling */
-    .top-nav {
+    .top-nav {{
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 10px 20px;
-        background: white;
-        border-bottom: 1px solid #e0e0e0;
+        background: var(--{st.session_state.get('theme', 'day')}-nav-bg-color);
+        border-bottom: 1px solid var(--{st.session_state.get('theme', 'day')}-border-color);
         margin-bottom: 2rem;
         position: sticky;
         top: 0;
         z-index: 1000;
-    }
+    }}
 
-    .nav-left {
+    .nav-left {{
         display: flex;
         align-items: center;
         gap: 20px;
-    }
+    }}
     
-    .nav-right {
+    .nav-right {{
         display: flex;
         align-items: center;
         gap: 20px;
-    }
+    }}
 
-    .nav-button {
+    .nav-button {{
         background: none;
         border: none;
         padding: 10px 15px;
         cursor: pointer;
         font-size: 16px;
         font-weight: 500;
-        color: #4A4A4A;
+        color: var(--{st.session_state.get('theme', 'day')}-text-color);
         border-radius: 8px;
         transition: background-color 0.3s ease, color 0.3s ease;
-    }
+    }}
 
-    .nav-button:hover {
+    .nav-button:hover {{
         background-color: #f0f0f0;
         color: #1a237e;
-    }
+    }}
 
     /* User profile and donation icon styling */
-    .user-profile-nav {
+    .user-profile-nav {{
         cursor: pointer;
         width: 40px;
         height: 40px;
         border-radius: 50%;
         object-fit: cover;
-    }
+    }}
     
-    .donation-dashboard-icon {
+    .donation-dashboard-icon {{
         cursor: pointer;
         font-size: 24px;
-        color: #4A4A4A;
+        color: var(--{st.session_state.get('theme', 'day')}-text-color);
         transition: color 0.3s ease;
-    }
+    }}
     
-    .donation-dashboard-icon:hover {
+    .donation-dashboard-icon:hover {{
         color: #1a237e;
-    }
+    }}
 
     /* Create campaign button styling */
-    .create-campaign-button {
+    .create-campaign-button {{
         width: 50px;
         height: 50px;
         background: #FF5252;
@@ -301,126 +413,64 @@ def load_custom_css():
         box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         cursor: pointer;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+    }}
 
-    .create-campaign-button:hover {
+    .create-campaign-button:hover {{
         transform: scale(1.05);
         box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-    }
+    }}
     
-    /* Login card styling */
-    .login-card {
-        background: white;
+    /* Card styling */
+    .login-card, .register-card, .campaign-card, .category-card {{
+        background: var(--{st.session_state.get('theme', 'day')}-card-bg-color);
         border-radius: 15px;
         padding: 2rem;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        max-width: 400px;
-        margin: 0 auto;
-    }
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }}
+    
+    .login-card {{ max-width: 400px; margin: 0 auto; }}
+    .register-card {{ max-width: 800px; margin: 0 auto; }}
+    .campaign-card {{ margin: 1rem 0; }}
 
-    /* Registration card styling */
-    .register-card {
-        background: white;
-        border-radius: 15px;
-        padding: 2rem;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        max-width: 800px;
-        margin: 0 auto;
-    }
+    .campaign-card:hover {{ transform: translateY(-5px); }}
 
-    /* OAuth buttons styling - matching first image */
-    .oauth-button {
-        width: 100%;
-        padding: 12px;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 500;
-        margin: 8px 0;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        transition: all 0.3s ease;
-    }
-
-    .google-btn {
-        background: #4285f4;
-        color: white;
-    }
-
-    .google-btn:hover {
-        background: #357ae8;
-        transform: translateY(-2px);
-    }
-
-    .facebook-btn {
-        background: #1877f2;
-        color: white;
-    }
-
-    .facebook-btn:hover {
-        background: #166fe5;
-        transform: translateY(-2px);
-    }
-
-    /* Campaign card styling */
-    .campaign-card {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease;
-    }
-
-    .campaign-card:hover {
-        transform: translateY(-5px);
-    }
-
-    /* Category card styling */
-    .category-card {
-        background: white;
-        border-radius: 15px;
-        padding: 2rem;
+    .category-card {{
         text-align: center;
         box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease;
         cursor: pointer;
-    }
+        transition: transform 0.3s ease;
+    }}
 
-    .category-card:hover {
-        transform: translateY(-5px);
-    }
+    .category-card:hover {{ transform: translateY(-5px); }}
 
-    .category-icon {
+    .category-icon {{
         font-size: 3rem;
         margin-bottom: 1rem;
-    }
+    }}
 
     /* Progress bar styling */
-    .progress-container {
+    .progress-container {{
         background: #f0f0f0;
         border-radius: 10px;
         height: 8px;
         margin: 10px 0;
-    }
+    }}
 
-    .progress-bar {
+    .progress-bar {{
         background: linear-gradient(90deg, #4caf50, #8bc34a);
         height: 100%;
         border-radius: 10px;
         transition: width 0.3s ease;
-    }
+    }}
 
     /* Tooltip styles for simplification */
-    .tooltip {
+    .tooltip {{
         position: relative;
         display: inline-block;
-    }
+    }}
 
-    .info-icon {
+    .info-icon {{
         background-color: #4CAF50;
         color: white;
         border-radius: 50%;
@@ -432,9 +482,9 @@ def load_custom_css():
         font-style: normal;
         margin-left: 5px;
         cursor: pointer;
-    }
+    }}
 
-    .tooltip .tooltiptext {
+    .tooltip .tooltiptext {{
         visibility: hidden;
         width: 250px;
         background-color: #555;
@@ -449,139 +499,80 @@ def load_custom_css():
         margin-left: -125px;
         opacity: 0;
         transition: opacity 0.3s;
-    }
+    }}
 
     /* Show the tooltip when hovering over the parent span */
-    .tooltip:hover .tooltiptext {
+    .tooltip:hover .tooltiptext {{
         visibility: visible;
         opacity: 1;
-    }
+    }}
 
     /* Typography */
-    h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
+    h1, h2, h3, h4, h5, h6 {{
+        color: var(--{st.session_state.get('theme', 'day')}-text-color);
+    }}
 
-    h2 {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
-
-    h3 {
-        font-size: 1.5rem;
-        font-weight: 500;
-        margin-bottom: 0.5rem;
-    }
-
-    p {
+    p {{
         font-size: 1.1rem;
         line-height: 1.6;
         margin-bottom: 1rem;
-    }
+        color: var(--{st.session_state.get('theme', 'day')}-text-color);
+    }}
 
-    /* Form styling */
-    .stTextInput > div > div > input {
+    a {{
+        color: #4caf50;
+    }}
+
+    /* Streamlit widget overrides */
+    .stTextInput > div > div > input,
+    .stTextArea > div > div > textarea,
+    .stFileUploader > div > div,
+    .stSelectbox > div > div > div {{
         border-radius: 8px;
-        border: 2px solid #e0e0e0;
+        border: 2px solid var(--{st.session_state.get('theme', 'day')}-border-color);
         padding: 12px;
         font-size: 16px;
-    }
-    
-    .stSelectbox > div > div > label {
-        display: none;
-    }
+        background-color: var(--{st.session_state.get('theme', 'day')}-card-bg-color);
+        color: var(--{st.session_state.get('theme', 'day')}-text-color);
+    }}
 
-    .stSelectbox > div > div > div {
-        border-radius: 8px;
-        border: 2px solid #e0e0e0;
-        padding: 8px;
-        font-size: 16px;
-        width: 150px;
-    }
-
-    .stTextArea > div > div > textarea {
-        border-radius: 8px;
-        border: 2px solid #e0e0e0;
-        padding: 12px;
-        font-size: 16px;
-    }
-
-    /* Button styling */
-    .stButton > button {
+    .stButton > button {{
         border-radius: 8px;
         padding: 12px 24px;
         font-size: 16px;
         font-weight: 500;
         border: none;
         transition: all 0.3s ease;
-    }
+    }}
 
-    .stButton > button:hover {
+    .stButton > button:hover {{
         transform: translateY(-2px);
-    }
+    }}
+    
+    .stRadio > label {{
+        color: var(--{st.session_state.get('theme', 'day')}-text-color);
+    }}
 
-    /* Search box styling */
-    .search-box {
-        background: white;
-        border-radius: 25px;
-        padding: 15px 20px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-        margin: 2rem 0;
-    }
-
-    /* Responsive design */
-    @media (max-width: 768px) {
-        .login-card, .register-card {
-            margin: 1rem;
-            padding: 1.5rem;
-        }
-        h1 {
-            font-size: 2rem;
-        }
-        h2 {
-            font-size: 1.5rem;
-        }
-        .haven-logo img {
-            max-width: 150px;
-        }
-    }
     </style>
-    <script>
-    // Get the page from the URL and apply a class to the body
-    const urlParams = new URLSearchParams(window.location.search);
-    const page = urlParams.get('page');
-    const body = document.querySelector('body');
-    if (body) {
-        if (page) {
-            body.classList.add(page + '-page-bg');
-        } else {
-            // Default to login page background
-            body.classList.add('login-page-bg');
-        }
-    }
-    </script>
     """, unsafe_allow_html=True)
 
 
 def top_navigation_unauthenticated():
     """Renders the top navigation for unauthenticated users."""
-    st.markdown("<div class='top-nav'>", unsafe_allow_html=True)
+    st.markdown(f'<div class="top-nav">', unsafe_allow_html=True)
     
     col1, col2 = st.columns([1, 1])
     with col1:
         st.markdown(f"<h3>{get_translated_text('page_title', st.session_state.language)}</h3>", unsafe_allow_html=True)
         
     with col2:
-        language_selection()
+        language_and_theme_selection()
         
     st.markdown("</div>", unsafe_allow_html=True)
 
 def top_navigation_authenticated():
     """Renders the top navigation for authenticated users."""
-    st.markdown("<div class='top-nav'>", unsafe_allow_html=True)
+    st.markdown(f'<div class="top-nav">', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 3, 2])
     
@@ -644,8 +635,7 @@ def top_navigation_authenticated():
         """
         st.markdown(profile_html, unsafe_allow_html=True)
         
-        # Language Dropdown
-        language_selection()
+        language_and_theme_selection()
         
         # Logout button
         if st.button(get_translated_text('logout', st.session_state.language)):
@@ -657,78 +647,60 @@ def top_navigation_authenticated():
         st.markdown("</div>", unsafe_allow_html=True)
         
     st.markdown("</div>", unsafe_allow_html=True)
-    
-def language_selection():
-    """Renders the language selection dropdown."""
-    languages = {
-        'en': 'English',
-        'hi': 'Hindi',
-        'ta': 'Tamil',
-        'te': 'Telugu'
-    }
-    
-    if 'language' not in st.session_state:
-        st.session_state.language = 'en'
-    
-    selected_language = st.selectbox(
-        label=get_translated_text('select_language', st.session_state.language),
-        options=list(languages.keys()),
-        format_func=lambda x: languages[x],
-        index=list(languages.keys()).index(st.session_state.language),
-        key="language_dropdown",
-        label_visibility="hidden"
-    )
-    if selected_language != st.session_state.language:
-        st.session_state.language = selected_language
-        st.experimental_set_query_params(page=st.session_state.current_page)
-        st.rerun()
 
-
-def get_oauth_url(provider):
-    """Generate OAuth URL for Google or Facebook"""
-    if provider == "google":
-        params = {
-            "client_id": GOOGLE_CLIENT_ID,
-            "redirect_uri": GOOGLE_REDIRECT_URI,
-            "scope": "openid email profile",
-            "response_type": "code",
-            "state": "google"
+def language_and_theme_selection():
+    """Renders the language and theme selection dropdowns."""
+    lang_col, theme_col = st.columns([2, 1])
+    
+    with lang_col:
+        languages = {
+            'en': 'English',
+            'hi': 'Hindi',
+            'ta': 'Tamil',
+            'te': 'Telugu'
         }
-        return f"https://accounts.google.com/o/oauth2/auth?{urlencode(params)}"
-    elif provider == "facebook":
-        params = {
-            "client_id": FACEBOOK_CLIENT_ID,
-            "redirect_uri": FACEBOOK_REDIRECT_URI,
-            "scope": "email,public_profile",
-            "response_type": "code",
-            "state": "facebook"
-        }
-        return f"https://www.facebook.com/v18.0/dialog/oauth?{urlencode(params)}"
+        
+        if 'language' not in st.session_state:
+            st.session_state.language = 'en'
+        
+        selected_language = st.selectbox(
+            label=get_translated_text('select_language', st.session_state.language),
+            options=list(languages.keys()),
+            format_func=lambda x: languages[x],
+            index=list(languages.keys()).index(st.session_state.language),
+            key="language_dropdown",
+            label_visibility="hidden"
+        )
+        if selected_language != st.session_state.language:
+            st.session_state.language = selected_language
+            st.experimental_set_query_params(page=st.session_state.current_page)
+            st.rerun()
 
-def oauth_login_button(provider, text, icon):
-    """Create OAuth login button with popup functionality"""
-    button_class = f"{provider}-btn oauth-button"
-    oauth_url = get_oauth_url(provider)
-    button_html = f"""
-    <button class="{button_class}" onclick="openOAuthPopup('{oauth_url}', '{provider}')">
-        {icon} {text}
-    </button>
-    """
-    st.markdown(button_html, unsafe_allow_html=True)
-    
-    # Placeholder for the popup window script
-    st.markdown("""
-    <script>
-        function openOAuthPopup(url, provider) {
-            const width = 600;
-            const height = 600;
-            const left = (window.innerWidth / 2) - (width / 2);
-            const top = (window.innerHeight / 2) - (height / 2);
-            window.open(url, provider, `width=${width},height=${height},left=${left},top=${top}`);
-        }
-    </script>
-    """, unsafe_allow_html=True)
+    with theme_col:
+        if 'theme' not in st.session_state:
+            st.session_state.theme = 'day'
+        
+        theme_options = {'day': '☀️', 'night': '🌙'}
+        selected_theme = st.radio(
+            "Theme",
+            options=list(theme_options.keys()),
+            format_func=lambda x: theme_options[x],
+            index=list(theme_options.keys()).index(st.session_state.theme),
+            key="theme_radio",
+            horizontal=True,
+            label_visibility="hidden"
+        )
+        if selected_theme != st.session_state.theme:
+            st.session_state.theme = selected_theme
+            st.rerun()
 
+def render_logo():
+    """Renders the HAVEN logo."""
+    logo_data = load_logo()
+    if logo_data:
+        st.image(f"data:image/png;base64,{logo_data}", width=150)
+    else:
+        st.markdown(f"<h1>HAVEN</h1>", unsafe_allow_html=True)
 
 # --- Page content functions ---
 def login_page():
@@ -737,11 +709,11 @@ def login_page():
     top_navigation_unauthenticated()
     
     st.markdown(
-        f"<h1 style='text-align: center; color: #1a237e;'>{get_translated_text('page_title', st.session_state.language)}</h1>",
+        f"<h1 style='text-align: center;'>{get_translated_text('page_title', st.session_state.language)}</h1>",
         unsafe_allow_html=True
     )
     st.markdown(
-        f"<h2 style='text-align: center; color: #1a237e; font-style: italic;'>{get_translated_text('tagline', st.session_state.language)}</h2>",
+        f"<h2 style='text-align: center; font-style: italic;'>{get_translated_text('tagline', st.session_state.language)}</h2>",
         unsafe_allow_html=True
     )
     
@@ -754,14 +726,10 @@ def login_page():
         if st.button(get_translated_text('login_title', st.session_state.language)):
             # This is a placeholder for the actual login logic
             try:
-                response = requests.post(
-                    f"{BACKEND_URL}/api/auth/login",
-                    json={"email": email, "password": password}
-                )
-                if response.status_code == 200:
+                # Mock login for demonstration
+                if email and password:
                     st.success("Login successful!")
                     st.session_state.authenticated = True
-                    st.session_state.token = response.json().get("token")
                     
                     # For demo purposes, hardcode user_type based on a specific email
                     if email == "org@example.com":
@@ -772,8 +740,8 @@ def login_page():
                     st.experimental_set_query_params(page='trending')
                     st.rerun()
                 else:
-                    st.error(f"Login failed: {response.json().get('detail', 'Invalid credentials')}")
-            except requests.exceptions.RequestException as e:
+                    st.error("Please enter email and password.")
+            except Exception as e:
                 st.error(f"An error occurred: {e}")
 
         st.markdown(f"---")
@@ -788,25 +756,102 @@ def login_page():
         
         st.markdown("</div>", unsafe_allow_html=True)
 
+def oauth_login_button(provider, text, icon):
+    """Create OAuth login button with popup functionality"""
+    button_class = f"{provider}-btn oauth-button"
+    # Placeholder for the actual OAuth URL generation
+    oauth_url = "#"
+    button_html = f"""
+    <button class="{button_class}">
+        {icon} {text}
+    </button>
+    """
+    st.markdown(button_html, unsafe_allow_html=True)
+
 
 def register_page():
-    """Renders the registration page."""
+    """Renders the registration page with forms for individuals and organizations."""
     load_custom_css()
     top_navigation_unauthenticated()
+    lang = st.session_state.get('language', 'en')
     
-    st.title(get_translated_text('register_title', st.session_state.language))
-    st.write("This page allows users to create a new account.")
-    
-    with st.form("register_form"):
-        email = st.text_input("Email")
-        password = st.text_input("Password", type="password")
-        user_type = st.radio(get_translated_text('user_type', st.session_state.language), (get_translated_text('individual', st.session_state.language), get_translated_text('organization', st.session_state.language)))
-        
-        if st.form_submit_button(get_translated_text('register_title', st.session_state.language)):
-            # Placeholder for registration logic
-            st.success("Registration successful! Please login.")
-            st.experimental_set_query_params(page='login')
-            st.rerun()
+    col1, col2, col3 = st.columns([1, 4, 1])
+    with col2:
+        st.markdown('<div class="register-card">', unsafe_allow_html=True)
+
+        st.markdown(f"## {get_translated_text('register_title', lang)}")
+
+        # Account type selection
+        account_type = st.selectbox("Select Account Type", [get_translated_text('individual', lang), get_translated_text('organization', lang)])
+
+        if account_type == get_translated_text('individual', lang):
+            st.markdown(f"### {get_translated_text('register_title', lang)} {get_translated_text('individual', lang)}")
+            with st.form("individual_register"):
+                col_i1, col_i2 = st.columns(2)
+                with col_i1:
+                    full_name = st.text_input(get_translated_text('full_name', lang), placeholder="R PRAKASH")
+                    email = st.text_input(get_translated_text('email_id', lang), placeholder="prakashr00@rediffmail.com")
+                    phone = st.text_input(get_translated_text('phone_number', lang), placeholder="09936528585")
+                    otp = st.text_input(get_translated_text('otp', lang), placeholder=get_translated_text('otp', lang))
+
+                with col_i2:
+                    password = st.text_input(get_translated_text('password', lang), type="password")
+                    confirm_password = st.text_input(get_translated_text('confirm_password', lang), type="password")
+                    address = st.text_area(get_translated_text('address', lang), placeholder=get_translated_text('address', lang))
+
+                    st.markdown(f"**{get_translated_text('identity_verification', lang)}**")
+                    document_type = st.selectbox(get_translated_text('document_type', lang), ["Aadhar Card", "PAN Card", "Passport", "Driving License", "Voter ID"])
+                    document_file = st.file_uploader(get_translated_text('upload_document', lang), type=['pdf', 'jpg', 'png'])
+
+                register_btn = st.form_submit_button(get_translated_text('register_button', lang), use_container_width=True)
+
+                if register_btn:
+                    if password == confirm_password:
+                        st.success(f"{get_translated_text('individual', lang)} {get_translated_text('register_button', lang).lower()} successful! You can now log in.")
+                        st.session_state.current_page = "login"
+                        st.rerun()
+                    else:
+                        st.error(get_translated_text('passwords_not_match', lang))
+
+        else: # Organization
+            st.markdown(f"### {get_translated_text('register_title', lang)} {get_translated_text('organization', lang)}")
+            with st.form("organization_register"):
+                col_o1, col_o2 = st.columns(2)
+                with col_o1:
+                    org_name = st.text_input(get_translated_text('org_name', lang), placeholder=get_translated_text('org_name', lang))
+                    org_phone = st.text_input(get_translated_text('org_phone', lang), placeholder=get_translated_text('org_phone', lang))
+                    org_type = st.selectbox(get_translated_text('org_type', lang), ["NGO", "Non-Profit", "Social Enterprise", "Charity", "Foundation"])
+                    org_description = st.text_area(get_translated_text('org_description', lang), placeholder=get_translated_text('org_description', lang), max_chars=100)
+
+                with col_o2:
+                    contact_person = st.text_input(get_translated_text('contact_person', lang))
+                    contact_email = st.text_input(get_translated_text('contact_email', lang))
+                    password = st.text_input(get_translated_text('password', lang), type="password")
+                    confirm_password = st.text_input(get_translated_text('confirm_password', lang), type="password")
+
+                    st.markdown(f"**{get_translated_text('org_verification', lang)}**")
+                    cert_type = st.selectbox(get_translated_text('cert_type', lang), ["Certificate of Incorporation", "GST Certificate", "12A Certificate", "80G Certificate", "FCRA Certificate"])
+                    cert_file = st.file_uploader(get_translated_text('upload_cert', lang), type=['pdf', 'jpg', 'png'])
+
+                register_btn = st.form_submit_button(get_translated_text('register_button', lang), use_container_width=True)
+
+                if register_btn:
+                    if password == confirm_password:
+                        st.success(f"{get_translated_text('organization', lang)} {get_translated_text('register_button', lang).lower()} successful! You can now log in.")
+                        st.session_state.current_page = "login"
+                        st.rerun()
+                    else:
+                        st.error(get_translated_text('passwords_not_match', lang))
+
+        # Sign in link
+        st.markdown(f"""
+        <div style="text-align: center; margin: 20px 0;">
+            {get_translated_text('not_registered', lang)} <a href="?page=login" style="color: #4caf50; text-decoration: none;">{get_translated_text('login_title', lang)}</a>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
 
 def trending_page():
     """Renders the trending campaigns page with term simplification."""
@@ -877,11 +922,15 @@ def main():
         st.session_state.current_page = 'login'
     if 'user_type' not in st.session_state:
         st.session_state.user_type = None
+    if 'theme' not in st.session_state:
+        st.session_state.theme = 'day'
 
     # Get page from URL parameters
     query_params = st.experimental_get_query_params()
     page = query_params.get('page', ['login'])[0]
     st.session_state.current_page = page
+    
+    st.markdown(f'<body class="{st.session_state.theme}-mode">', unsafe_allow_html=True)
 
     # Route to appropriate page
     if not st.session_state.authenticated and page not in ['login', 'register']:
@@ -914,6 +963,8 @@ def main():
         else:
             st.experimental_set_query_params(page='login')
             login_page()
+            
+    st.markdown('</body>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
