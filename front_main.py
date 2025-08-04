@@ -218,7 +218,7 @@ TRANSLATIONS = {
         'full_name': 'పూర్తి పేరు',
         'email_id': 'ఇమెయిల్ ఐడి',
         'phone_number': 'ఫోన్ నంబర్',
-        'otp': 'OTP ని నమోదు చేయండి',
+        'otp': 'ఓటిపి ని నమోదు చేయండి',
         'password': 'పాస్వర్డ్',
         'confirm_password': 'పాస్వర్డ్ను నిర్ధారించండి',
         'address': 'చిరునామా',
@@ -278,7 +278,6 @@ def load_logo():
     """
     try:
         # Assuming the logo is available in the deployment environment
-        # Note: The path might need to be adjusted based on your deployment setup.
         with open("haven_logo.png", "rb") as f:
             logo_data = f.read()
         return base64.b64encode(logo_data).decode()
@@ -288,14 +287,12 @@ def load_logo():
 
 def get_profile_image():
     """Placeholder for a user's profile image."""
-    # In a real app, this would fetch the user's profile image URL
-    # from a database or a service like Firebase Storage.
     return "https://placehold.co/40x40/4CAF50/FFFFFF?text=P"
 
 
 def load_custom_css():
     """
-    Loads custom CSS for the entire app, including theme support.
+    Loads custom CSS for the entire app, including theme support and new layout.
     """
     # Using Font Awesome for icons
     st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">', unsafe_allow_html=True)
@@ -303,17 +300,19 @@ def load_custom_css():
     <style>
     /* Theme variables */
     :root {{
-        --day-bg-color: #f0f2f6;
+        --day-bg-color: #e8f5e9; /* Light green as requested */
         --day-text-color: #333333;
         --day-card-bg-color: #ffffff;
         --day-nav-bg-color: #ffffff;
         --day-border-color: #e0e0e0;
+        --day-secondary-text-color: #757575;
 
         --night-bg-color: #121212;
         --night-text-color: #e0e0e0;
         --night-card-bg-color: #1e1e1e;
         --night-nav-bg-color: #1e1e1e;
         --night-border-color: #333333;
+        --night-secondary-text-color: #a0a0a0;
     }}
 
     /* Apply theme based on session state */
@@ -327,57 +326,76 @@ def load_custom_css():
         color: var(--night-text-color);
     }}
 
-    /* Global styling for main container */
+    /* New main layout using CSS Grid */
+    .main-layout {{
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        grid-template-rows: 1fr;
+        min-height: 100vh;
+        width: 100vw;
+    }}
+
+    .sidebar {{
+        grid-column: 1 / 2;
+        background: var(--{st.session_state.get('theme', 'day')}-nav-bg-color);
+        border-right: 1px solid var(--{st.session_state.get('theme', 'day')}-border-color);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }}
+    
+    .content-area {{
+        grid-column: 2 / 3;
+        padding: 20px;
+    }}
+
+    .top-right-bar {{
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 15px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--{st.session_state.get('theme', 'day')}-border-color);
+        margin-bottom: 20px;
+    }}
+
+    /* --- Sidebar navigation styling --- */
+    .sidebar-nav-item {{
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--{st.session_state.get('theme', 'day')}-secondary-text-color);
+        border-radius: 8px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }}
+
+    .sidebar-nav-item:hover, .sidebar-nav-item.active {{
+        background-color: #4CAF50;
+        color: white;
+    }}
+
+    .sidebar-nav-item.active .nav-icon {{
+        color: white;
+    }}
+
+    .sidebar-nav-item .nav-icon {{
+        font-size: 20px;
+        color: var(--{st.session_state.get('theme', 'day')}-secondary-text-color);
+    }}
+
+    /* --- Common styling for all pages --- */
     .main .block-container {{
         padding-top: 1rem;
         padding-bottom: 1rem;
         max-width: 100%;
         min-height: 100vh;
     }}
-
-    /* Top navigation bar styling */
-    .top-nav {{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 20px;
-        background: var(--{st.session_state.get('theme', 'day')}-nav-bg-color);
-        border-bottom: 1px solid var(--{st.session_state.get('theme', 'day')}-border-color);
-        margin-bottom: 2rem;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-    }}
-
-    .nav-left {{
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }}
     
-    .nav-right {{
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }}
-
-    .nav-button {{
-        background: none;
-        border: none;
-        padding: 10px 15px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 500;
-        color: var(--{st.session_state.get('theme', 'day')}-text-color);
-        border-radius: 8px;
-        transition: background-color 0.3s ease, color 0.3s ease;
-    }}
-
-    .nav-button:hover {{
-        background-color: #f0f0f0;
-        color: #1a237e;
-    }}
-
     /* User profile and donation icon styling */
     .user-profile-nav {{
         cursor: pointer;
@@ -395,7 +413,7 @@ def load_custom_css():
     }}
     
     .donation-dashboard-icon:hover {{
-        color: #1a237e;
+        color: #4CAF50;
     }}
 
     /* Create campaign button styling */
@@ -543,108 +561,88 @@ def load_custom_css():
         font-weight: 500;
         border: none;
         transition: all 0.3s ease;
+        background: #4CAF50;
+        color: white;
     }}
 
     .stButton > button:hover {{
         transform: translateY(-2px);
+        background: #45a049;
     }}
-    
+
     .stRadio > label {{
         color: var(--{st.session_state.get('theme', 'day')}-text-color);
     }}
+
+    /* Hide Streamlit default elements */
+    #MainMenu {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
+    header {{visibility: hidden;}}
+    .stDeployButton {{display: none;}}
 
     </style>
     """, unsafe_allow_html=True)
 
 
-def top_navigation_unauthenticated():
-    """Renders the top navigation for unauthenticated users."""
-    st.markdown(f'<div class="top-nav">', unsafe_allow_html=True)
+def sidebar_navigation():
+    """Renders the vertical sidebar navigation for authenticated users."""
+    st.markdown('<div class="sidebar">', unsafe_allow_html=True)
     
-    col1, col2 = st.columns([1, 1])
-    with col1:
-        st.markdown(f"<h3>{get_translated_text('page_title', st.session_state.language)}</h3>", unsafe_allow_html=True)
-        
-    with col2:
-        language_and_theme_selection()
+    st.markdown("<h3>HAVEN</h3>", unsafe_allow_html=True)
+    
+    st.markdown('<div style="display: flex; flex-direction: column; gap: 10px;">', unsafe_allow_html=True)
+    
+    nav_items = {
+        'trending': ('fa-solid fa-fire', get_translated_text('home_nav', st.session_state.language)),
+        'search': ('fa-solid fa-magnifying-glass', get_translated_text('search_nav', st.session_state.language)),
+        'explore': ('fa-solid fa-compass', get_translated_text('explore_nav', st.session_state.language)),
+    }
+    
+    for page, (icon, text) in nav_items.items():
+        is_active = "active" if st.session_state.current_page == page else ""
+        st.markdown(f"""
+        <div class="sidebar-nav-item {is_active}" onclick="window.location.href='?page={page}'">
+            <i class="nav-icon {icon}"></i>
+            <span>{text}</span>
+        </div>
+        """, unsafe_allow_html=True)
         
     st.markdown("</div>", unsafe_allow_html=True)
-
-def top_navigation_authenticated():
-    """Renders the top navigation for authenticated users."""
-    st.markdown(f'<div class="top-nav">', unsafe_allow_html=True)
     
-    col1, col2, col3 = st.columns([1, 3, 2])
+    st.markdown("</div>", unsafe_allow_html=True)
+
+def top_right_bar():
+    """Renders the horizontal top bar with user profile and actions."""
+    st.markdown('<div class="top-right-bar">', unsafe_allow_html=True)
     
-    with col1:
-        # Logo and Title
-        st.markdown(f"<h3>{get_translated_text('page_title', st.session_state.language)}</h3>", unsafe_allow_html=True)
-
-    with col2:
-        # Main Navigation Buttons
-        st.markdown("<div style='display: flex; gap: 10px;'>", unsafe_allow_html=True)
-        if st.button(get_translated_text('home_nav', st.session_state.language), key="nav_home", help="Go to Home (Trending) Page"):
-            st.experimental_set_query_params(page='trending')
-            st.session_state.current_page = 'trending'
-            st.rerun()
-        if st.button(get_translated_text('search_nav', st.session_state.language), key="nav_search", help="Go to Search Page"):
-            st.experimental_set_query_params(page='search')
-            st.session_state.current_page = 'search'
-            st.rerun()
-        if st.button(get_translated_text('explore_nav', st.session_state.language), key="nav_explore", help="Go to Explore Page"):
-            st.experimental_set_query_params(page='explore')
-            st.session_state.current_page = 'explore'
-            st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col3:
-        # Right side: Create Campaign, Donation Dashboard, Profile, Language
-        st.markdown("<div style='display: flex; justify-content: flex-end; align-items: center; gap: 15px;'>", unsafe_allow_html=True)
-        
-        # Create Campaign button (organization only)
-        if st.session_state.get('user_type') == 'organization':
-            if st.button("+", key="create_campaign_button"):
-                st.write("Redirecting to create campaign page...")
-            st.markdown("""
-            <style>
-            .stButton[data-testid="stButton"] button[key="create_campaign_button"] {
-                width: 50px;
-                height: 50px;
-                background: #FF5252;
-                border-radius: 50%;
-                border: none;
-                color: white;
-                font-size: 24px;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            }
-            </style>
-            """, unsafe_allow_html=True)
-        
-        # Donation Dashboard icon
-        if st.button("📝", key="donation_dashboard", help="Go to Donation Dashboard"):
-            st.experimental_set_query_params(page='donations')
-            st.session_state.current_page = 'donations'
-            st.rerun()
-        
-        # User Profile image (clickable)
-        profile_img_url = get_profile_image()
-        profile_html = f"""
-        <div style="cursor: pointer;" onclick="window.location.href = '?page=profile';">
-            <img src="{profile_img_url}" class="user-profile-nav" alt="Profile">
-        </div>
-        """
-        st.markdown(profile_html, unsafe_allow_html=True)
-        
-        language_and_theme_selection()
-        
-        # Logout button
-        if st.button(get_translated_text('logout', st.session_state.language)):
-            st.session_state.authenticated = False
-            st.session_state.user_type = None
-            st.experimental_set_query_params(page='login')
-            st.rerun()
-            
-        st.markdown("</div>", unsafe_allow_html=True)
+    # Create Campaign button (organization only)
+    if st.session_state.get('user_type') == 'organization':
+        if st.button(get_translated_text('create_campaign', st.session_state.language), key="create_campaign_button"):
+            st.write("Redirecting to create campaign page...")
+    
+    # Donation Dashboard icon
+    if st.button("📝", key="donation_dashboard", help="Go to Donation Dashboard"):
+        st.experimental_set_query_params(page='donations')
+        st.session_state.current_page = 'donations'
+        st.rerun()
+    
+    # User Profile image (clickable)
+    profile_img_url = get_profile_image()
+    profile_html = f"""
+    <div style="cursor: pointer;" onclick="window.location.href = '?page=profile';">
+        <img src="{profile_img_url}" class="user-profile-nav" alt="Profile">
+    </div>
+    """
+    st.markdown(profile_html, unsafe_allow_html=True)
+    
+    language_and_theme_selection()
+    
+    # Logout button
+    if st.button(get_translated_text('logout', st.session_state.language)):
+        st.session_state.authenticated = False
+        st.session_state.user_type = None
+        st.experimental_set_query_params(page='login')
+        st.rerun()
         
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -705,61 +703,54 @@ def render_logo():
 # --- Page content functions ---
 def login_page():
     """Renders the login page."""
-    load_custom_css()
-    top_navigation_unauthenticated()
     
-    st.markdown(
-        f"<h1 style='text-align: center;'>{get_translated_text('page_title', st.session_state.language)}</h1>",
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        f"<h2 style='text-align: center; font-style: italic;'>{get_translated_text('tagline', st.session_state.language)}</h2>",
-        unsafe_allow_html=True
-    )
-    
-    with st.container():
-        st.markdown("<div class='login-card'>", unsafe_allow_html=True)
-        st.subheader(get_translated_text('login_title', st.session_state.language))
-        email = st.text_input(get_translated_text('login_prompt', st.session_state.language))
-        password = st.text_input(get_translated_text('password_prompt', st.session_state.language), type="password")
+    col1, col2, col3 = st.columns([1, 4, 1])
+    with col2:
+        render_logo()
+        st.markdown(
+            f"<h2 style='text-align: center; font-style: italic;'>{get_translated_text('tagline', st.session_state.language)}</h2>",
+            unsafe_allow_html=True
+        )
         
-        if st.button(get_translated_text('login_title', st.session_state.language)):
-            # This is a placeholder for the actual login logic
-            try:
-                # Mock login for demonstration
-                if email and password:
-                    st.success("Login successful!")
-                    st.session_state.authenticated = True
-                    
-                    # For demo purposes, hardcode user_type based on a specific email
-                    if email == "org@example.com":
-                        st.session_state.user_type = "organization"
+        with st.container():
+            st.markdown("<div class='login-card'>", unsafe_allow_html=True)
+            st.subheader(get_translated_text('login_title', st.session_state.language))
+            email = st.text_input(get_translated_text('login_prompt', st.session_state.language))
+            password = st.text_input(get_translated_text('password_prompt', st.session_state.language), type="password")
+            
+            if st.button(get_translated_text('login_title', st.session_state.language)):
+                try:
+                    if email and password:
+                        st.success("Login successful!")
+                        st.session_state.authenticated = True
+                        
+                        if email == "org@example.com":
+                            st.session_state.user_type = "organization"
+                        else:
+                            st.session_state.user_type = "individual"
+                        
+                        st.experimental_set_query_params(page='trending')
+                        st.rerun()
                     else:
-                        st.session_state.user_type = "individual"
-                    
-                    st.experimental_set_query_params(page='trending')
-                    st.rerun()
-                else:
-                    st.error("Please enter email and password.")
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
+                        st.error("Please enter email and password.")
+                except Exception as e:
+                    st.error(f"An error occurred: {e}")
 
-        st.markdown(f"---")
-        st.markdown(f"<p style='text-align: center;'>{get_translated_text('not_registered', st.session_state.language)} <a href='?page=register' style='color: #42a5f5;'>{get_translated_text('create_account', st.session_state.language)}</a></p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='text-align: center;'>{get_translated_text('or_signin_with', st.session_state.language)}</p>", unsafe_allow_html=True)
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            oauth_login_button("google", "Google", "<i class='fa-brands fa-google'></i>")
-        with col2:
-            oauth_login_button("facebook", "Facebook", "<i class='fa-brands fa-facebook'></i>")
-        
-        st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown(f"---")
+            st.markdown(f"<p style='text-align: center;'>{get_translated_text('not_registered', st.session_state.language)} <a href='?page=register' style='color: #42a5f5;'>{get_translated_text('create_account', st.session_state.language)}</a></p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align: center;'>{get_translated_text('or_signin_with', st.session_state.language)}</p>", unsafe_allow_html=True)
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                oauth_login_button("google", "Google", "<i class='fa-brands fa-google'></i>")
+            with col2:
+                oauth_login_button("facebook", "Facebook", "<i class='fa-brands fa-facebook'></i>")
+            
+            st.markdown("</div>", unsafe_allow_html=True)
 
 def oauth_login_button(provider, text, icon):
     """Create OAuth login button with popup functionality"""
     button_class = f"{provider}-btn oauth-button"
-    # Placeholder for the actual OAuth URL generation
     oauth_url = "#"
     button_html = f"""
     <button class="{button_class}">
@@ -771,17 +762,15 @@ def oauth_login_button(provider, text, icon):
 
 def register_page():
     """Renders the registration page with forms for individuals and organizations."""
-    load_custom_css()
-    top_navigation_unauthenticated()
     lang = st.session_state.get('language', 'en')
     
     col1, col2, col3 = st.columns([1, 4, 1])
     with col2:
+        render_logo()
         st.markdown('<div class="register-card">', unsafe_allow_html=True)
 
         st.markdown(f"## {get_translated_text('register_title', lang)}")
 
-        # Account type selection
         account_type = st.selectbox("Select Account Type", [get_translated_text('individual', lang), get_translated_text('organization', lang)])
 
         if account_type == get_translated_text('individual', lang):
@@ -843,7 +832,6 @@ def register_page():
                     else:
                         st.error(get_translated_text('passwords_not_match', lang))
 
-        # Sign in link
         st.markdown(f"""
         <div style="text-align: center; margin: 20px 0;">
             {get_translated_text('not_registered', lang)} <a href="?page=login" style="color: #4caf50; text-decoration: none;">{get_translated_text('login_title', lang)}</a>
@@ -855,11 +843,9 @@ def register_page():
 
 def trending_page():
     """Renders the trending campaigns page with term simplification."""
-    load_custom_css()
-    top_navigation_authenticated()
+    
     st.title(get_translated_text('trending_title', st.session_state.language))
 
-    # Sample content to demonstrate the simplification feature
     sample_text = """
     We are launching a new initiative to promote Sustainability and a positive Social impact in local communities. 
     Our mission is to use Crowdfunding to support various Philanthropy projects.
@@ -875,39 +861,34 @@ def trending_page():
 
 def search_page():
     """Renders the search campaigns page."""
-    load_custom_css()
-    top_navigation_authenticated()
+    
     st.title(get_translated_text('search_title', st.session_state.language))
     st.write("Search for campaigns.")
 
 
 def explore_page():
     """Renders the explore categories page."""
-    load_custom_css()
-    top_navigation_authenticated()
+    
     st.title(get_translated_text('explore_title', st.session_state.language))
     st.write("Explore campaigns by category.")
 
 
 def profile_page():
     """Renders the user profile page."""
-    load_custom_css()
-    top_navigation_authenticated()
+    
     st.title(get_translated_text('profile_title', st.session_state.language))
     st.write("Display user profile details.")
 
 
 def campaign_detail_page(campaign_id):
     """Renders a single campaign detail page."""
-    load_custom_css()
-    top_navigation_authenticated()
+    
     st.title(f"Campaign Details: {campaign_id}")
     st.write("Display details for a specific campaign.")
 
 def donation_dashboard_page():
     """Renders a placeholder for the donation dashboard."""
-    load_custom_css()
-    top_navigation_authenticated()
+    
     st.title(get_translated_text('donation_dashboard', st.session_state.language))
     st.write("This page will show a dashboard of your donations.")
 
@@ -930,39 +911,49 @@ def main():
     page = query_params.get('page', ['login'])[0]
     st.session_state.current_page = page
     
+    # Load custom CSS and set body class
+    load_custom_css()
     st.markdown(f'<body class="{st.session_state.theme}-mode">', unsafe_allow_html=True)
 
-    # Route to appropriate page
-    if not st.session_state.authenticated and page not in ['login', 'register']:
-        page = 'login'
-        st.session_state.current_page = 'login'
-    
-    # Page routing logic
-    if page == 'login':
-        login_page()
-    elif page == 'register':
-        register_page()
-    elif page == 'trending':
-        trending_page()
-    elif page == 'search':
-        search_page()
-    elif page == 'explore':
-        explore_page()
-    elif page == 'profile':
-        profile_page()
-    elif page.startswith('campaign_'):
-        campaign_id = page.split('_')[1]
-        campaign_detail_page(campaign_id)
-    elif page == 'donations':
-        donation_dashboard_page()
-    else:
-        # Default to trending if authenticated, login if not
-        if st.session_state.authenticated:
+    # Logic for authenticated vs unauthenticated layout
+    if st.session_state.authenticated:
+        # Authenticated users get the new sidebar layout
+        st.markdown('<div class="main-layout">', unsafe_allow_html=True)
+        sidebar_navigation()
+        st.markdown('<div class="content-area">', unsafe_allow_html=True)
+        top_right_bar()
+        
+        # Page routing
+        if page == 'login' or page == 'register':
             st.experimental_set_query_params(page='trending')
             trending_page()
-        else:
+        elif page == 'trending':
+            trending_page()
+        elif page == 'search':
+            search_page()
+        elif page == 'explore':
+            explore_page()
+        elif page == 'profile':
+            profile_page()
+        elif page.startswith('campaign_'):
+            campaign_id = page.split('_')[1]
+            campaign_detail_page(campaign_id)
+        elif page == 'donations':
+            donation_dashboard_page()
+
+        st.markdown('</div></div>', unsafe_allow_html=True)
+    else:
+        # Unauthenticated users get a simplified, centered layout
+        if page not in ['login', 'register']:
             st.experimental_set_query_params(page='login')
+            page = 'login'
+            st.session_state.current_page = 'login'
+        
+        # Render login/register pages
+        if page == 'login':
             login_page()
+        elif page == 'register':
+            register_page()
             
     st.markdown('</body>', unsafe_allow_html=True)
 
