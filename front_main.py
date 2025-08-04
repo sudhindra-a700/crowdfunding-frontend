@@ -42,6 +42,7 @@ TRANSLATIONS = {
     'en': {
         'page_title': "HAVEN - Crowdfunding Platform",
         'tagline': "Help not just some people, but Help Humanity.",
+        'home_nav': "Home",
         'trending_title': "Trending Campaigns",
         'search_title': "Search Campaigns",
         'explore_title': "Explore Categories",
@@ -53,26 +54,22 @@ TRANSLATIONS = {
         'not_registered': "Not registered?",
         'create_account': "Create an account",
         'or_signin_with': "or you can sign in with",
-        'trending_nav': "Trending",
         'search_nav': "Search",
         'explore_nav': "Explore",
-        'profile_nav': "Profile",
         'language': "Language",
-        'term_simplification': "Term Simplification",
-        'simplify_term': "Enter a term to simplify",
-        'simplify_button': "Simplify Term",
-        'ask_ai': "Ask AI",
         'select_language': "Select Language",
         'search_placeholder': "Search by keyword, category...",
         'logout': "Logout",
-        'placeholder_simplify_result': "Simplified term will appear here.",
-        'simplify_page_title': "Term Simplification",
-        'simplify_intro': "Enter a complex term or concept, and our AI will provide a simple, easy-to-understand explanation.",
-        'please_enter_term': "Please enter a term to simplify."
+        'create_campaign': "Create Campaign",
+        'donation_dashboard': "Donation Dashboard",
+        'user_type': "User Type",
+        'individual': "Individual",
+        'organization': "Organization",
     },
     'hi': {
         'page_title': "हेवन - क्राउडफंडिंग प्लेटफ़ॉर्म",
         'tagline': "केवल कुछ लोगों की नहीं, बल्कि मानवता की मदद करें।",
+        'home_nav': "होम",
         'trending_title': "ट्रेंडिंग अभियान",
         'search_title': "अभियान खोजें",
         'explore_title': "श्रेणियाँ खोजें",
@@ -84,26 +81,22 @@ TRANSLATIONS = {
         'not_registered': "पंजीकृत नहीं हैं?",
         'create_account': "एक खाता बनाएँ",
         'or_signin_with': "या आप इसके साथ साइन इन कर सकते हैं",
-        'trending_nav': "ट्रेंडिंग",
         'search_nav': "खोज",
         'explore_nav': "खोज",
-        'profile_nav': "प्रोफ़ाइल",
         'language': "भाषा",
-        'term_simplification': "शब्द सरलीकरण",
-        'simplify_term': "सरल करने के लिए एक शब्द दर्ज करें",
-        'simplify_button': "शब्द सरल करें",
-        'ask_ai': "एआई से पूछें",
         'select_language': "भाषा चुनें",
         'search_placeholder': "कीवर्ड, श्रेणी द्वारा खोजें...",
         'logout': "लॉग आउट",
-        'placeholder_simplify_result': "सरलीकृत शब्द यहां दिखाई देगा।",
-        'simplify_page_title': "शब्द सरलीकरण",
-        'simplify_intro': "एक जटिल शब्द या अवधारणा दर्ज करें, और हमारा एआई एक सरल, समझने में आसान स्पष्टीकरण प्रदान करेगा।",
-        'please_enter_term': "कृपा करके सरलीकरण के लिए एक शब्द दर्ज करें।"
+        'create_campaign': "अभियान बनाएँ",
+        'donation_dashboard': "दान डैशबोर्ड",
+        'user_type': "उपयोगकर्ता प्रकार",
+        'individual': "व्यक्तिगत",
+        'organization': "संगठन",
     },
     'ta': {
         'page_title': "ஹெவன் - கிரவுட்ஃபண்டிங் பிளாட்ஃபார்ம்",
         'tagline': "சிலருக்கு மட்டுமல்ல, மனிதகுலத்திற்கே உதவுங்கள்.",
+        'home_nav': "முகப்பு",
         'trending_title': "பிரபலமான பிரச்சாரங்கள்",
         'search_title': "பிரச்சாரங்களைத் தேடு",
         'explore_title': "பிரிவுகளை ஆராயுங்கள்",
@@ -115,26 +108,22 @@ TRANSLATIONS = {
         'not_registered': "பதிவு செய்யவில்லையா?",
         'create_account': "ஒரு கணக்கை உருவாக்கவும்",
         'or_signin_with': "அல்லது நீங்கள் இவற்றுடன் உள்நுழையலாம்",
-        'trending_nav': "பிரபலம்",
         'search_nav': "தேடல்",
         'explore_nav': "ஆராய்",
-        'profile_nav': "சுயவிவரம்",
         'language': "மொழி",
-        'term_simplification': "சொல் எளிதாக்கல்",
-        'simplify_term': "எளிதாக்க ஒரு சொல்லை உள்ளிடவும்",
-        'simplify_button': "சொல்லை எளிதாக்கு",
-        'ask_ai': "AI-யிடம் கேளுங்கள்",
         'select_language': "மொழியைத் தேர்ந்தெடுக்கவும்",
         'search_placeholder': "முக்கிய வார்த்தை, வகைப்படி தேடு...",
         'logout': "வெளியேறு",
-        'placeholder_simplify_result': "எளிதாக்கப்பட்ட சொல் இங்கே தோன்றும்.",
-        'simplify_page_title': "சொல் எளிதாக்கல்",
-        'simplify_intro': "ஒரு சிக்கலான சொல்லை அல்லது கருத்தை உள்ளிடவும், எங்கள் AI ஒரு எளிய, புரிந்துகொள்ள எளிதான விளக்கத்தை வழங்கும்.",
-        'please_enter_term': "தயவுசெய்து எளிதாக்க ஒரு சொல்லை உள்ளிடவும்."
+        'create_campaign': "பிரச்சாரத்தை உருவாக்கு",
+        'donation_dashboard': "நன்கொடை டாஷ்போர்டு",
+        'user_type': "பயனர் வகை",
+        'individual': "தனிநபர்",
+        'organization': "நிறுவனம்",
     },
     'te': {
         'page_title': "హేవెన్ - క్రౌడ్‌ఫండింగ్ ప్లాట్‌ఫారమ్",
         'tagline': "కొంతమందికి మాత్రమే కాకుండా, మానవత్వానికి సహాయం చేయండి.",
+        'home_nav': "హోమ్",
         'trending_title': "ట్రెండింగ్ ప్రచారాలు",
         'search_title': "ప్రచారాలను శోధించండి",
         'explore_title': "వర్గాలను అన్వేషించండి",
@@ -146,22 +135,17 @@ TRANSLATIONS = {
         'not_registered': "నమోదు చేసుకోలేదా?",
         'create_account': "ఒక ఖాతాను సృష్టించండి",
         'or_signin_with': "లేదా మీరు దీనితో సైన్ ఇన్ చేయవచ్చు",
-        'trending_nav': "ట్రెండింగ్",
         'search_nav': "శోధన",
         'explore_nav': "అన్వేషణ",
-        'profile_nav': "ప్రొఫైల్",
         'language': "భాష",
-        'term_simplification': "పదం సరళీకరణ",
-        'simplify_term': "సరళీకరించడానికి ఒక పదాన్ని నమోదు చేయండి",
-        'simplify_button': "పదం సరళీకరించండి",
-        'ask_ai': "AIని అడగండి",
         'select_language': "భాషను ఎంచుకోండి",
         'search_placeholder': "కీలకపదం, వర్గం ద్వారా శోధించండి...",
         'logout': "లాగ్ అవుట్",
-        'placeholder_simplify_result': "సరళీకరించిన పదం ఇక్కడ కనిపిస్తుంది.",
-        'simplify_page_title': "పదం సరళీకరణ",
-        'simplify_intro': "ఒక క్లిష్టమైన పదం లేదా భావనను నమోదు చేయండి, మా AI ఒక సులభమైన, అర్థం చేసుకోవడానికి సులభమైన వివరణను అందిస్తుంది.",
-        'please_enter_term': "దయచేసి సరళీకరించడానికి ఒక పదాన్ని నమోదు చేయండి।"
+        'create_campaign': "ప్రచారాన్ని సృష్టించండి",
+        'donation_dashboard': "విరాళాల డాష్‌బోర్డ్",
+        'user_type': "వినియోగదారు రకం",
+        'individual': "వ్యక్తిగత",
+        'organization': "సంస్థ",
     }
 }
 
@@ -210,64 +194,37 @@ def load_logo():
         # Fallback if logo file is not found
         return None
 
-def load_custom_css(page):
+def get_profile_image():
+    """Placeholder for a user's profile image."""
+    # In a real app, this would fetch the user's profile image URL
+    # from a database or a service like Firebase Storage.
+    return "https://placehold.co/40x40/4CAF50/FFFFFF?text=P"
+
+
+def load_custom_css():
     """
-    Loads custom CSS and a JavaScript snippet to apply the correct background
-    color to the page body based on the current page. The styles are
-    designed to match the provided image mockups.
+    Loads custom CSS for the entire app.
     """
-    st.markdown(f"""
+    # Using Font Awesome for icons
+    st.markdown('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">', unsafe_allow_html=True)
+    st.markdown("""
     <style>
     /* Hide Streamlit default elements */
-    #MainMenu {{visibility: hidden;}}
-    footer {{visibility: hidden;}}
-    header {{visibility: hidden;}}
-    .stDeployButton {{display: none;}}
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .stDeployButton {display: none;}
 
     /* Global styling for main container */
-    .main .block-container {{
+    .main .block-container {
         padding-top: 1rem;
         padding-bottom: 1rem;
         max-width: 100%;
         min-height: 100vh;
-    }}
-
-    /* Page-specific body background styles */
-    .login-page-bg {{
-        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-        color: #1a237e;
-    }}
-    .register-page-bg {{
-        background: linear-gradient(135deg, #ffcdd2 0%, #f8bbd9 100%);
-        color: #263238;
-    }}
-    .trending-page-bg {{
-        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-        color: #1a237e;
-    }}
-    .search-page-bg {{
-        background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-        color: #212121;
-    }}
-    .explore-page-bg {{
-        background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-        color: #212121;
-    }}
-    .profile-page-bg {{
-        background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-        color: #212121;
-    }}
-    .campaign-page-bg {{
-        background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
-        color: #263238;
-    }}
-    .simplify-page-bg {{
-        background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
-        color: #004d40;
-    }}
+    }
 
     /* Top navigation bar styling */
-    .top-nav {{
+    .top-nav {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -275,33 +232,104 @@ def load_custom_css(page):
         background: white;
         border-bottom: 1px solid #e0e0e0;
         margin-bottom: 2rem;
-    }}
-    .top-nav .stSelectbox {{
-        width: 150px;
-    }}
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
 
+    .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .nav-button {
+        background: none;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        color: #4A4A4A;
+        border-radius: 8px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .nav-button:hover {
+        background-color: #f0f0f0;
+        color: #1a237e;
+    }
+
+    /* User profile and donation icon styling */
+    .user-profile-nav {
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    .donation-dashboard-icon {
+        cursor: pointer;
+        font-size: 24px;
+        color: #4A4A4A;
+        transition: color 0.3s ease;
+    }
+    
+    .donation-dashboard-icon:hover {
+        color: #1a237e;
+    }
+
+    /* Create campaign button styling */
+    .create-campaign-button {
+        width: 50px;
+        height: 50px;
+        background: #FF5252;
+        border-radius: 50%;
+        border: none;
+        color: white;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .create-campaign-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    }
+    
     /* Login card styling */
-    .login-card {{
+    .login-card {
         background: white;
         border-radius: 15px;
         padding: 2rem;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         max-width: 400px;
         margin: 0 auto;
-    }}
+    }
 
     /* Registration card styling */
-    .register-card {{
+    .register-card {
         background: white;
         border-radius: 15px;
         padding: 2rem;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         max-width: 800px;
         margin: 0 auto;
-    }}
+    }
 
     /* OAuth buttons styling - matching first image */
-    .oauth-button {{
+    .oauth-button {
         width: 100%;
         padding: 12px;
         border: none;
@@ -315,44 +343,44 @@ def load_custom_css(page):
         justify-content: center;
         gap: 10px;
         transition: all 0.3s ease;
-    }}
+    }
 
-    .google-btn {{
+    .google-btn {
         background: #4285f4;
         color: white;
-    }}
+    }
 
-    .google-btn:hover {{
+    .google-btn:hover {
         background: #357ae8;
         transform: translateY(-2px);
-    }}
+    }
 
-    .facebook-btn {{
+    .facebook-btn {
         background: #1877f2;
         color: white;
-    }}
+    }
 
-    .facebook-btn:hover {{
+    .facebook-btn:hover {
         background: #166fe5;
         transform: translateY(-2px);
-    }}
+    }
 
     /* Campaign card styling */
-    .campaign-card {{
+    .campaign-card {
         background: white;
         border-radius: 15px;
         padding: 1.5rem;
         margin: 1rem 0;
         box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         transition: transform 0.3s ease;
-    }}
+    }
 
-    .campaign-card:hover {{
+    .campaign-card:hover {
         transform: translateY(-5px);
-    }}
+    }
 
     /* Category card styling */
-    .category-card {{
+    .category-card {
         background: white;
         border-radius: 15px;
         padding: 2rem;
@@ -360,39 +388,39 @@ def load_custom_css(page):
         box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         transition: transform 0.3s ease;
         cursor: pointer;
-    }}
+    }
 
-    .category-card:hover {{
+    .category-card:hover {
         transform: translateY(-5px);
-    }}
+    }
 
-    .category-icon {{
+    .category-icon {
         font-size: 3rem;
         margin-bottom: 1rem;
-    }}
+    }
 
     /* Progress bar styling */
-    .progress-container {{
+    .progress-container {
         background: #f0f0f0;
         border-radius: 10px;
         height: 8px;
         margin: 10px 0;
-    }}
+    }
 
-    .progress-bar {{
+    .progress-bar {
         background: linear-gradient(90deg, #4caf50, #8bc34a);
         height: 100%;
         border-radius: 10px;
         transition: width 0.3s ease;
-    }}
+    }
 
     /* Tooltip styles for simplification */
-    .tooltip {{
+    .tooltip {
         position: relative;
         display: inline-block;
-    }}
+    }
 
-    .info-icon {{
+    .info-icon {
         background-color: #4CAF50;
         color: white;
         border-radius: 50%;
@@ -404,9 +432,9 @@ def load_custom_css(page):
         font-style: normal;
         margin-left: 5px;
         cursor: pointer;
-    }}
+    }
 
-    .tooltip .tooltiptext {{
+    .tooltip .tooltiptext {
         visibility: hidden;
         width: 250px;
         background-color: #555;
@@ -421,141 +449,240 @@ def load_custom_css(page):
         margin-left: -125px;
         opacity: 0;
         transition: opacity 0.3s;
-    }}
+    }
 
     /* Show the tooltip when hovering over the parent span */
-    .tooltip:hover .tooltiptext {{
+    .tooltip:hover .tooltiptext {
         visibility: visible;
         opacity: 1;
-    }}
-
-    /* Bottom navigation styling */
-    .bottom-nav {{
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: white;
-        border-top: 1px solid #e0e0e0;
-        padding: 10px 0;
-        display: flex;
-        justify-content: space-around;
-        z-index: 1000;
-    }}
-
-    .nav-item {{
-        text-align: center;
-        cursor: pointer;
-        padding: 5px;
-        transition: color 0.3s ease;
-    }}
-
-    .nav-item:hover {{
-        color: #4caf50;
-    }}
+    }
 
     /* Typography */
-    h1 {{
+    h1 {
         font-size: 2.5rem;
         font-weight: 700;
         margin-bottom: 1rem;
-    }}
+    }
 
-    h2 {{
+    h2 {
         font-size: 2rem;
         font-weight: 600;
         margin-bottom: 1rem;
-    }}
+    }
 
-    h3 {{
+    h3 {
         font-size: 1.5rem;
         font-weight: 500;
         margin-bottom: 0.5rem;
-    }}
+    }
 
-    p {{
+    p {
         font-size: 1.1rem;
         line-height: 1.6;
         margin-bottom: 1rem;
-    }}
+    }
 
     /* Form styling */
-    .stTextInput > div > div > input {{
+    .stTextInput > div > div > input {
         border-radius: 8px;
         border: 2px solid #e0e0e0;
         padding: 12px;
         font-size: 16px;
-    }}
+    }
+    
+    .stSelectbox > div > div > label {
+        display: none;
+    }
 
-    .stSelectbox > div > div > select {{
+    .stSelectbox > div > div > div {
         border-radius: 8px;
         border: 2px solid #e0e0e0;
-        padding: 12px;
+        padding: 8px;
         font-size: 16px;
-    }}
+        width: 150px;
+    }
 
-    .stTextArea > div > div > textarea {{
+    .stTextArea > div > div > textarea {
         border-radius: 8px;
         border: 2px solid #e0e0e0;
         padding: 12px;
         font-size: 16px;
-    }}
+    }
 
     /* Button styling */
-    .stButton > button {{
+    .stButton > button {
         border-radius: 8px;
         padding: 12px 24px;
         font-size: 16px;
         font-weight: 500;
         border: none;
         transition: all 0.3s ease;
-    }}
+    }
 
-    .stButton > button:hover {{
+    .stButton > button:hover {
         transform: translateY(-2px);
-    }}
+    }
 
     /* Search box styling */
-    .search-box {{
+    .search-box {
         background: white;
         border-radius: 25px;
         padding: 15px 20px;
         box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         margin: 2rem 0;
-    }}
+    }
 
     /* Responsive design */
-    @media (max-width: 768px) {{
-        .login-card, .register-card {{
+    @media (max-width: 768px) {
+        .login-card, .register-card {
             margin: 1rem;
             padding: 1.5rem;
-        }}
-        h1 {{
+        }
+        h1 {
             font-size: 2rem;
-        }}
-        h2 {{
+        }
+        h2 {
             font-size: 1.5rem;
-        }}
-        .haven-logo img {{
+        }
+        .haven-logo img {
             max-width: 150px;
-        }}
-    }}
+        }
+    }
     </style>
     <script>
     // Get the page from the URL and apply a class to the body
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page');
     const body = document.querySelector('body');
-    if (body) {{
-        if (page) {{
+    if (body) {
+        if (page) {
             body.classList.add(page + '-page-bg');
-        }} else {{
+        } else {
             // Default to login page background
             body.classList.add('login-page-bg');
-        }}
-    }}
+        }
+    }
     </script>
     """, unsafe_allow_html=True)
+
+
+def top_navigation_unauthenticated():
+    """Renders the top navigation for unauthenticated users."""
+    st.markdown("<div class='top-nav'>", unsafe_allow_html=True)
+    
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        st.markdown(f"<h3>{get_translated_text('page_title', st.session_state.language)}</h3>", unsafe_allow_html=True)
+        
+    with col2:
+        language_selection()
+        
+    st.markdown("</div>", unsafe_allow_html=True)
+
+def top_navigation_authenticated():
+    """Renders the top navigation for authenticated users."""
+    st.markdown("<div class='top-nav'>", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 3, 2])
+    
+    with col1:
+        # Logo and Title
+        st.markdown(f"<h3>{get_translated_text('page_title', st.session_state.language)}</h3>", unsafe_allow_html=True)
+
+    with col2:
+        # Main Navigation Buttons
+        st.markdown("<div style='display: flex; gap: 10px;'>", unsafe_allow_html=True)
+        if st.button(get_translated_text('home_nav', st.session_state.language), key="nav_home", help="Go to Home (Trending) Page"):
+            st.experimental_set_query_params(page='trending')
+            st.session_state.current_page = 'trending'
+            st.rerun()
+        if st.button(get_translated_text('search_nav', st.session_state.language), key="nav_search", help="Go to Search Page"):
+            st.experimental_set_query_params(page='search')
+            st.session_state.current_page = 'search'
+            st.rerun()
+        if st.button(get_translated_text('explore_nav', st.session_state.language), key="nav_explore", help="Go to Explore Page"):
+            st.experimental_set_query_params(page='explore')
+            st.session_state.current_page = 'explore'
+            st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with col3:
+        # Right side: Create Campaign, Donation Dashboard, Profile, Language
+        st.markdown("<div style='display: flex; justify-content: flex-end; align-items: center; gap: 15px;'>", unsafe_allow_html=True)
+        
+        # Create Campaign button (organization only)
+        if st.session_state.get('user_type') == 'organization':
+            if st.button("+", key="create_campaign_button"):
+                st.write("Redirecting to create campaign page...")
+            st.markdown("""
+            <style>
+            .stButton[data-testid="stButton"] button[key="create_campaign_button"] {
+                width: 50px;
+                height: 50px;
+                background: #FF5252;
+                border-radius: 50%;
+                border: none;
+                color: white;
+                font-size: 24px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            }
+            </style>
+            """, unsafe_allow_html=True)
+        
+        # Donation Dashboard icon
+        if st.button("📝", key="donation_dashboard", help="Go to Donation Dashboard"):
+            st.experimental_set_query_params(page='donations')
+            st.session_state.current_page = 'donations'
+            st.rerun()
+        
+        # User Profile image (clickable)
+        profile_img_url = get_profile_image()
+        profile_html = f"""
+        <div style="cursor: pointer;" onclick="window.location.href = '?page=profile';">
+            <img src="{profile_img_url}" class="user-profile-nav" alt="Profile">
+        </div>
+        """
+        st.markdown(profile_html, unsafe_allow_html=True)
+        
+        # Language Dropdown
+        language_selection()
+        
+        # Logout button
+        if st.button(get_translated_text('logout', st.session_state.language)):
+            st.session_state.authenticated = False
+            st.session_state.user_type = None
+            st.experimental_set_query_params(page='login')
+            st.rerun()
+            
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+def language_selection():
+    """Renders the language selection dropdown."""
+    languages = {
+        'en': 'English',
+        'hi': 'Hindi',
+        'ta': 'Tamil',
+        'te': 'Telugu'
+    }
+    
+    if 'language' not in st.session_state:
+        st.session_state.language = 'en'
+    
+    selected_language = st.selectbox(
+        label=get_translated_text('select_language', st.session_state.language),
+        options=list(languages.keys()),
+        format_func=lambda x: languages[x],
+        index=list(languages.keys()).index(st.session_state.language),
+        key="language_dropdown",
+        label_visibility="hidden"
+    )
+    if selected_language != st.session_state.language:
+        st.session_state.language = selected_language
+        st.experimental_set_query_params(page=st.session_state.current_page)
+        st.rerun()
+
 
 def get_oauth_url(provider):
     """Generate OAuth URL for Google or Facebook"""
@@ -604,10 +731,11 @@ def oauth_login_button(provider, text, icon):
 
 
 # --- Page content functions ---
-
 def login_page():
     """Renders the login page."""
-    load_custom_css('login')
+    load_custom_css()
+    top_navigation_unauthenticated()
+    
     st.markdown(
         f"<h1 style='text-align: center; color: #1a237e;'>{get_translated_text('page_title', st.session_state.language)}</h1>",
         unsafe_allow_html=True
@@ -634,6 +762,13 @@ def login_page():
                     st.success("Login successful!")
                     st.session_state.authenticated = True
                     st.session_state.token = response.json().get("token")
+                    
+                    # For demo purposes, hardcode user_type based on a specific email
+                    if email == "org@example.com":
+                        st.session_state.user_type = "organization"
+                    else:
+                        st.session_state.user_type = "individual"
+                    
                     st.experimental_set_query_params(page='trending')
                     st.rerun()
                 else:
@@ -656,16 +791,27 @@ def login_page():
 
 def register_page():
     """Renders the registration page."""
-    load_custom_css('register')
+    load_custom_css()
+    top_navigation_unauthenticated()
+    
     st.title(get_translated_text('register_title', st.session_state.language))
     st.write("This page allows users to create a new account.")
-    if st.button("Go to Login"):
-        st.experimental_set_query_params(page='login')
-
+    
+    with st.form("register_form"):
+        email = st.text_input("Email")
+        password = st.text_input("Password", type="password")
+        user_type = st.radio(get_translated_text('user_type', st.session_state.language), (get_translated_text('individual', st.session_state.language), get_translated_text('organization', st.session_state.language)))
+        
+        if st.form_submit_button(get_translated_text('register_title', st.session_state.language)):
+            # Placeholder for registration logic
+            st.success("Registration successful! Please login.")
+            st.experimental_set_query_params(page='login')
+            st.rerun()
 
 def trending_page():
     """Renders the trending campaigns page with term simplification."""
-    load_custom_css('trending')
+    load_custom_css()
+    top_navigation_authenticated()
     st.title(get_translated_text('trending_title', st.session_state.language))
 
     # Sample content to demonstrate the simplification feature
@@ -684,88 +830,41 @@ def trending_page():
 
 def search_page():
     """Renders the search campaigns page."""
-    load_custom_css('search')
+    load_custom_css()
+    top_navigation_authenticated()
     st.title(get_translated_text('search_title', st.session_state.language))
     st.write("Search for campaigns.")
 
 
 def explore_page():
     """Renders the explore categories page."""
-    load_custom_css('explore')
+    load_custom_css()
+    top_navigation_authenticated()
     st.title(get_translated_text('explore_title', st.session_state.language))
     st.write("Explore campaigns by category.")
 
 
 def profile_page():
     """Renders the user profile page."""
-    load_custom_css('profile')
+    load_custom_css()
+    top_navigation_authenticated()
     st.title(get_translated_text('profile_title', st.session_state.language))
     st.write("Display user profile details.")
 
 
 def campaign_detail_page(campaign_id):
     """Renders a single campaign detail page."""
-    load_custom_css('campaign')
+    load_custom_css()
+    top_navigation_authenticated()
     st.title(f"Campaign Details: {campaign_id}")
     st.write("Display details for a specific campaign.")
 
-
-def sidebar_navigation():
-    """
-    Creates the left-side navigation panel with links and a language dropdown.
-    """
-    with st.sidebar:
-        logo_data = load_logo()
-        if logo_data:
-            st.image(logo_data, use_column_width=True)
-        else:
-            st.header("HAVEN")
-
-        # Language dropdown
-        st.markdown("---")
-        st.subheader(get_translated_text('language', st.session_state.language))
-        languages = {
-            'en': 'English',
-            'hi': 'Hindi',
-            'ta': 'Tamil',
-            'te': 'Telugu'
-        }
-        
-        if 'language' not in st.session_state:
-            st.session_state.language = 'en'
-        
-        selected_language = st.selectbox(
-            get_translated_text('select_language', st.session_state.language),
-            options=list(languages.keys()),
-            format_func=lambda x: languages[x],
-            index=list(languages.keys()).index(st.session_state.language)
-        )
-        if selected_language != st.session_state.language:
-            st.session_state.language = selected_language
-            st.experimental_set_query_params(page=st.session_state.current_page)
-            st.rerun()
-
-        # Navigation buttons
-        st.markdown("---")
-        st.subheader("Navigation")
-        if st.button(get_translated_text('trending_nav', st.session_state.language)):
-            st.experimental_set_query_params(page='trending')
-            st.session_state.current_page = 'trending'
-        if st.button(get_translated_text('search_nav', st.session_state.language)):
-            st.experimental_set_query_params(page='search')
-            st.session_state.current_page = 'search'
-        if st.button(get_translated_text('explore_nav', st.session_state.language)):
-            st.experimental_set_query_params(page='explore')
-            st.session_state.current_page = 'explore'
-        if st.button(get_translated_text('profile_nav', st.session_state.language)):
-            st.experimental_set_query_params(page='profile')
-            st.session_state.current_page = 'profile'
-
-        st.markdown("---")
-        if st.button(get_translated_text('logout', st.session_state.language)):
-            st.session_state.authenticated = False
-            st.experimental_set_query_params(page='login')
-
+def donation_dashboard_page():
+    """Renders a placeholder for the donation dashboard."""
+    load_custom_css()
+    top_navigation_authenticated()
+    st.title(get_translated_text('donation_dashboard', st.session_state.language))
+    st.write("This page will show a dashboard of your donations.")
 
 # Main application
 def main():
@@ -776,19 +875,19 @@ def main():
         st.session_state.language = 'en'
     if 'current_page' not in st.session_state:
         st.session_state.current_page = 'login'
+    if 'user_type' not in st.session_state:
+        st.session_state.user_type = None
 
     # Get page from URL parameters
     query_params = st.experimental_get_query_params()
     page = query_params.get('page', ['login'])[0]
+    st.session_state.current_page = page
 
     # Route to appropriate page
     if not st.session_state.authenticated and page not in ['login', 'register']:
         page = 'login'
+        st.session_state.current_page = 'login'
     
-    # Display sidebar if authenticated
-    if st.session_state.authenticated:
-        sidebar_navigation()
-
     # Page routing logic
     if page == 'login':
         login_page()
@@ -805,6 +904,8 @@ def main():
     elif page.startswith('campaign_'):
         campaign_id = page.split('_')[1]
         campaign_detail_page(campaign_id)
+    elif page == 'donations':
+        donation_dashboard_page()
     else:
         # Default to trending if authenticated, login if not
         if st.session_state.authenticated:
