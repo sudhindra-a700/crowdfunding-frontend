@@ -38,120 +38,79 @@ def load_logo():
         return None
 
 # Custom CSS for exact design match
-def load_custom_css():
-    st.markdown("""
+def load_custom_css(page):
+    """
+    Loads custom CSS and a JavaScript snippet to apply the correct background
+    color to the page body based on the current page.
+    """
+    st.markdown(f"""
     <style>
     /* Hide Streamlit default elements */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .stDeployButton {display: none;}
+    #MainMenu {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
+    header {{visibility: hidden;}}
+    .stDeployButton {{display: none;}}
     
-    /* Main container styling */
-    .main .block-container {
+    /* Global styling for main container */
+    .main .block-container {{
         padding-top: 1rem;
         padding-bottom: 1rem;
         max-width: 100%;
-    }
-    
-    /* Login page styling - Light blue background */
-    .login-container {
-        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
         min-height: 100vh;
-        padding: 2rem;
-        color: #1a237e;
-    }
+    }}
     
-    /* Registration page styling - Light red background */
-    .register-container {
+    /* Page-specific body background styles */
+    .login-page-bg {{
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        color: #1a237e;
+    }}
+    .register-page-bg {{
         background: linear-gradient(135deg, #ffcdd2 0%, #f8bbd9 100%);
-        min-height: 100vh;
-        padding: 2rem;
         color: #263238;
-    }
-    
-    /* Trending page styling - Light blue background */
-    .trending-container {
+    }}
+    .trending-page-bg {{
         background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-        min-height: 100vh;
-        padding: 2rem;
         color: #1a237e;
-    }
-    
-    /* Search page styling - Light purple background */
-    .search-container {
+    }}
+    .search-page-bg {{
         background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-        min-height: 100vh;
-        padding: 2rem;
         color: #212121;
-    }
-    
-    /* Explore page styling - Light purple background */
-    .explore-container {
+    }}
+    .explore-page-bg {{
         background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-        min-height: 100vh;
-        padding: 2rem;
         color: #212121;
-    }
-    
-    /* Profile page styling - Light purple background */
-    .profile-container {
+    }}
+    .profile-page-bg {{
         background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-        min-height: 100vh;
-        padding: 2rem;
         color: #212121;
-    }
-    
-    /* Campaign detail styling - Light green background */
-    .campaign-container {
+    }}
+    .campaign-page-bg {{
         background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
-        min-height: 100vh;
-        padding: 2rem;
         color: #263238;
-    }
-    
-    /* HAVEN logo styling */
-    .haven-logo {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    
-    .haven-logo img {
-        max-width: 200px;
-        height: auto;
-    }
-    
-    /* Tagline styling */
-    .tagline {
-        text-align: center;
-        font-size: 1.2rem;
-        font-style: italic;
-        margin-bottom: 2rem;
-        opacity: 0.8;
-    }
-    
+    }}
+
     /* Login card styling */
-    .login-card {
+    .login-card {{
         background: white;
         border-radius: 15px;
         padding: 2rem;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         max-width: 400px;
         margin: 0 auto;
-    }
+    }}
     
     /* Registration card styling */
-    .register-card {
+    .register-card {{
         background: white;
         border-radius: 15px;
         padding: 2rem;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         max-width: 800px;
         margin: 0 auto;
-    }
+    }}
     
     /* OAuth buttons styling - matching first image */
-    .oauth-button {
+    .oauth-button {{
         width: 100%;
         padding: 12px;
         border: none;
@@ -165,44 +124,44 @@ def load_custom_css():
         justify-content: center;
         gap: 10px;
         transition: all 0.3s ease;
-    }
+    }}
     
-    .google-btn {
+    .google-btn {{
         background: #4285f4;
         color: white;
-    }
+    }}
     
-    .google-btn:hover {
+    .google-btn:hover {{
         background: #357ae8;
         transform: translateY(-2px);
-    }
+    }}
     
-    .facebook-btn {
+    .facebook-btn {{
         background: #1877f2;
         color: white;
-    }
+    }}
     
-    .facebook-btn:hover {
+    .facebook-btn:hover {{
         background: #166fe5;
         transform: translateY(-2px);
-    }
+    }}
     
     /* Campaign card styling */
-    .campaign-card {
+    .campaign-card {{
         background: white;
         border-radius: 15px;
         padding: 1.5rem;
         margin: 1rem 0;
         box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         transition: transform 0.3s ease;
-    }
+    }}
     
-    .campaign-card:hover {
+    .campaign-card:hover {{
         transform: translateY(-5px);
-    }
+    }}
     
     /* Category card styling */
-    .category-card {
+    .category-card {{
         background: white;
         border-radius: 15px;
         padding: 2rem;
@@ -210,34 +169,34 @@ def load_custom_css():
         box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         transition: transform 0.3s ease;
         cursor: pointer;
-    }
+    }}
     
-    .category-card:hover {
+    .category-card:hover {{
         transform: translateY(-5px);
-    }
+    }}
     
-    .category-icon {
+    .category-icon {{
         font-size: 3rem;
         margin-bottom: 1rem;
-    }
+    }}
     
     /* Progress bar styling */
-    .progress-container {
+    .progress-container {{
         background: #f0f0f0;
         border-radius: 10px;
         height: 8px;
         margin: 10px 0;
-    }
+    }}
     
-    .progress-bar {
+    .progress-bar {{
         background: linear-gradient(90deg, #4caf50, #8bc34a);
         height: 100%;
         border-radius: 10px;
         transition: width 0.3s ease;
-    }
+    }}
     
     /* Bottom navigation styling */
-    .bottom-nav {
+    .bottom-nav {{
         position: fixed;
         bottom: 0;
         left: 0;
@@ -248,109 +207,123 @@ def load_custom_css():
         display: flex;
         justify-content: space-around;
         z-index: 1000;
-    }
+    }}
     
-    .nav-item {
+    .nav-item {{
         text-align: center;
         cursor: pointer;
         padding: 5px;
         transition: color 0.3s ease;
-    }
+    }}
     
-    .nav-item:hover {
+    .nav-item:hover {{
         color: #4caf50;
-    }
+    }}
     
     /* Typography */
-    h1 {
+    h1 {{
         font-size: 2.5rem;
         font-weight: 700;
         margin-bottom: 1rem;
-    }
+    }}
     
-    h2 {
+    h2 {{
         font-size: 2rem;
         font-weight: 600;
         margin-bottom: 1rem;
-    }
+    }}
     
-    h3 {
+    h3 {{
         font-size: 1.5rem;
         font-weight: 500;
         margin-bottom: 0.5rem;
-    }
+    }}
     
-    p {
+    p {{
         font-size: 1.1rem;
         line-height: 1.6;
         margin-bottom: 1rem;
-    }
+    }}
     
     /* Form styling */
-    .stTextInput > div > div > input {
+    .stTextInput > div > div > input {{
         border-radius: 8px;
         border: 2px solid #e0e0e0;
         padding: 12px;
         font-size: 16px;
-    }
+    }}
     
-    .stSelectbox > div > div > select {
+    .stSelectbox > div > div > select {{
         border-radius: 8px;
         border: 2px solid #e0e0e0;
         padding: 12px;
         font-size: 16px;
-    }
+    }}
     
-    .stTextArea > div > div > textarea {
+    .stTextArea > div > div > textarea {{
         border-radius: 8px;
         border: 2px solid #e0e0e0;
         padding: 12px;
         font-size: 16px;
-    }
+    }}
     
     /* Button styling */
-    .stButton > button {
+    .stButton > button {{
         border-radius: 8px;
         padding: 12px 24px;
         font-size: 16px;
         font-weight: 500;
         border: none;
         transition: all 0.3s ease;
-    }
+    }}
     
-    .stButton > button:hover {
+    .stButton > button:hover {{
         transform: translateY(-2px);
-    }
+    }}
     
     /* Search box styling */
-    .search-box {
+    .search-box {{
         background: white;
         border-radius: 25px;
         padding: 15px 20px;
         box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         margin: 2rem 0;
-    }
+    }}
     
     /* Responsive design */
-    @media (max-width: 768px) {
-        .login-card, .register-card {
+    @media (max-width: 768px) {{
+        .login-card, .register-card {{
             margin: 1rem;
             padding: 1.5rem;
-        }
+        }}
         
-        h1 {
+        h1 {{
             font-size: 2rem;
-        }
+        }}
         
-        h2 {
+        h2 {{
             font-size: 1.5rem;
-        }
+        }}
         
-        .haven-logo img {
+        .haven-logo img {{
             max-width: 150px;
-        }
-    }
+        }}
+    }}
     </style>
+    <script>
+        // Get the page from the URL and apply a class to the body
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = urlParams.get('page');
+        const body = document.querySelector('body');
+        if (body) {{
+            if (page) {{
+                body.classList.add(page + '-page-bg');
+            }} else {{
+                // Default to login page background
+                body.classList.add('login-page-bg');
+            }}
+        }}
+    </script>
     """, unsafe_allow_html=True)
 
 # OAuth integration functions
@@ -428,23 +401,27 @@ def fetch_categories():
         if response.status_code == 200:
             return response.json()
         else:
-            return [
+            return {
+                "categories": [
+                    {"name": "Art & Design", "count": 25, "icon": "🎨"},
+                    {"name": "Technology", "count": 18, "icon": "💻"},
+                    {"name": "Community", "count": 32, "icon": "👥"},
+                    {"name": "Film & Video", "count": 14, "icon": "🎬"},
+                    {"name": "Music", "count": 22, "icon": "🎵"},
+                    {"name": "Publishing", "count": 16, "icon": "📚"}
+                ]
+            }
+    except:
+        return {
+            "categories": [
                 {"name": "Art & Design", "count": 25, "icon": "🎨"},
                 {"name": "Technology", "count": 18, "icon": "💻"},
                 {"name": "Community", "count": 32, "icon": "👥"},
                 {"name": "Film & Video", "count": 14, "icon": "🎬"},
                 {"name": "Music", "count": 22, "icon": "🎵"},
-                {"name": "Publishing", "count": 16, "icon": "📚"}
+                {"name": "Publishing", "count": 16, "📚"}
             ]
-    except:
-        return [
-            {"name": "Art & Design", "count": 25, "icon": "🎨"},
-            {"name": "Technology", "count": 18, "icon": "💻"},
-            {"name": "Community", "count": 32, "icon": "👥"},
-            {"name": "Film & Video", "count": 14, "icon": "🎬"},
-            {"name": "Music", "count": 22, "icon": "🎵"},
-            {"name": "Publishing", "count": 16, "icon": "📚"}
-        ]
+        }
 
 def search_campaigns(query):
     """Search campaigns"""
@@ -485,8 +462,6 @@ def render_tagline():
 
 def login_page():
     """Login page matching first image design"""
-    st.markdown('<div class="login-container">', unsafe_allow_html=True)
-    
     render_logo()
     render_tagline()
     
@@ -531,12 +506,10 @@ def login_page():
         oauth_login_button("facebook", "Facebook", "📘")
     
     st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+
 
 def register_page():
     """Registration page with Individual/Organization forms"""
-    st.markdown('<div class="register-container">', unsafe_allow_html=True)
-    
     render_logo()
     
     st.markdown('<div class="register-card">', unsafe_allow_html=True)
@@ -620,12 +593,9 @@ def register_page():
     """, unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 def trending_page():
     """Trending campaigns page (matching 5th and 10th images)"""
-    st.markdown('<div class="trending-container">', unsafe_allow_html=True)
-    
     render_logo()
     
     st.markdown("# Trending Campaigns")
@@ -672,12 +642,9 @@ def trending_page():
     else:
         st.info("Loading trending campaigns...")
     
-    st.markdown('</div>', unsafe_allow_html=True)
 
 def search_page():
     """Search campaigns page (matching 6th image)"""
-    st.markdown('<div class="search-container">', unsafe_allow_html=True)
-    
     render_logo()
     
     st.markdown("# Search Campaigns")
@@ -709,12 +676,9 @@ def search_page():
         else:
             st.info("No campaigns found. Try different keywords.")
     
-    st.markdown('</div>', unsafe_allow_html=True)
 
 def explore_page():
     """Explore categories page (matching 7th and 8th images)"""
-    st.markdown('<div class="explore-container">', unsafe_allow_html=True)
-    
     render_logo()
     
     st.markdown("# Explore Categories")
@@ -750,12 +714,9 @@ def explore_page():
                 </div>
                 """, unsafe_allow_html=True)
     
-    st.markdown('</div>', unsafe_allow_html=True)
 
 def campaign_detail_page(campaign_id):
     """Campaign detail page (matching 9th image - hand-drawn sketch)"""
-    st.markdown('<div class="campaign-container">', unsafe_allow_html=True)
-    
     render_logo()
     
     # Campaign picture
@@ -805,12 +766,9 @@ def campaign_detail_page(campaign_id):
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown('</div>', unsafe_allow_html=True)
 
 def profile_page():
     """User profile page"""
-    st.markdown('<div class="profile-container">', unsafe_allow_html=True)
-    
     render_logo()
     
     st.markdown("# User Profile")
@@ -854,9 +812,8 @@ def profile_page():
         st.warning("Please log in to view your profile.")
         if st.button("Go to Login"):
             st.session_state.current_page = "login"
-            st.rerun()
+            st.experimental_rerun()
     
-    st.markdown('</div>', unsafe_allow_html=True)
 
 def bottom_navigation():
     """Bottom navigation bar"""
@@ -889,18 +846,18 @@ def bottom_navigation():
 
 # Main application
 def main():
-    # Load custom CSS
-    load_custom_css()
+    # Get page from URL parameters
+    query_params = st.experimental_get_query_params()
+    page = query_params.get('page', ['login'])[0]
     
+    # Load custom CSS
+    load_custom_css(page)
+
     # Initialize session state
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
     if 'current_page' not in st.session_state:
         st.session_state.current_page = "login"
-    
-    # Get page from URL parameters
-    query_params = st.experimental_get_query_params()
-    page = query_params.get('page', ['login'])[0]
     
     # Route to appropriate page
     if not st.session_state.authenticated and page not in ['login', 'register']:
