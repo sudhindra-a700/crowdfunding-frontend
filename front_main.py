@@ -419,7 +419,7 @@ def fetch_categories():
                 {"name": "Community", "count": 32, "icon": "👥"},
                 {"name": "Film & Video", "count": 14, "icon": "🎬"},
                 {"name": "Music", "count": 22, "icon": "🎵"},
-                {"name": "Publishing", "count": 16, "📚"}
+                {"name": "Publishing", "count": 16, "icon": "📚"}
             ]
         }
 
