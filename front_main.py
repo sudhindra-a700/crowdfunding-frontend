@@ -15,9 +15,8 @@ import json
 import os
 from urllib.parse import urlencode
 import time
-from streamlit_extras.st_card import st_card
-from streamlit_extras.st_metric_card import st_metric_card
-from streamlit_extras.st_toggle_switch import st_toggle_switch
+from streamlit_extras.metric_cards import metric_card
+from streamlit_extras.stoggle import stoggle
 
 # --- Page configuration ---
 st.set_page_config(
@@ -34,7 +33,6 @@ GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", f"{BACKEND_URL}/auth/goog
 FACEBOOK_CLIENT_ID = os.getenv("FACEBOOK_CLIENT_ID", "your-facebook-app-id")
 FACEBOOK_REDIRECT_URI = os.getenv("FACEBOOK_REDIRECT_URI", f"{BACKEND_URL}/auth/facebook/callback")
 FRONTEND_BASE_URI = os.getenv("FRONTEND_BASE_URI", "https://haven-streamlit-frontend.onrender.com")
-
 
 # --- Translation Dictionary and Term Simplification Logic ---
 TRANSLATION_DICT = {
@@ -83,7 +81,7 @@ TRANSLATION_DICT = {
     'te': {
         'login': 'లాగిన్', 'register': 'నమోదు', 'register_title': 'HAVENలో నమోదు చేయండి',
         'individual': 'వ్యక్తిగత', 'organization': 'సంస్థ', 'full_name': 'పూర్తి పేరు',
-        'email_id': 'ఇమెయిల్ చిరునామా', 'phone_number': 'ఫోన్ నంబర్', 'otp': 'OTP',
+        'email_id': 'ఇమెయిల్ చిరునామా', 'phone_number': 'ఫోన్ నంబర్', 'otp': 'ఓటిపి',
         'password': 'పాస్వర్డ్', 'confirm_password': 'పాస్వర్డ్‌ను నిర్ధారించండి', 'address': 'చిరునామా',
         'identity_verification': 'గుర్తింపు ధృవీకరణ', 'document_type': 'పత్రం రకం',
         'upload_document': 'పత్రాన్ని అప్‌లోడ్ చేయండి', 'register_button': 'నమోదు చేయండి',
@@ -109,7 +107,6 @@ def simplify_text(text, lang='en'):
     for term, simple_term in SIMPLIFICATION_DICT.items():
         text = text.replace(term, simple_term)
     return text
-
 
 # --- Custom CSS for improved design ---
 def load_custom_css():
@@ -174,6 +171,16 @@ def load_custom_css():
         padding-right: 1rem;
         padding-bottom: 0px;
         padding-left: 1rem;
+    }
+    
+    /* Custom card styling for campaigns */
+    .campaign-card {
+        padding: 1.5rem;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -245,7 +252,6 @@ def render_logo():
         )
     else:
         st.markdown(f"<h1 style='text-align: center;'>HAVEN</h1>", unsafe_allow_html=True)
-
 
 # --- Navigation and Page Functions ---
 def navigate_to(page_name):
@@ -400,13 +406,17 @@ def trending_page():
     st.header("Trending Campaigns")
     trending_campaigns = get_trending_campaigns()
     if trending_campaigns:
-        # Use st_card for a cleaner, consistent look
-        for campaign in trending_campaigns:
-            with st_card(title=campaign['title'], key=f"card_{campaign['id']}"):
-                st.write(f"**Organization:** {campaign['organization']}")
-                st.write(f"**Amount Raised:** ${campaign['current_amount']:,}")
-                st.write(f"**Target:** ${campaign['target_amount']:,}")
-                st.button("View Details", key=f"trend_{campaign['id']}")
+        # Use columns and custom CSS for a card-like layout
+        cols = st.columns(3)
+        for i, campaign in enumerate(trending_campaigns):
+            with cols[i % 3]:
+                with st.container(border=True):
+                    st.markdown(f"**{campaign['title']}**")
+                    st.write(f"**Organization:** {campaign['organization']}")
+                    st.write(f"**Amount Raised:** ${campaign['current_amount']:,}")
+                    st.write(f"**Target:** ${campaign['target_amount']:,}")
+                    # Use a unique key for each button to avoid Streamlit errors
+                    st.button("View Details", key=f"trend_{campaign['id']}")
     else:
         st.info("No trending campaigns found.")
 
@@ -414,13 +424,17 @@ def explore_page():
     st.header("Explore All Campaigns")
     all_campaigns = get_all_campaigns()
     if all_campaigns:
-        # Use st_card for a cleaner, consistent look
-        for campaign in all_campaigns:
-            with st_card(title=campaign['title'], key=f"card_{campaign['id']}"):
-                st.write(f"**Organization:** {campaign['organization']}")
-                st.write(f"**Amount Raised:** ${campaign['current_amount']:,}")
-                st.write(f"**Target:** ${campaign['target_amount']:,}")
-                st.button("View Details", key=f"explore_{campaign['id']}")
+        # Use columns and custom CSS for a card-like layout
+        cols = st.columns(3)
+        for i, campaign in enumerate(all_campaigns):
+            with cols[i % 3]:
+                with st.container(border=True):
+                    st.markdown(f"**{campaign['title']}**")
+                    st.write(f"**Organization:** {campaign['organization']}")
+                    st.write(f"**Amount Raised:** ${campaign['current_amount']:,}")
+                    st.write(f"**Target:** ${campaign['target_amount']:,}")
+                    # Use a unique key for each button
+                    st.button("View Details", key=f"explore_{campaign['id']}")
     else:
         st.info("No campaigns to display.")
 
@@ -442,12 +456,10 @@ def profile_page():
         organization = st.text_input("Organization Name")
         category = st.selectbox("Category", ["Education", "Health", "Community", "Technology"])
         
-        # Use st_toggle_switch for a modern look
-        has_certificate = st_toggle_switch(
-            label="Do you have a registration certificate?",
-            key="certificate_toggle",
-            default_value=False,
-            label_after=True
+        # Corrected usage of stoggle
+        has_certificate = stoggle(
+            "Do you have a registration certificate?", 
+            "Yes, I have a certificate."
         )
         
         ngo_darpan_id = st.text_input("NGO Darpan ID (optional)")
@@ -476,7 +488,6 @@ def profile_page():
                         st.write(f"Fraud Score: {result['fraud_score']:.2f}")
                         st.write(f"Explanation: {result['explanation']}")
 
-
 def campaign_detail_page(campaign_id):
     st.header(f"Campaign Details for ID: {campaign_id}")
     campaign = get_campaign_by_id(campaign_id)
@@ -489,17 +500,17 @@ def campaign_detail_page(campaign_id):
             with st.expander("Read full description"):
                 st.write(campaign['description'])
             
-            # Use st_metric_card for a professional data display
+            # Use metric_card for a professional data display
             col1, col2 = st.columns(2)
             with col1:
-                st_metric_card(
+                metric_card(
                     title="Amount Raised",
                     value=f"${campaign['current_amount']:,}",
                     delta=f"Target: ${campaign['target_amount']:,}",
                     # You can add a specific icon here if you like
                 )
             with col2:
-                st_metric_card(
+                metric_card(
                     title="Donors",
                     value=f"{campaign.get('donors_count', 0):,}",
                     # You can add an icon for donors here
