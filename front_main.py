@@ -15,13 +15,20 @@ import json
 import os
 from urllib.parse import urlencode
 import time
-from streamlit_extras.metric_cards import style_metric_cards
+from streamlit_extras.metric_cards import style_metric_cards # Changed import from metric_card
 from streamlit_extras.stoggle import stoggle
-from streamlit_card import card # Importing the new streamlit-card library
-from streamlit_extras.grid import grid # New import for grid layout
-from streamlit_extras.badges import badge # New import for badges
-from streamlit_avatar import avatar # New import for avatars
-from streamlit_extras.image_selector import image_selector # New import for image selector
+from streamlit_card import card
+from streamlit_extras.grid import grid
+from streamlit_extras.badges import badge
+from streamlit_avatar import avatar
+from streamlit_extras.image_selector import image_selector
+
+# New imports from the provided links
+from streamlit_extras.pdf_viewer import pdf_viewer
+from streamlit_extras.markdownlit import markdownlit
+from streamlit_extras.tags import tagger_component as tags
+from streamlit_notify import notify
+from annotated_text import annotated_text # New import for annotated text
 
 # --- Page configuration ---
 st.set_page_config(
@@ -289,12 +296,12 @@ def login_page():
             if login_button:
                 # Placeholder for actual login logic
                 if email == "test@example.com" and password == "password":
+                    notify("Login successful!", "success")
                     st.session_state.authenticated = True
-                    st.success("Login successful!")
                     time.sleep(1)
                     navigate_to("trending")
                 else:
-                    st.error("Invalid email or password.")
+                    notify("Invalid email or password.", "error")
         
         st.markdown("<p style='text-align: center;'>Don't have an account? <a href='?page=register'>Register here</a></p>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
@@ -354,11 +361,17 @@ def register_page():
 
                 if register_btn:
                     if password == confirm_password:
-                        st.success(f"{get_translated_text('individual', lang)} {get_translated_text('register_button', lang).lower()} successful! You can now log in.")
+                        notify(f"{get_translated_text('individual', lang)} {get_translated_text('register_button', lang).lower()} successful! You can now log in.", "success")
                         st.session_state.current_page = "login"
                         st.rerun()
                     else:
-                        st.error(get_translated_text('passwords_not_match', lang))
+                        notify(get_translated_text('passwords_not_match', lang), "error")
+                
+                # Display PDF preview if available
+                if document_file and document_file.type == "application/pdf":
+                    st.markdown("### Document Preview")
+                    pdf_viewer(document_file.read())
+
 
         else: # Organization
             st.markdown(f"### {get_translated_text('register_title', lang)} {get_translated_text('organization', lang)}")
@@ -384,11 +397,16 @@ def register_page():
 
                 if register_btn:
                     if password == confirm_password:
-                        st.success(f"{get_translated_text('organization', lang)} {get_translated_text('register_button', lang).lower()} successful! You can now log in.")
+                        notify(f"{get_translated_text('organization', lang)} {get_translated_text('register_button', lang).lower()} successful! You can now log in.", "success")
                         st.session_state.current_page = "login"
                         st.rerun()
                     else:
-                        st.error(get_translated_text('passwords_not_match', lang))
+                        notify(get_translated_text('passwords_not_match', lang), "error")
+                
+                # Display PDF preview if available
+                if cert_file and cert_file.type == "application/pdf":
+                    st.markdown("### Certificate Preview")
+                    pdf_viewer(cert_file.read())
 
         st.markdown(f"""
         <div style="text-align: center; margin: 20px 0;">
@@ -430,6 +448,8 @@ def trending_page():
                         },
                     }
                 )
+                # Display tags below the card
+                tags([campaign['category']], color_map={'Education': 'blue', 'Health': 'green', 'Community': 'orange'})
     else:
         st.info("No trending campaigns found.")
 
@@ -464,6 +484,9 @@ def explore_page():
                         },
                     }
                 )
+                # Display tags below the card
+                tags([campaign['category']], color_map={'Education': 'blue', 'Health': 'green', 'Community': 'orange'})
+
     else:
         st.info("No campaigns to display.")
 
@@ -532,13 +555,26 @@ def profile_page():
             with st.spinner("Submitting campaign for fraud moderation..."):
                 result = submit_campaign_for_moderation(campaign_data)
                 if 'error' in result:
-                    st.chat_message("assistant").error(f"Error: {result['error']}")
+                    notify(f"Error: {result['error']}", "error")
                 else:
-                    with st.chat_message("assistant"):
-                        st.success("Campaign submitted!")
-                        st.info(f"Status: {result['status']}")
-                        st.write(f"Fraud Score: {result['fraud_score']:.2f}")
-                        st.write(f"Explanation: {result['explanation']}")
+                    notify("Campaign submitted!", "success")
+                    st.info(f"Status: {result['status']}")
+                    st.write(f"Fraud Score: {result['fraud_score']:.2f}")
+
+                    # Using annotated_text to explain the score with colored words
+                    st.markdown("### Explanation of Fraud Score")
+                    # Mock data for demonstration. In a real app, this would come from the backend.
+                    annotated_text(
+                        "The campaign description mentions ",
+                        ("urgent", "High Risk", "#ea9999"),
+                        " and ",
+                        ("donate now", "High Risk", "#ea9999"),
+                        " frequently, which are common indicators of fraudulent activity. However, the mention of ",
+                        ("community support", "Low Risk", "#8dcc90"),
+                        " and ",
+                        ("verified charity", "Low Risk", "#8dcc90"),
+                        " helps to lower the overall score. The final risk score is a balanced assessment of these factors."
+                    )
 
 def campaign_detail_page(campaign_id):
     st.header(f"Campaign Details for ID: {campaign_id}")
@@ -553,21 +589,23 @@ def campaign_detail_page(campaign_id):
                 st.title(campaign['title'])
                 st.markdown(f"**Organization:** {campaign['organization']}")
             
-            st.markdown(f"**Category:** {campaign['category']}")
-            
+            # Use tags for the category
+            st.markdown("Category:")
+            tags([campaign['category']], color_map={'Education': 'blue', 'Health': 'green', 'Community': 'orange'})
+
             # Calculate progress percentage
             progress_percent = (campaign['current_amount'] / campaign['target_amount']) * 100 if campaign['target_amount'] > 0 else 0
             
             col1, col2 = st.columns(2)
             with col1:
-                metric_card(
+                style_metric_cards( # Changed metric_card to style_metric_cards
                     title="Amount Raised",
                     value=f"${campaign['current_amount']:,}",
                     delta=f"Target: ${campaign['target_amount']:,}",
                     # You can add a specific icon here if you like
                 )
             with col2:
-                metric_card(
+                style_metric_cards( # Changed metric_card to style_metric_cards
                     title="Donors",
                     value=f"{campaign.get('donors_count', 0):,}",
                     # You can add an icon for donors here
@@ -578,10 +616,11 @@ def campaign_detail_page(campaign_id):
             st.progress(progress_percent / 100, text=f"{progress_percent:.2f}% of goal reached")
 
             with st.expander("Read full description"):
-                st.write(campaign['description'])
+                # Use markdownlit for the description
+                markdownlit(campaign['description'])
 
             if st.button("Donate"):
-                st.success("Thank you for your donation! (This is a placeholder)")
+                notify("Thank you for your donation! (This is a placeholder)", "success")
     else:
         st.error("Campaign not found.")
 
