@@ -24,7 +24,7 @@ from streamlit_avatar import avatar
 
 # Imports from the provided links
 from streamlit_extras.pdf_viewer import pdf_viewer
-from streamlit_extras.markdownlit import markdownlit
+# REMOVED: from streamlit_extras.markdownlit import markdownlit
 from streamlit_extras.tags import tagger_component as tags
 from streamlit_notify import notify
 from annotated_text import annotated_text
@@ -259,10 +259,6 @@ def sidebar_navigation():
     with st.sidebar:
         st.title("HAVEN")
         st.subheader("Crowdfunding Platform")
-        
-        # --- FIXED: Removed st_theme code ---
-        # The st.radio widget for theme selection has been removed.
-        # Users should use the built-in theme selector in the app menu (☰ -> Settings).
         
         # Use a single radio button for navigation
         page = st.radio(
