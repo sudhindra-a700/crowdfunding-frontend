@@ -13,7 +13,7 @@ rich==13.6.0
 streamlit-card
 streamlit-avatar
 streamlit-notify
-annotated-text
+st-annotated-text # FIXED: Corrected package name
 
 # HTTP/API Communication
 requests==2.31.0
