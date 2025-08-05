@@ -15,7 +15,7 @@ import json
 import os
 from urllib.parse import urlencode
 import time
-from streamlit_extras.metric_cards import metric_card
+from streamlit_extras.metric_cards import style_metric_cards
 from streamlit_extras.stoggle import stoggle
 from streamlit_card import card # Importing the new streamlit-card library
 from streamlit_extras.grid import grid # New import for grid layout
