@@ -17,7 +17,7 @@ from urllib.parse import urlencode
 import time
 from streamlit_extras.metric_cards import style_metric_cards
 from streamlit_extras.stoggle import stoggle
-from streamlit_extras.st_card import st_card as card
+from streamlit_card import card # Corrected import statement as requested
 from streamlit_extras.grid import grid
 from streamlit_extras.badges import badge
 from streamlit_avatar import avatar
@@ -433,7 +433,7 @@ def trending_page():
             with grid_cols.container():
                 # Add a badge for trending campaigns
                 badge(type="success", label="Trending")
-                # Use streamlit-card to display the campaign
+                # Use streamlit_card to display the campaign
                 card(
                     title=campaign['title'],
                     text=f"Raised: ${campaign['current_amount']:,} of ${campaign['target_amount']:,}\nCategory: {campaign['category']}",
@@ -465,11 +465,9 @@ def explore_page():
     st.header("Explore All Campaigns")
     all_campaigns = get_all_campaigns()
     if all_campaigns:
-        # Use grid layout for a cleaner display
         grid_cols = grid([1, 1, 1], gap="medium")
         for i, campaign in enumerate(all_campaigns):
             with grid_cols.container():
-                # Use streamlit-card to display the campaign
                 card(
                     title=campaign['title'],
                     text=f"Raised: ${campaign['current_amount']:,} of ${campaign['target_amount']:,}\nCategory: {campaign['category']}",
@@ -492,145 +490,124 @@ def explore_page():
                         },
                     }
                 )
-                # Display tags below the card
                 tags([campaign['category']], color_map={'Education': 'blue', 'Health': 'green', 'Community': 'orange'})
-
     else:
-        st.info("No campaigns to display.")
+        st.info("No campaigns found.")
 
 def search_page():
     st.header("Search Campaigns")
-    query = st.text_input("Enter a keyword to search for campaigns...")
-    if st.button("Search"):
-        with st.spinner("Searching for campaigns..."):
-            time.sleep(2) # Simulate search time
-            # Placeholder for search logic
-            st.info(f"Search results for '{query}' will be displayed here.")
+    query = st.text_input("Enter keywords to search for campaigns")
+
+    if query:
+        st.subheader(f"Search results for: '{query}'")
+        # Placeholder for actual search logic and API call
+        # For now, we'll just show all campaigns
+        all_campaigns = get_all_campaigns()
+        
+        # Simple text matching search for demonstration
+        results = [
+            c for c in all_campaigns 
+            if query.lower() in c['title'].lower() or query.lower() in c['description'].lower()
+        ]
+
+        if results:
+            grid_cols = grid([1, 1, 1], gap="medium")
+            for campaign in results:
+                 with grid_cols.container():
+                    card(
+                        title=campaign['title'],
+                        text=f"Raised: ${campaign['current_amount']:,} of ${campaign['target_amount']:,}\nCategory: {campaign['category']}",
+                        image="https://placehold.co/600x400/2980b9/ffffff?text=Campaign",
+                        url=f"?page=campaign_{campaign['id']}",
+                        styles={
+                            "card": {
+                                "width": "100%",
+                                "height": "auto",
+                                "border-radius": "10px",
+                                "box-shadow": "0 4px 12px rgba(0, 0, 0, 0.05)",
+                                "transition": "all 0.3s ease-in-out",
+                            },
+                            "title": {
+                                "font-size": "22px",
+                                "font-weight": "bold",
+                            },
+                            "text": {
+                                "font-size": "16px",
+                            },
+                        }
+                    )
+        else:
+            st.info("No campaigns match your search.")
+    else:
+        st.info("Please enter a search query.")
 
 def profile_page():
-    st.header("My Profile")
-    st.info("This is a placeholder for the user profile page.")
-    
-    # Display user avatar
-    avatar(name="John Doe", src="https://placehold.co/50x50/3498db/ffffff?text=JD")
-    st.markdown("### Welcome, John Doe!")
+    st.header("User Profile")
+    st.subheader("Your Donations")
+    # Placeholder for displaying user's donation history
 
     st.subheader("Create a New Campaign")
-    
-    with st.form(key='new_campaign_form'):
-        col1, col2 = st.columns(2)
-        with col1:
-            title = st.text_input("Campaign Title")
-            organization = st.text_input("Organization Name")
-            category = st.selectbox("Category", ["Education", "Health", "Community", "Technology"])
-            ngo_darpan_id = st.text_input("NGO Darpan ID (optional)")
-            pan_number = st.text_input("PAN Number (optional)")
-        
-        with col2:
-            description = st.text_area("Campaign Description", height=200)
-            
-            # Use a standard selectbox to choose a placeholder image
-            st.markdown("Select a campaign image:")
-            image_options = {
-                "Education": "https://placehold.co/600x400/2980b9/ffffff?text=Education",
-                "Health": "https://placehold.co/600x400/27ae60/ffffff?text=Health",
-                "Community": "https://placehold.co/600x400/e67e22/ffffff?text=Community",
-                "Technology": "https://placehold.co/600x400/9b59b6/ffffff?text=Technology",
-            }
-            selected_image_key = st.selectbox(
-                "Choose a campaign image",
-                list(image_options.keys())
-            )
-            selected_image = image_options[selected_image_key]
+    with st.form("new_campaign_form"):
+        st.markdown("Enter details for your new campaign:")
+        title = st.text_input("Campaign Title")
+        description = st.text_area("Campaign Description")
+        category = st.selectbox("Category", ["Education", "Health", "Community", "Environment"])
+        target_amount = st.number_input("Target Amount ($)", min_value=100.0, step=100.0)
 
-            has_certificate = stoggle(
-                "Do you have a registration certificate?", 
-                "Yes, I have a certificate."
-            )
-        
-        submit_button = st.form_submit_button(label="Submit for Review", use_container_width=True)
-        
-        if submit_button:
+        submit_btn = st.form_submit_button("Submit for Moderation")
+
+        if submit_btn:
             campaign_data = {
                 "title": title,
                 "description": description,
-                "organization": organization,
                 "category": category,
-                "ngo_darpan_id": ngo_darpan_id,
-                "pan_number": pan_number,
-                "has_certificate": has_certificate,
-                "image_url": selected_image
+                "organization": "Dummy Org", # Placeholder
+                "target_amount": target_amount,
+                "current_amount": 0,
+                "donors_count": 0,
             }
-            with st.spinner("Submitting campaign for fraud moderation..."):
-                result = submit_campaign_for_moderation(campaign_data)
-                if 'error' in result:
-                    notify(f"Error: {result['error']}", "error")
-                else:
-                    notify("Campaign submitted!", "success")
-                    st.info(f"Status: {result['status']}")
-                    st.write(f"Fraud Score: {result['fraud_score']:.2f}")
-
-                    # Using annotated_text to explain the score with colored words
-                    st.markdown("### Explanation of Fraud Score")
-                    # Mock data for demonstration. In a real app, this would come from the backend.
-                    annotated_text(
-                        "The campaign description mentions ",
-                        ("urgent", "High Risk", "#ea9999"),
-                        " and ",
-                        ("donate now", "High Risk", "#ea9999"),
-                        " frequently, which are common indicators of fraudulent activity. However, the mention of ",
-                        ("community support", "Low Risk", "#8dcc90"),
-                        " and ",
-                        ("verified charity", "Low Risk", "#8dcc90"),
-                        " helps to lower the overall score. The final risk score is a balanced assessment of these factors."
-                    )
-
+            # Submit to moderation API endpoint
+            response = submit_campaign_for_moderation(campaign_data)
+            if "error" in response:
+                st.error(f"Error submitting campaign: {response['error']}")
+            else:
+                st.success("Campaign submitted for moderation. Thank you!")
+                
 def campaign_detail_page(campaign_id):
-    st.header(f"Campaign Details for ID: {campaign_id}")
     campaign = get_campaign_by_id(campaign_id)
     if campaign:
-        with st.container():
-            col1, col2 = st.columns([1, 4])
-            with col1:
-                # Display organization avatar
-                avatar(name=campaign['organization'], src="https://placehold.co/50x50/3498db/ffffff?text=Org")
-            with col2:
-                st.title(campaign['title'])
-                st.markdown(f"**Organization:** {campaign['organization']}")
-            
-            # Use tags for the category
-            st.markdown("Category:")
-            tags([campaign['category']], color_map={'Education': 'blue', 'Health': 'green', 'Community': 'orange'})
+        st.header(campaign['title'])
+        st.markdown(f"**Category:** {campaign['category']}")
+        st.markdown(f"**Organization:** {campaign['organization']}")
+        
+        # Use metric cards for a clear display of progress
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric(label="Amount Raised", value=f"${campaign['current_amount']:,}")
+        with col2:
+            st.metric(label="Target Amount", value=f"${campaign['target_amount']:,}")
+        with col3:
+            st.metric(label="Donors", value=campaign['donors_count'])
+        
+        style_metric_cards(background_color="#f0f2f6", border_left_color="#007bff")
 
-            # Calculate progress percentage
-            progress_percent = (campaign['current_amount'] / campaign['target_amount']) * 100 if campaign['target_amount'] > 0 else 0
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                style_metric_cards(
-                    title="Amount Raised",
-                    value=f"${campaign['current_amount']:,}",
-                    delta=f"Target: ${campaign['target_amount']:,}",
-                )
-            with col2:
-                style_metric_cards(
-                    title="Donors",
-                    value=f"{campaign.get('donors_count', 0):,}",
-                )
-            
-            # Display a larger progress bar
-            st.markdown("### Progress")
-            st.progress(progress_percent / 100, text=f"{progress_percent:.2f}% of goal reached")
+        st.progress(campaign['current_amount'] / campaign['target_amount'])
+        st.markdown(f"**Progress:** {campaign['current_amount'] / campaign['target_amount'] * 100:.2f}%")
 
-            with st.expander("Read full description"):
-                # Use markdownlit for the description
-                markdownlit(campaign['description'])
-
-            if st.button("Donate"):
-                notify("Thank you for your donation! (This is a placeholder)", "success")
+        # Use stoggle for a collapsible description
+        stoggle("Read Campaign Description", campaign['description'])
+        
+        st.markdown("---")
+        st.subheader("Donate to this Campaign")
+        
+        with st.form(key=f"donate_form_{campaign_id}"):
+            donation_amount = st.number_input("Enter donation amount ($)", min_value=1.0, step=1.0)
+            donate_button = st.form_submit_button("Donate Now")
+            if donate_button:
+                # Placeholder for donation logic
+                st.success(f"Thank you for your donation of ${donation_amount}! (This is a placeholder)")
     else:
         st.error("Campaign not found.")
-
 
 def main():
     """
@@ -663,10 +640,10 @@ def main():
         register_page()
     elif page == 'trending':
         trending_page()
-    elif page == 'search':
-        search_page()
     elif page == 'explore':
         explore_page()
+    elif page == 'search':
+        search_page()
     elif page == 'profile':
         profile_page()
     elif page.startswith('campaign_'):
@@ -675,7 +652,7 @@ def main():
     else:
         # Default to trending if authenticated, login if not
         if st.session_state.authenticated:
-            trending_page()
+            navigate_to('trending')
         else:
             login_page()
 
