@@ -17,7 +17,7 @@ from urllib.parse import urlencode
 import time
 from streamlit_extras.metric_cards import style_metric_cards
 from streamlit_extras.stoggle import stoggle
-from streamlit_card import card # Corrected import statement as requested
+from streamlit_card import card
 from streamlit_extras.grid import grid
 from streamlit_extras.badges import badge
 from streamlit_avatar import avatar
@@ -260,13 +260,9 @@ def sidebar_navigation():
         st.title("HAVEN")
         st.subheader("Crowdfunding Platform")
         
-        # Add a theme selector using st_theme
-        selected_theme = st.radio(
-            "Select Theme",
-            ["light", "dark", "classic"],
-            key="theme_selector",
-        )
-        st_theme.set_theme(selected_theme)
+        # --- FIXED: Removed st_theme code ---
+        # The st.radio widget for theme selection has been removed.
+        # Users should use the built-in theme selector in the app menu (☰ -> Settings).
         
         # Use a single radio button for navigation
         page = st.radio(
