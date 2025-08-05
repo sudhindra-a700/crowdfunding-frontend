@@ -35,3 +35,26 @@ def display_organization_profile():
     st.subheader("Campaigns You Created")
     for campaign in profile_data["created_campaigns"]:
         st.info(f"You created the campaign: **{campaign['title']}**")
+
+def show_profile_details():
+    st.title("Your Profile")
+    user_type = st.session_state.get("user_type")
+    if user_type == "individual":
+        display_individual_profile()
+    elif user_type == "organization":
+        display_organization_profile()
+    else:
+        st.error("Could not determine user type. Please log in again.")
+
+def show_creation_form():
+    st.title("Create a New Campaign")
+    st.info("Submit your project details below. It will be reviewed by our AI and Admin team.")
+    with st.form("new_campaign_form", border=True):
+        title = st.text_input("Campaign Title")
+        description = st.text_area("Campaign Description")
+        category = st.selectbox("Category", ["Education", "Health", "Community"])
+        target_amount = st.number_input("Target Amount ($)", min_value=100.0)
+        if st.form_submit_button("Submit for Moderation"):
+            data = {"title": title, "description": description, "category": category, "target_amount": target_amount}
+            response = submit_campaign_for_review(data)
+            notify(response['message'], "success")
