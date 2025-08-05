@@ -21,7 +21,6 @@ from streamlit_card import card # Corrected import statement as requested
 from streamlit_extras.grid import grid
 from streamlit_extras.badges import badge
 from streamlit_avatar import avatar
-from st_theme import st_theme # Import the st-theme library
 
 # Imports from the provided links
 from streamlit_extras.pdf_viewer import pdf_viewer
