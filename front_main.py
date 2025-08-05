@@ -15,20 +15,20 @@ import json
 import os
 from urllib.parse import urlencode
 import time
-from streamlit_extras.metric_cards import style_metric_cards # Changed import from metric_card
+from streamlit_extras.metric_cards import style_metric_cards
 from streamlit_extras.stoggle import stoggle
-from streamlit_card import card
+from streamlit_extras.st_card import st_card as card
 from streamlit_extras.grid import grid
 from streamlit_extras.badges import badge
 from streamlit_avatar import avatar
-from streamlit_extras.image_selector import image_selector
+from st_theme import st_theme # Import the st-theme library
 
-# New imports from the provided links
+# Imports from the provided links
 from streamlit_extras.pdf_viewer import pdf_viewer
 from streamlit_extras.markdownlit import markdownlit
 from streamlit_extras.tags import tagger_component as tags
 from streamlit_notify import notify
-from annotated_text import annotated_text # New import for annotated text
+from annotated_text import annotated_text
 
 # --- Page configuration ---
 st.set_page_config(
@@ -175,7 +175,7 @@ def load_custom_css():
     .stButton>button:hover {
         background-color: #0056b3;
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        box-shadow: 4px 8px 8px rgba(0, 0, 0, 0.2);
     }
     .st-emotion-cache-12oz5g7 {
         max-width: 100%;
@@ -256,14 +256,18 @@ def render_logo():
         st.markdown(f"<h1 style='text-align: center;'>HAVEN</h1>", unsafe_allow_html=True)
 
 # --- Navigation and Page Functions ---
-def navigate_to(page_name):
-    st.session_state.current_page = page_name
-    st.experimental_set_query_params(page=page_name)
-
 def sidebar_navigation():
     with st.sidebar:
         st.title("HAVEN")
         st.subheader("Crowdfunding Platform")
+        
+        # Add a theme selector using st_theme
+        selected_theme = st.radio(
+            "Select Theme",
+            ["light", "dark", "classic"],
+            key="theme_selector",
+        )
+        st_theme.set_theme(selected_theme)
         
         # Use a single radio button for navigation
         page = st.radio(
@@ -279,6 +283,10 @@ def sidebar_navigation():
             navigate_to("search")
         elif page == "Profile":
             navigate_to("profile")
+
+def navigate_to(page_name):
+    st.session_state.current_page = page_name
+    st.experimental_set_query_params(page=page_name)
 
 def login_page():
     # Use st.container for a cleaner, centered look
@@ -521,19 +529,20 @@ def profile_page():
         with col2:
             description = st.text_area("Campaign Description", height=200)
             
-            # Use image_selector for a nicer campaign image upload experience
+            # Use a standard selectbox to choose a placeholder image
             st.markdown("Select a campaign image:")
-            selected_image = image_selector(
-                images=[
-                    "https://placehold.co/600x400/2980b9/ffffff?text=Education",
-                    "https://placehold.co/600x400/27ae60/ffffff?text=Health",
-                    "https://placehold.co/600x400/e67e22/ffffff?text=Community",
-                    "https://placehold.co/600x400/9b59b6/ffffff?text=Technology",
-                ],
-                key="campaign_image_selector"
+            image_options = {
+                "Education": "https://placehold.co/600x400/2980b9/ffffff?text=Education",
+                "Health": "https://placehold.co/600x400/27ae60/ffffff?text=Health",
+                "Community": "https://placehold.co/600x400/e67e22/ffffff?text=Community",
+                "Technology": "https://placehold.co/600x400/9b59b6/ffffff?text=Technology",
+            }
+            selected_image_key = st.selectbox(
+                "Choose a campaign image",
+                list(image_options.keys())
             )
+            selected_image = image_options[selected_image_key]
 
-            # Corrected usage of stoggle
             has_certificate = stoggle(
                 "Do you have a registration certificate?", 
                 "Yes, I have a certificate."
@@ -550,7 +559,7 @@ def profile_page():
                 "ngo_darpan_id": ngo_darpan_id,
                 "pan_number": pan_number,
                 "has_certificate": has_certificate,
-                "image_url": selected_image # Assuming backend can handle this
+                "image_url": selected_image
             }
             with st.spinner("Submitting campaign for fraud moderation..."):
                 result = submit_campaign_for_moderation(campaign_data)
@@ -598,17 +607,15 @@ def campaign_detail_page(campaign_id):
             
             col1, col2 = st.columns(2)
             with col1:
-                style_metric_cards( # Changed metric_card to style_metric_cards
+                style_metric_cards(
                     title="Amount Raised",
                     value=f"${campaign['current_amount']:,}",
                     delta=f"Target: ${campaign['target_amount']:,}",
-                    # You can add a specific icon here if you like
                 )
             with col2:
-                style_metric_cards( # Changed metric_card to style_metric_cards
+                style_metric_cards(
                     title="Donors",
                     value=f"{campaign.get('donors_count', 0):,}",
-                    # You can add an icon for donors here
                 )
             
             # Display a larger progress bar
